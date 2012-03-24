@@ -38,7 +38,7 @@ public:
 	{
 		CompoundEICG random = _random;
 
-		unsigned int s1[6] = { 0, 0, 0, 0, 0, 0 };
+		UInt32 s1[6] = { 0, 0, 0, 0, 0, 0 };
 		CPPUNIT_ASSERT(random.seed() == CompoundEICG::Seed(s1));
 
 		random.nextSubstream();
@@ -48,7 +48,7 @@ public:
 			random.next();
 		}
 
-		unsigned int s2[6] = { 1073741827, 1073745247, 1073855287, 1073906047, 1074048847, 1074226927 };
+		UInt32 s2[6] = { 1073741827, 1073745247, 1073855287, 1073906047, 1074048847, 1074226927 };
 		CPPUNIT_ASSERT(random.seed() == CompoundEICG::Seed(s2));
 
 		random.nextSubstream();
@@ -57,7 +57,7 @@ public:
 			random.next();
 		}
 
-		unsigned int s3[6] = { 6, 6864, 226986, 328514, 614130, 970304 };
+		UInt32 s3[6] = { 6, 6864, 226986, 328514, 614130, 970304 };
 		CPPUNIT_ASSERT(random.seed() == CompoundEICG::Seed(s3));
 
 		for (int i = 0; i < 52; i++)
@@ -69,7 +69,7 @@ public:
 			random.next();
 		}
 
-		unsigned int s4[6] = { 50, 7376, 228590, 330326, 616358, 972896 };
+		UInt32 s4[6] = { 50, 7376, 228590, 330326, 616358, 972896 };
 		CPPUNIT_ASSERT(random.seed() == CompoundEICG::Seed(s4));
 
 		random.resetChunk();
@@ -78,7 +78,7 @@ public:
 			random.next();
 		}
 
-		unsigned int s5[6] = { 207, 7533, 228747, 330483, 616515, 973053 };
+		UInt32 s5[6] = { 207, 7533, 228747, 330483, 616515, 973053 };
 		CPPUNIT_ASSERT(random.seed() == CompoundEICG::Seed(s5));
 
 		for (int i = 0; i < 5321; i++)
@@ -94,7 +94,7 @@ public:
 			random.next();
 		}
 
-		unsigned int s6[6] = { 1073744585, 1091997521, 1677853085, 1948070021, 560753770, 1508711172 };
+		UInt32 s6[6] = { 1073744585, 1091997521, 1677853085, 1948070021, 560753770, 1508711172 };
 		CPPUNIT_ASSERT(random.seed() == CompoundEICG::Seed(s6));
 
 		random.resetSubstream();
@@ -103,7 +103,7 @@ public:
 			random.nextChunk();
 		}
 
-		unsigned int s7[6] = { 2667, 18255333, 604110267, 874327083, 1634494155, 434967784 };
+		UInt32 s7[6] = { 2667, 18255333, 604110267, 874327083, 1634494155, 434967784 };
 		CPPUNIT_ASSERT(random.seed() == CompoundEICG::Seed(s7));
 	}
 
