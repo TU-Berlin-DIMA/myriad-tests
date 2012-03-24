@@ -1,0 +1,69 @@
+################################################################################
+# Additional makefile targets
+################################################################################
+
+# include the following files in the package
+# ./config/*properties  -- properties config files
+# ./config/*xml         -- xml config files
+# ./config/gnuplot/*gpi -- gnuplot scripts
+CONFIG_FILES  = $(shell cd ../vendor/myriad/src && find config -name '*.properties')
+CONFIG_FILES += $(shell cd ../vendor/myriad/src && find config -name '*.xml')
+CONFIG_FILES += $(shell cd ../vendor/myriad/src && find config -name '*.xsd')
+CONFIG_FILES += $(shell cd ../src && find config -name '*.properties')
+CONFIG_FILES += $(shell cd ../src && find config -name '*.xml')
+CONFIG_FILES += $(shell cd ../src && find config -name '*.xsd')
+
+# All Target
+all: work-dirs config-files lib-poco bin/myriad-tests
+
+cleanall: clean
+	rm -Rf bin
+	rm -Rf config
+	rm -Rf lib
+
+install: 
+	mkdir -p $(MYRIAD_INSTALL_DIR)
+	cp -Rf ./bin $(MYRIAD_INSTALL_DIR)
+	cp -Rf ./config $(MYRIAD_INSTALL_DIR)
+	cp -Rf ./lib $(MYRIAD_INSTALL_DIR)
+	cp CHANGELOG $(MYRIAD_INSTALL_DIR)
+	cp LICENSE $(MYRIAD_INSTALL_DIR)
+	cp NOTICE $(MYRIAD_INSTALL_DIR)
+	cp README $(MYRIAD_INSTALL_DIR)
+	cp VERSION $(MYRIAD_INSTALL_DIR)
+	
+work-dirs: 
+	@echo 'Creating directory hierarchy'
+	mkdir -p bin
+	mkdir -p config
+	mkdir -p lib
+	mkdir -p lib/c++
+	@echo ' '
+	
+config-files: $(CONFIG_FILES)
+	@echo ' '
+	
+lib-poco:
+	@echo 'Copying lib files'
+	find $(POCO_LIBRARY_PATH) -name "libPoco*" -type f -exec cp -f {} ./lib/c++/. \;
+	find $(POCO_LIBRARY_PATH) -name "libPoco*" -type l -exec cp -PRf {} ./lib/c++/. \;
+	@echo ' '
+
+config/myriad-frontend.template.xml: ../vendor/myriad/src/config/myriad-frontend.template.xml
+	@echo 'Processing: $@'
+	cp -r $< $@
+	
+config/myriad-frontend.xsd: ../vendor/myriad/src/config/myriad-frontend.xsd
+	@echo 'Processing: $@'
+	cp -r $< $@
+
+config/%: ../src/config/%
+	@echo 'Processing: $@'
+	cp -r $< $@
+	
+bin/myriad-%: ../vendor/myriad/src/script/myriad-%
+	@echo 'Processing: $@'
+	cp $< $@ && chmod 0755 $@
+
+.PHONY: all tests clean tests cleanall install work-dirs config-files lib-poco
+.SILENT: work-dirs lib-poco

@@ -1,0 +1,5 @@
+# ignore the user-specific build setup settings (makefile.defs)
+makefile.defs
+
+# ignore build artifacts
+build/*

@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<generator-config>
+
+  <!-- configurable properties -->
+  <properties>
+    <property-group type="test_generator">
+      <property name="output-file">user.json</property>
+    </property-group>
+  </properties>
+
+  <!-- function configuration -->
+  <functions>
+    <function name="t-product-class-probability" type="custom-discrete-probability" />
+    <function name="t-male-name-probability" type="custom-discrete-probability" />
+    <function name="t-id-range-map" type="id-range-map" />
+    <function name="t-interval-map" type="interval-map" />
+    <function name="t-pareto" type="pareto">
+      <param name="xMin">7.0</param>
+      <param name="alpha">1</param>
+    </function>
+  </functions>
+  
+  <!-- partitioning configuration -->
+  <partitioning>
+    <partition type="test_generator" method="simple">
+      <base-cardinality>156250</base-cardinality>
+    </partition>
+  </partitioning>
+
+  <!-- string sets -->
+  <object-sets>
+    <!-- product classes definition -->
+    <object-set id="product_classes">
+      <object>
+        <probability function="t-product-class-probability" value="0.24" />
+        <property name="pc_meta_alias">automotive</property>
+        <property name="pc_class_sk">10000</property>
+        <property name="pc_class_name">Automotive</property>
+      </object>
+      <object>
+        <probability function="t-product-class-probability" value="0.26" />
+        <property name="pc_meta_alias">baby-products</property>
+        <property name="pc_class_sk">20000</property>
+        <property name="pc_class_name">Baby</property>
+      </object>
+      <object>
+        <probability function="t-product-class-probability" value="0.17" />
+        <property name="pc_meta_alias">beauty</property>
+        <property name="pc_class_sk">30000</property>
+        <property name="pc_class_name">Beauty</property>
+      </object>
+      <object>
+        <probability function="t-product-class-probability" value="0.12" />
+        <property name="pc_meta_alias">stripbooks</property>
+        <property name="pc_class_sk">40000</property>
+        <property name="pc_class_name">Books</property>
+      </object>
+      <object>
+        <probability function="t-product-class-probability" value="0.21" />
+        <property name="pc_class_sk">50000</property>
+        <property name="pc_meta_alias">wireless-aps</property>
+        <property name="pc_class_name">Cell Phones &amp; Service</property>
+      </object>
+    </object-set>
+  </object-sets>
+
+  <!-- string sets -->
+  <string-sets>
+    <!-- cities definition -->
+    <string-set id="male-names">
+      <string value="John">
+        <probability function="t-male-name-probability" value="0.4" />
+      </string>
+      <string value="Jake">
+        <probability function="t-male-name-probability" value="0.3" />
+      </string>
+      <string value="Paul">
+        <probability function="t-male-name-probability" value="0.2" />
+      </string>
+      <string value="Don">
+        <probability function="t-male-name-probability" value="0.1" />
+      </string>
+    </string-set>
+  </string-sets>
+  
+</generator-config>
