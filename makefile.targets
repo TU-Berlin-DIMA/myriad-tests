@@ -6,12 +6,10 @@
 # ./config/*properties  -- properties config files
 # ./config/*xml         -- xml config files
 # ./config/gnuplot/*gpi -- gnuplot scripts
-CONFIG_FILES  = $(shell cd ../vendor/myriad/src && find config -name '*.properties')
-CONFIG_FILES += $(shell cd ../vendor/myriad/src && find config -name '*.xml')
-CONFIG_FILES += $(shell cd ../vendor/myriad/src && find config -name '*.xsd')
-CONFIG_FILES += $(shell cd ../src && find config -name '*.properties')
-CONFIG_FILES += $(shell cd ../src && find config -name '*.xml')
-CONFIG_FILES += $(shell cd ../src && find config -name '*.xsd')
+CONFIG_FILES     = $(shell cd ../src && ls config/*properties)
+CONFIG_FILES    += $(shell cd ../src && ls config/*xml)
+CONFIG_FILES    += $(shell cd ../src && ls config/*qhistogram)
+CONFIG_FILES    += $(shell cd ../vendor/myriad/src && ls config/*xsd)
 
 # All Target
 all: work-dirs config-files lib-poco bin/myriad-tests
