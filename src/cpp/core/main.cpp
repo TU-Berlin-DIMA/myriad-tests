@@ -27,6 +27,7 @@
 #include "math/MathUtilitiesTest.h"
 #include "math/IntervalMapTest.h"
 #include "math/random/ProbabilityFunctionsTest.h"
+#include "math/random/QHistogramPrFunctionTest.h"
 #include "math/random/CompoundEICGTest.h"
 #include "math/random/HashRandomStreamTest.h"
 #include "math/random/SurrogateKeyGeneratorTest.h"
@@ -56,8 +57,8 @@ int main(int argc, char **argv)
 //	runner.addTest(IntervalMapTest::suite());
 //	runner.addTest(MathUtilitiesTest::suite());
 //	runner.addTest(GeneratorConfigTest::suite());
-	runner.addTest(ObjectBuilderTest::suite());
-	runner.addTest(ProbabilityFunctionsTest::suite());
+//	runner.addTest(ObjectBuilderTest::suite());
+//	runner.addTest(ProbabilityFunctionsTest::suite());
 	runner.addTest(CompoundEICGTest::suite());
 	runner.addTest(HashRandomStreamTest::suite());
 	runner.addTest(ConditionalHydratorTest::suite());
@@ -65,6 +66,7 @@ int main(int argc, char **argv)
 	runner.addTest(EnumSetHydratorTest::suite());
 	runner.addTest(RangeSetHydratorTest::suite());
 	runner.addTest(SurrogateKeyGeneratorTest::suite());
+	runner.addTest(QHistogramPrFunctionTest::suite());
 	runner.run();
 
 	return 0;
