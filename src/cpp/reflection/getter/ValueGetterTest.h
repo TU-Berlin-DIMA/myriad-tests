@@ -10,8 +10,9 @@
 
 #include "record/Record.h"
 #include "reflection/getter/ValueGetter.h"
-#include "reflection/getter/SimpleValueGetter.h"
+#include "reflection/getter/FieldGetter.h"
 #include "reflection/getter/ReferencedRecordGetter.h"
+#include "reflection/getter/ReferencedRecordFieldGetter.h"
 
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestFixture.h>
@@ -89,12 +90,12 @@ public:
 	{
 	}
 
-	void testSimpleValueGetter()
+	void testFieldGetter()
 	{
-		const ValueGetter<X, I64u>& getA = SimpleValueGetter<X, I64u>(&X::a);
-		const ValueGetter<X, String>& getB = SimpleValueGetter<X, String>(&X::b);
+		const ValueGetter<X, I64u>& getA = FieldGetter<X, I64u>(&X::a);
+		const ValueGetter<X, String>& getB = FieldGetter<X, String>(&X::b);
 
-		for (int i = 0; i < 1000; i++)
+		for (int i = 0; i < 10000; i++)
 		{
 			AutoPtr<X> x = new X();
 			fillX(x);
@@ -110,7 +111,7 @@ public:
 
 		AutoPtr<Y> y = new Y();
 
-		for (int i = 0; i < 1000; i++)
+		for (int i = 0; i < 10000; i++)
 		{
 			AutoPtr<X> x = new X();
 			fillX(x);
@@ -121,11 +122,31 @@ public:
 		}
 	}
 
+	void testReferencedRecordFieldGetter()
+	{
+		const ValueGetter<Y, I64u>& getXA = ReferencedRecordFieldGetter<Y, X, I64u>(&Y::x, &X::a);
+		const ValueGetter<Y, String>& getXB = ReferencedRecordFieldGetter<Y, X, String>(&Y::x, &X::b);
+
+		AutoPtr<Y> y = new Y();
+
+		for (int i = 0; i < 10000; i++)
+		{
+			AutoPtr<X> x = new X();
+			fillX(x);
+
+			y->x(x);
+
+			CPPUNIT_ASSERT_EQUAL(x->a(), getXA(y));
+			CPPUNIT_ASSERT_EQUAL(x->b(), getXB(y));
+		}
+	}
+
 	static Test *suite()
 	{
 		TestSuite* suite = new TestSuite("ValueGetterTest");
-		suite->addTest(new TestCaller<ValueGetterTest>("testSimpleValueGetter", &ValueGetterTest::testSimpleValueGetter));
+		suite->addTest(new TestCaller<ValueGetterTest>("testFieldGetter", &ValueGetterTest::testFieldGetter));
 		suite->addTest(new TestCaller<ValueGetterTest>("testReferencedRecordGetter", &ValueGetterTest::testReferencedRecordGetter));
+		suite->addTest(new TestCaller<ValueGetterTest>("testReferencedRecordFieldGetter", &ValueGetterTest::testReferencedRecordFieldGetter));
 		return suite;
 	}
 

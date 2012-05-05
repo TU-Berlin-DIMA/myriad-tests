@@ -60,9 +60,9 @@ int main(int argc, char **argv)
 	runner.addTest(IntervalMapTest::suite());
 	runner.addTest(MathUtilitiesTest::suite());
 	runner.addTest(GeneratorConfigTest::suite());
-	runner.addTest(ObjectBuilderTest::suite());
 	runner.addTest(ProbabilityFunctionsTest::suite());
      */
+	runner.addTest(ObjectBuilderTest::suite());
 	runner.addTest(CompoundEICGTest::suite());
 	runner.addTest(HashRandomStreamTest::suite());
 	runner.addTest(ConditionalHydratorTest::suite());
