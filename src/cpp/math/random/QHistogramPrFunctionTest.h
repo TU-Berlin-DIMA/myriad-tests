@@ -31,7 +31,10 @@ public:
 	{
 		srand(241231591);
 
-		_probability = new QHistogramPrFunction("sample_qhist", "/home/alexander/workspace/phd/myriad-tests/build/config/sample_qhist.qhistogram");
+	    size_t size = 512;
+	    char path[size];
+
+		_probability = new QHistogramPrFunction("sample_qhist", string(getcwd(path, size)) + "/build/config/sample_qhist.qhistogram");
 	}
 
 	void tearDown()
