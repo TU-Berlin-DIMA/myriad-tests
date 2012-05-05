@@ -31,6 +31,7 @@
 #include "math/random/CompoundEICGTest.h"
 #include "math/random/HashRandomStreamTest.h"
 #include "math/random/SurrogateKeyGeneratorTest.h"
+#include "reflection/getter/ValueGetterTest.h"
 
 #include <cppunit/ui/text/TestRunner.h>
 
@@ -54,11 +55,14 @@ const String Constant::APP_VERSION = "0.1.0";
 int main(int argc, char **argv)
 {
 	TextUi::TestRunner runner;
-//	runner.addTest(IntervalMapTest::suite());
-//	runner.addTest(MathUtilitiesTest::suite());
-//	runner.addTest(GeneratorConfigTest::suite());
-//	runner.addTest(ObjectBuilderTest::suite());
-//	runner.addTest(ProbabilityFunctionsTest::suite());
+	/*
+     * TODO: these tests need to be updated / removed
+	runner.addTest(IntervalMapTest::suite());
+	runner.addTest(MathUtilitiesTest::suite());
+	runner.addTest(GeneratorConfigTest::suite());
+	runner.addTest(ObjectBuilderTest::suite());
+	runner.addTest(ProbabilityFunctionsTest::suite());
+     */
 	runner.addTest(CompoundEICGTest::suite());
 	runner.addTest(HashRandomStreamTest::suite());
 	runner.addTest(ConditionalHydratorTest::suite());
@@ -67,6 +71,7 @@ int main(int argc, char **argv)
 	runner.addTest(RangeSetHydratorTest::suite());
 	runner.addTest(SurrogateKeyGeneratorTest::suite());
 	runner.addTest(QHistogramPrFunctionTest::suite());
+	runner.addTest(ValueGetterTest::suite());
 	runner.run();
 
 	return 0;
