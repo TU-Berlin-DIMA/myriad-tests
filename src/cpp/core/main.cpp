@@ -26,8 +26,9 @@
 #include "hydrator/RangeSetHydratorTest.h"
 #include "math/MathUtilitiesTest.h"
 #include "math/IntervalMapTest.h"
-#include "math/random/ProbabilityFunctionsTest.h"
-#include "math/random/QHistogramPrFunctionTest.h"
+#include "math/probability/ProbabilityFunctionsTest.h"
+#include "math/probability/QHistogramPrFunctionTest.h"
+#include "math/probability/ConditionalQHistogramPrFunctionTest.h"
 #include "math/random/CompoundEICGTest.h"
 #include "math/random/HashRandomStreamTest.h"
 #include "math/random/SurrogateKeyGeneratorTest.h"
@@ -71,6 +72,7 @@ int main(int argc, char **argv)
 	runner.addTest(RangeSetHydratorTest::suite());
 	runner.addTest(SurrogateKeyGeneratorTest::suite());
 	runner.addTest(QHistogramPrFunctionTest::suite());
+	runner.addTest(ConditionalQHistogramPrFunctionTest::suite());
 	runner.addTest(ValueGetterTest::suite());
 	runner.run();
 
