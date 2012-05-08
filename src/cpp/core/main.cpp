@@ -24,6 +24,7 @@
 #include "hydrator/ClusteredEnumSetHydratorTest.h"
 #include "hydrator/EnumSetHydratorTest.h"
 #include "hydrator/RangeSetHydratorTest.h"
+#include "hydrator/ConditionalRandomizedHydratorTest.h"
 #include "math/MathUtilitiesTest.h"
 #include "math/IntervalMapTest.h"
 #include "math/probability/ProbabilityFunctionsTest.h"
@@ -63,17 +64,18 @@ int main(int argc, char **argv)
 	runner.addTest(GeneratorConfigTest::suite());
 	runner.addTest(ProbabilityFunctionsTest::suite());
      */
-	runner.addTest(ObjectBuilderTest::suite());
-	runner.addTest(CompoundEICGTest::suite());
-	runner.addTest(HashRandomStreamTest::suite());
-	runner.addTest(ConditionalHydratorTest::suite());
-	runner.addTest(ClusteredEnumSetHydratorTest::suite());
-	runner.addTest(EnumSetHydratorTest::suite());
-	runner.addTest(RangeSetHydratorTest::suite());
-	runner.addTest(SurrogateKeyGeneratorTest::suite());
-	runner.addTest(QHistogramPrFunctionTest::suite());
-	runner.addTest(ConditionalQHistogramPrFunctionTest::suite());
-	runner.addTest(ValueGetterTest::suite());
+//	runner.addTest(ObjectBuilderTest::suite());
+//	runner.addTest(CompoundEICGTest::suite());
+//	runner.addTest(HashRandomStreamTest::suite());
+//	runner.addTest(ConditionalHydratorTest::suite());
+//	runner.addTest(ClusteredEnumSetHydratorTest::suite());
+//	runner.addTest(EnumSetHydratorTest::suite());
+//	runner.addTest(RangeSetHydratorTest::suite());
+	runner.addTest(ConditionalRandomizedHydratorTest::suite());
+//	runner.addTest(SurrogateKeyGeneratorTest::suite());
+//	runner.addTest(QHistogramPrFunctionTest::suite());
+//	runner.addTest(ConditionalQHistogramPrFunctionTest::suite());
+//	runner.addTest(ValueGetterTest::suite());
 	runner.run();
 
 	return 0;

@@ -8,7 +8,8 @@
 #ifndef VALUEGETTERTEST_H_
 #define VALUEGETTERTEST_H_
 
-#include "record/Record.h"
+#include "record/RecordX.h"
+#include "record/RecordY.h"
 #include "reflection/getter/ValueGetter.h"
 #include "reflection/getter/FieldGetter.h"
 #include "reflection/getter/ReferencedRecordGetter.h"
@@ -28,55 +29,6 @@ using namespace std;
 
 namespace Myriad {
 
-class X: public Record
-{
-public:
-
-	void a(const I64u& v)
-	{
-		_a = v;
-	}
-
-	const I64u& a() const
-	{
-		return _a;
-	}
-
-	void b(const String& v)
-	{
-		_b = v;
-	}
-
-	const String& b() const
-	{
-		return _b;
-	}
-
-private:
-
-	I64u _a;
-	String _b;
-};
-
-class Y: public Record
-{
-public:
-
-	void x(const AutoPtr<X>& v)
-	{
-		_x = v;
-	}
-
-	const AutoPtr<X>& x() const
-	{
-		return _x;
-	}
-
-private:
-
-	AutoPtr<X> _x;
-};
-
 class ValueGetterTest: public TestFixture
 {
 public:
@@ -92,12 +44,12 @@ public:
 
 	void testFieldGetter()
 	{
-		const ValueGetter<X, I64u>& getA = FieldGetter<X, I64u>(&X::a);
-		const ValueGetter<X, String>& getB = FieldGetter<X, String>(&X::b);
+		const ValueGetter<RecordX, I64u>& getA = FieldGetter<RecordX, I64u>(&RecordX::a);
+		const ValueGetter<RecordX, String>& getB = FieldGetter<RecordX, String>(&RecordX::b);
 
 		for (int i = 0; i < 10000; i++)
 		{
-			AutoPtr<X> x = new X();
+			AutoPtr<RecordX> x = new RecordX();
 			fillX(x);
 
 			CPPUNIT_ASSERT_EQUAL(x->a(), getA(x));
@@ -107,13 +59,13 @@ public:
 
 	void testReferencedRecordGetter()
 	{
-		const ValueGetter<Y, AutoPtr<X> >& getX = ReferencedRecordGetter<Y, X>(&Y::x);
+		const ValueGetter<RecordY, AutoPtr<RecordX> >& getX = ReferencedRecordGetter<RecordY, RecordX>(&RecordY::x);
 
-		AutoPtr<Y> y = new Y();
+		AutoPtr<RecordY> y = new RecordY();
 
 		for (int i = 0; i < 10000; i++)
 		{
-			AutoPtr<X> x = new X();
+			AutoPtr<RecordX> x = new RecordX();
 			fillX(x);
 
 			y->x(x);
@@ -124,14 +76,14 @@ public:
 
 	void testReferencedRecordFieldGetter()
 	{
-		const ValueGetter<Y, I64u>& getXA = ReferencedRecordFieldGetter<Y, X, I64u>(&Y::x, &X::a);
-		const ValueGetter<Y, String>& getXB = ReferencedRecordFieldGetter<Y, X, String>(&Y::x, &X::b);
+		const ValueGetter<RecordY, I64u>& getXA = ReferencedRecordFieldGetter<RecordY, RecordX, I64u>(&RecordY::x, &RecordX::a);
+		const ValueGetter<RecordY, String>& getXB = ReferencedRecordFieldGetter<RecordY, RecordX, String>(&RecordY::x, &RecordX::b);
 
-		AutoPtr<Y> y = new Y();
+		AutoPtr<RecordY> y = new RecordY();
 
 		for (int i = 0; i < 10000; i++)
 		{
-			AutoPtr<X> x = new X();
+			AutoPtr<RecordX> x = new RecordX();
 			fillX(x);
 
 			y->x(x);
@@ -152,7 +104,7 @@ public:
 
 private:
 
-	void fillX(AutoPtr<X>& x)
+	void fillX(AutoPtr<RecordX>& x)
 	{
 		// set random value of 'a'
 		x->a(rand() % 9 + 2);

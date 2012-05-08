@@ -12,7 +12,6 @@
 
 #include "math/random/RandomStream.h"
 #include "math/probability/Probability.h"
-#include "math/probability/DiscreteDistribution.h"
 
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestFixture.h>
@@ -112,90 +111,52 @@ public:
 
 //	void testParetoGeneration()
 //	{
-//		I64u N = 2000000; // number of products
-//		I64u M = 5 * N; // number of product offers
+//		ParetoPrFunction f1(1, 0.5);
+////		ParetoPrFunction f2(1, 2.0);
+////		NormalPrFunction f3(0, 1.0);
 //
-//		Decimal xMin = 1;
-//		Decimal alpha = 0.01;
-//
-//		ParetoPrFunction d(xMin, alpha);
-//
-//		Decimal xMax = d.invpdf(1 / static_cast<Decimal> (M));
-//		Decimal step = (xMax - xMin) / static_cast<Decimal> (N);
-//
-//		std::cout << "xMax is " << xMax << std::endl;
-//
-//		Decimal S = 0;
-//		I64u zeroes = 0;
-//
-//		Decimal scale = M / d.cdf(xMax);
-//
-//		for (I16u i = 0; i < N; i++)
+//		for (int m = 0; m < 1; m++)
 //		{
-//			Decimal weight = static_cast<I64u> (scale * d.cdf(xMin + (i + 1) * step) + 0.5) - static_cast<I64u> (scale * d.cdf(xMin + i * step) + 0.5);
+//			FileOutputStream out(format("discreteprob%02d.dat", m+1), std::ios::trunc | std::ios::binary);
 //
-//			S += weight;
+//			I64u N = _random(100, 1000);
+//			I64u scale = _random(5, 25);
+//			I64u M = scale*N;
+//			I64u min = _random(0, 3);
 //
-//			if (weight == 0.0)
+//			N = 5001;
+//			M = 25002;
+//			min = 1;
+//
+////			std::cout << "starting run " << m << " with parameters (" << N << "," << scale*N << "," << min << ")" << std::endl;
+//
+////			DiscreteDistribution<ParetoPrFunction> d1(f1, N, M, min);
+////			DiscreteDistribution<ParetoPrFunction> d2(f2, N, M, min);
+////			DiscreteDistribution<NormalPrFunction> d3(f3, N, M, min);
+//
+//			I64u S1 = 0;
+////			I64u S2 = 0;
+////			I64u S3 = 0;
+//
+//			for (I64u i = 0; i < N; i++)
 //			{
-//				zeroes++;
+//				S1 += d1(i);
+////				S2 += d2(i);
+////				S3 += d3(i);
+//
+////				out << format("%Lu, %Lu", i, d1(i)) << std::endl;
+////				out << format("%Lu, %Lu, %Lu, %Lu", i, d1(i), d2(i), d3(i)) << std::endl;
 //			}
 //
-//			std::cout << "weight at position " << i << " is " << weight << endl;
-//		}
+//			CPPUNIT_ASSERT(M == S1);
+////			CPPUNIT_ASSERT(M == S2);
+////			CPPUNIT_ASSERT(M == S3);
 //
-//		std::cout << "number of zeroes is " << (zeroes/static_cast<Decimal>(N)) << std::endl;
-//		std::cout << "sum of weights from 0 to " << N << " is " << S << endl;
+//			out.close();
+//
+//			_random.nextChunk();
+//		}
 //	}
-
-	void testParetoGeneration()
-	{
-		ParetoPrFunction f1(1, 0.5);
-//		ParetoPrFunction f2(1, 2.0);
-//		NormalPrFunction f3(0, 1.0);
-
-		for (int m = 0; m < 1; m++)
-		{
-			FileOutputStream out(format("discreteprob%02d.dat", m+1), std::ios::trunc | std::ios::binary);
-
-			I64u N = _random(100, 1000);
-			I64u scale = _random(5, 25);
-			I64u M = scale*N;
-			I64u min = _random(0, 3);
-
-			N = 5001;
-			M = 25002;
-			min = 1;
-
-//			std::cout << "starting run " << m << " with parameters (" << N << "," << scale*N << "," << min << ")" << std::endl;
-
-			DiscreteDistribution<ParetoPrFunction> d1(f1, N, M, min);
-//			DiscreteDistribution<ParetoPrFunction> d2(f2, N, M, min);
-//			DiscreteDistribution<NormalPrFunction> d3(f3, N, M, min);
-
-			I64u S1 = 0;
-//			I64u S2 = 0;
-//			I64u S3 = 0;
-
-			for (I64u i = 0; i < N; i++)
-			{
-				S1 += d1(i);
-//				S2 += d2(i);
-//				S3 += d3(i);
-
-				out << format("%Lu, %Lu", i, d1(i)) << std::endl;
-//				out << format("%Lu, %Lu, %Lu, %Lu", i, d1(i), d2(i), d3(i)) << std::endl;
-			}
-
-			CPPUNIT_ASSERT(M == S1);
-//			CPPUNIT_ASSERT(M == S2);
-//			CPPUNIT_ASSERT(M == S3);
-
-			out.close();
-
-			_random.nextChunk();
-		}
-	}
 
 	static Test *suite()
 	{
