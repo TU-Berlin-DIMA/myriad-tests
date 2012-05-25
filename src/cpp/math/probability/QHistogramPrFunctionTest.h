@@ -34,7 +34,7 @@ public:
 	    size_t size = 512;
 	    char path[size];
 
-		_probability = new QHistogramPrFunction("sample_qhist", string(getcwd(path, size)) + "/build/config/sample_qhist.qhistogram");
+		_probability = new QHistogramPrFunction("sample_qhist", string(getcwd(path, size)) + "/build/config/sample_qhist.distribution");
 	}
 
 	void tearDown()

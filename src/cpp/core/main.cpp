@@ -27,6 +27,7 @@
 #include "hydrator/ConditionalRandomizedHydratorTest.h"
 #include "math/MathUtilitiesTest.h"
 #include "math/IntervalMapTest.h"
+#include "math/probability/CombinedPrFunctionTest.h"
 #include "math/probability/ProbabilityFunctionsTest.h"
 #include "math/probability/QHistogramPrFunctionTest.h"
 #include "math/probability/ConditionalQHistogramPrFunctionTest.h"
@@ -71,8 +72,9 @@ int main(int argc, char **argv)
 //	runner.addTest(ClusteredEnumSetHydratorTest::suite());
 //	runner.addTest(EnumSetHydratorTest::suite());
 //	runner.addTest(RangeSetHydratorTest::suite());
-	runner.addTest(ConditionalRandomizedHydratorTest::suite());
+//	runner.addTest(ConditionalRandomizedHydratorTest::suite());
 //	runner.addTest(SurrogateKeyGeneratorTest::suite());
+	runner.addTest(CombinedPrFunctionTest::suite());
 //	runner.addTest(QHistogramPrFunctionTest::suite());
 //	runner.addTest(ConditionalQHistogramPrFunctionTest::suite());
 //	runner.addTest(ValueGetterTest::suite());

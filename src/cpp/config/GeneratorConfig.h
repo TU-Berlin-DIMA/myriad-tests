@@ -35,10 +35,11 @@ public:
 
 protected:
 
-	virtual void configureSets(const AutoPtr<XML::Document>& doc)
+	virtual void configureSets()
 	{
-		bindStringSet(doc, "male-names", _maleNames);
-		bindRecordSet<ProductClass> (doc, "product_classes", _productClasses);
+		// FIXME
+//		bindStringSet(doc, "male-names", _maleNames);
+//		bindRecordSet<ProductClass> (doc, "product_classes", _productClasses);
 	}
 
 private:

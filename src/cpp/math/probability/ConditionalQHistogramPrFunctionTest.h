@@ -34,7 +34,7 @@ public:
 	    size_t size = 512;
 	    char path[size];
 
-		_probability = new ConditionalQHistogramPrFunction("sample_cond_qhist", string(getcwd(path, size)) + "/build/config/sample_cond_qhist.qhistogram");
+		_probability = new ConditionalQHistogramPrFunction("sample_cond_qhist", string(getcwd(path, size)) + "/build/config/sample_cond_qhist.distribution");
 	}
 
 	void tearDown()
