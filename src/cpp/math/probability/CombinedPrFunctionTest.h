@@ -1,8 +1,19 @@
 /*
- * CombinedPrFunctionTest.h
+ * Copyright 2010-2011 DIMA Research Group, TU Berlin
  *
- *  Created on: May 2, 2012
- *      Author: alexander
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @author: Alexander Alexandrov <alexander.alexandrov@tu-berlin.de>
  */
 
 #ifndef COMBINEDPRFUNCTIONTEST_H_
@@ -44,7 +55,7 @@ public:
 		delete _probability;
 	}
 
-	void testQHistogramPDF()
+	void testCombinedPrFunctionPDF()
 	{
 		for (int i = 0; i < 100000; i++)
 		{
@@ -102,50 +113,66 @@ public:
 		}
 	}
 
-//	void testQHistogramCDF()
-//	{
-//		for (int i = 0; i < 100000; i++)
-//		{
-//			I64u x = rand() % 100;
-//			Decimal y = _probability->cdf(x);
-//
-//			if (x < 10)
-//			{
-//				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, y, 0.0);
-//			}
-//			else if (x < 30)
-//			{
-//				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01*(x-10), y, _delta);
-//			}
-//			else if (x < 35)
-//			{
-//				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.20 + 0.04*(x-30), y, _delta);
-//			}
-//			else if (x < 45)
-//			{
-//				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.40 + 0.02*(x-35), y, _delta);
-//			}
-//			else if (x < 60)
-//			{
-//				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.60 + 0.0133333333333*(x-45), y, _delta);
-//			}
-//			else if (x < 90)
-//			{
-//				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.80 + 0.00666666666667*(x-60), y, _delta);
-//			}
-//			else
-//			{
-//				CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, y, 0.0);
-//			}
-//		}
-//	}
-
-	void testQHistogramSampling()
+	void testCombinedPrFunctionCDF()
 	{
-//		std::cout << "sample for 0.210 is " << _probability->invcdf(0.210) << std::endl;
-//		std::cout << "sample for 0.220 is " << _probability->invcdf(0.220) << std::endl;
-//		std::cout << "sample for 0.280 is " << _probability->invcdf(0.280) << std::endl;
+		for (int i = 0; i < 100000; i++)
+		{
+			I64u x = rand() % 100;
+			Decimal y = _probability->cdf(x);
 
+			if (x < 10)
+			{
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, y, 0.0);
+			}
+			else if (x < 29)
+			{
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01*(x-9), y, _delta);
+			}
+			else if (x == 29)
+			{
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.26, y, _delta);
+			}
+			else if (x < 34)
+			{
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.26 + 0.01*(x-29), y, _delta);
+			}
+			else if (x == 34)
+			{
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.31, y, _delta);
+			}
+			else if (x < 43)
+			{
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.31 + 0.01*(x-34), y, _delta);
+			}
+			else if (x == 43)
+			{
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.44, y, _delta);
+			}
+			else if (x == 44)
+			{
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.49, y, _delta);
+			}
+			else if (x < 59)
+			{
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.49 + 0.01*(x-44), y, _delta);
+			}
+			else if (x == 59)
+			{
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.66, y, _delta);
+			}
+			else if (x < 90)
+			{
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.66 + 0.01*(x-59), y, _delta);
+			}
+			else
+			{
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.96, y, 0.0);
+			}
+		}
+	}
+
+	void testCombinedPrFunctionSampling()
+	{
 		I32u f[100], fNull = 0;
 
 		// initialize the value frequency counters
@@ -159,11 +186,6 @@ public:
 		{
 			Decimal y = (rand() % 10000) / 10000.0;
 			I64u x = _probability->invcdf(y);
-
-//			if (x == 0)
-//			{
-//				std::cout << "BAD SAMPLE 0 for y = " << y << std::endl;
-//			}
 
 			if (x != nullValue<I64u>())
 			{
@@ -188,9 +210,9 @@ public:
 	static Test *suite()
 	{
 		TestSuite* suite = new TestSuite("CombinedPrFunctionTest");
-		suite->addTest(new TestCaller<CombinedPrFunctionTest> ("testQHistogramPDF", &CombinedPrFunctionTest::testQHistogramPDF));
-//		suite->addTest(new TestCaller<CombinedPrFunctionTest> ("testQHistogramCDF", &CombinedPrFunctionTest::testQHistogramCDF));
-		suite->addTest(new TestCaller<CombinedPrFunctionTest> ("testQHistogramSampling", &CombinedPrFunctionTest::testQHistogramSampling));
+		suite->addTest(new TestCaller<CombinedPrFunctionTest> ("testCombinedPrFunctionPDF", &CombinedPrFunctionTest::testCombinedPrFunctionPDF));
+		suite->addTest(new TestCaller<CombinedPrFunctionTest> ("testCombinedPrFunctionCDF", &CombinedPrFunctionTest::testCombinedPrFunctionCDF));
+		suite->addTest(new TestCaller<CombinedPrFunctionTest> ("testCombinedPrFunctionSampling", &CombinedPrFunctionTest::testCombinedPrFunctionSampling));
 		return suite;
 	}
 
