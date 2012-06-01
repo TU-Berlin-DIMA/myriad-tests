@@ -36,8 +36,99 @@ using namespace std;
 namespace Myriad {
 
 
-class CombinedPrFunctionInput
+template<typename T> class CombinedPrFunctionInput
 {
+public:
+
+	CombinedPrFunctionInput(double nullProbability) :
+		_nullProbability(nullProbability)
+	{
+		_interval.set(numeric_limits<T>::max(), numeric_limits<T>::min());
+	}
+
+	CombinedPrFunctionInput(const CombinedPrFunctionInput& o) :
+		_nullProbability(o._nullProbability),
+		_buckets(o._buckets),
+		_exactValueBuckets(o._exactValueBuckets),
+		_multiValueBuckets(o._multiValueBuckets),
+		_pdf(o._pdf),
+		_cdf(o._cdf),
+		_interval(o._interval)
+	{
+	}
+
+	CombinedPrFunctionInput<T>& addExactValue(double probability, const T& x)
+	{
+		size_t i = _buckets.size();
+
+		_buckets.push_back(Interval<T>(x, x+1));
+		_pdf.push_back(probability);
+		_cdf.push_back(i > 0 ? _cdf[i-1] + probability : probability);
+
+		_exactValueBuckets.push_back(i);
+
+		_interval.set(min(_interval.min(), x), max(_interval.max(), x+1));
+
+		return *this;
+	}
+
+	CombinedPrFunctionInput<T>& addBucket(double probability, const T& l, const T& u)
+	{
+		size_t i = _buckets.size();
+
+		_buckets.push_back(Interval<T>(l, u));
+		_pdf.push_back(probability);
+		_cdf.push_back(i > 0 ? _cdf[i-1] + probability : probability);
+
+		_multiValueBuckets.push_back(i);
+
+		_interval.set(min(_interval.min(), l), max(_interval.max(), u));
+
+		return *this;
+	}
+
+	std::istream& serialize()
+	{
+		_in.clear();
+
+		_in << "# numberofexactvals: " << _exactValueBuckets.size() << "\n"
+			<< "# numberofbins: "      << _multiValueBuckets.size()  << "\n"
+			<< "# nullprobability: "   << _nullProbability           << "\n";
+
+		for (size_t j = 0; j < _exactValueBuckets.size(); j++)
+		{
+			size_t i = _exactValueBuckets[j];
+			_in << _pdf[i] << "\t" << _buckets[i].min() << "\n";
+		}
+
+		for (size_t j = 0; j < _multiValueBuckets.size(); j++)
+		{
+			size_t i = _multiValueBuckets[j];
+			_in << _pdf[i] << "\t" << _buckets[i].min() << "\t" << _buckets[i].max() << "\n";
+		}
+
+		return _in;
+	}
+
+private:
+
+	typedef Interval<T> TInterval;
+
+	double _nullProbability;
+
+	std::vector<TInterval> _buckets;
+
+	std::vector<size_t> _exactValueBuckets;
+
+	std::vector<size_t> _multiValueBuckets;
+
+	std::vector<double> _pdf;
+
+	std::vector<double> _cdf;
+
+	TInterval _interval;
+
+	std::stringstream _in;
 };
 
 class CombinedPrFunctionTest: public TestFixture
@@ -72,7 +163,19 @@ public:
 
 	void testCombinedPrFunctionPDF()
 	{
-		_probability = new CombinedPrFunction("sample.I64u.combined", _basePath + "/build/config/sample.I64u.combined.distribution");
+		CombinedPrFunctionInput<I64u> prFunctionInput(0.04000);
+		prFunctionInput.addExactValue(0.0700, 29);
+		prFunctionInput.addExactValue(0.0100, 34);
+		prFunctionInput.addExactValue(0.0500, 43);
+		prFunctionInput.addExactValue(0.0500, 44);
+		prFunctionInput.addExactValue(0.0300, 59);
+		prFunctionInput.addBucket(0.1900, 10, 29);
+		prFunctionInput.addBucket(0.0400, 30, 34);
+		prFunctionInput.addBucket(0.0800, 35, 43);
+		prFunctionInput.addBucket(0.1400, 45, 59);
+		prFunctionInput.addBucket(0.3000, 60, 90);
+
+		_probability = new CombinedPrFunction("sample.I64u.combined", prFunctionInput.serialize());
 
 		for (int i = 0; i < 100000; i++)
 		{
@@ -239,11 +342,34 @@ public:
 
 private:
 
+	template <typename T> CombinedPrFunctionInput<T> prFunctionInputFactory()
+	{
+		throw std::exception("Unsupported base parameter type T");
+	}
+
 	double _defaultDelta;
 	string _basePath;
 
 	CombinedPrFunction* _probability;
 };
+
+template<> CombinedPrFunctionInput<I64u> CombinedPrFunctionTest::prFunctionInputFactory<I64u>()
+{
+	CombinedPrFunctionInput<I64u> prFunctionInput(0.04000);
+
+	prFunctionInput.addExactValue(0.0700, 29);
+	prFunctionInput.addExactValue(0.0100, 34);
+	prFunctionInput.addExactValue(0.0500, 43);
+	prFunctionInput.addExactValue(0.0500, 44);
+	prFunctionInput.addExactValue(0.0300, 59);
+	prFunctionInput.addBucket(0.1900, 10, 29);
+	prFunctionInput.addBucket(0.0400, 30, 34);
+	prFunctionInput.addBucket(0.0800, 35, 43);
+	prFunctionInput.addBucket(0.1400, 45, 59);
+	prFunctionInput.addBucket(0.3000, 60, 90);
+
+	return prFunctionInput;
+}
 
 } // namespace Myriad
 
