@@ -35,28 +35,45 @@ using namespace std;
 
 namespace Myriad {
 
+
+class CombinedPrFunctionInput
+{
+};
+
 class CombinedPrFunctionTest: public TestFixture
 {
 public:
+
+	CombinedPrFunctionTest() :
+		_defaultDelta(0.00001),
+		_basePath(""),
+		_probability(NULL)
+	{
+	    size_t size = 512;
+	    char buffer[size];
+
+	    _basePath = string(getcwd(buffer, size));
+	}
+
 	void setUp()
 	{
 		srand(241231591);
-
-	    size_t size = 512;
-	    char path[size];
-
-		_probability = new CombinedPrFunction("sample_chist", string(getcwd(path, size)) + "/build/config/sample_chist.distribution");
-
-		_delta = 0.00001;
+		_probability = NULL;
 	}
 
 	void tearDown()
 	{
-		delete _probability;
+		if (_probability != NULL)
+		{
+			delete _probability;
+			_probability = NULL;
+		}
 	}
 
 	void testCombinedPrFunctionPDF()
 	{
+		_probability = new CombinedPrFunction("sample.I64u.combined", _basePath + "/build/config/sample.I64u.combined.distribution");
+
 		for (int i = 0; i < 100000; i++)
 		{
 			I64u x = rand() % 100;
@@ -68,43 +85,43 @@ public:
 			}
 			else if (x == 29)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.07, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.07, y, _defaultDelta);
 			}
 			else if (x == 34)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _defaultDelta);
 			}
 			else if (x == 43)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05, y, _defaultDelta);
 			}
 			else if (x == 44)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05, y, _defaultDelta);
 			}
 			else if (x == 59)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.03, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.03, y, _defaultDelta);
 			}
 			else if (x < 29)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _defaultDelta);
 			}
 			else if (x < 34)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _defaultDelta);
 			}
 			else if (x < 43)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _defaultDelta);
 			}
 			else if (x < 59)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _defaultDelta);
 			}
 			else if (x < 90)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _defaultDelta);
 			}
 			else
 			{
@@ -115,6 +132,8 @@ public:
 
 	void testCombinedPrFunctionCDF()
 	{
+		_probability = new CombinedPrFunction("sample.I64u.combined", _basePath + "/build/config/sample.I64u.combined.distribution");
+
 		for (int i = 0; i < 100000; i++)
 		{
 			I64u x = rand() % 100;
@@ -126,43 +145,43 @@ public:
 			}
 			else if (x < 29)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01*(x-9), y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01*(x-9), y, _defaultDelta);
 			}
 			else if (x == 29)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.26, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.26, y, _defaultDelta);
 			}
 			else if (x < 34)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.26 + 0.01*(x-29), y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.26 + 0.01*(x-29), y, _defaultDelta);
 			}
 			else if (x == 34)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.31, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.31, y, _defaultDelta);
 			}
 			else if (x < 43)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.31 + 0.01*(x-34), y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.31 + 0.01*(x-34), y, _defaultDelta);
 			}
 			else if (x == 43)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.44, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.44, y, _defaultDelta);
 			}
 			else if (x == 44)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.49, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.49, y, _defaultDelta);
 			}
 			else if (x < 59)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.49 + 0.01*(x-44), y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.49 + 0.01*(x-44), y, _defaultDelta);
 			}
 			else if (x == 59)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.66, y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.66, y, _defaultDelta);
 			}
 			else if (x < 90)
 			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.66 + 0.01*(x-59), y, _delta);
+				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.66 + 0.01*(x-59), y, _defaultDelta);
 			}
 			else
 			{
@@ -173,6 +192,8 @@ public:
 
 	void testCombinedPrFunctionSampling()
 	{
+		_probability = new CombinedPrFunction("sample.I64u.combined", _basePath + "/build/config/sample.I64u.combined.distribution");
+
 		I32u f[100], fNull = 0;
 
 		// initialize the value frequency counters
@@ -218,11 +239,9 @@ public:
 
 private:
 
-	double _delta;
+	double _defaultDelta;
+	string _basePath;
 
-	/**
-	 * Random seed for the stream.
-	 */
 	CombinedPrFunction* _probability;
 };
 
