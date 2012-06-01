@@ -74,7 +74,8 @@ int main(int argc, char **argv)
 //	runner.addTest(RangeSetHydratorTest::suite());
 //	runner.addTest(ConditionalRandomizedHydratorTest::suite());
 //	runner.addTest(SurrogateKeyGeneratorTest::suite());
-	runner.addTest(CombinedPrFunctionTest::suite());
+	runner.addTest(CombinedPrFunctionTest<I64u>::suite());
+	runner.addTest(CombinedPrFunctionTest<Date>::suite());
 //	runner.addTest(QHistogramPrFunctionTest::suite());
 //	runner.addTest(ConditionalQHistogramPrFunctionTest::suite());
 //	runner.addTest(ValueGetterTest::suite());
