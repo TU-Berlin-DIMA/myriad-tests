@@ -43,7 +43,7 @@ public:
 	CombinedPrFunctionInput(double nullProbability) :
 		_nullProbability(nullProbability)
 	{
-		_interval.set(numeric_limits<T>::max(), numeric_limits<T>::min());
+		_domain.set(numeric_limits<T>::max(), numeric_limits<T>::min());
 	}
 
 	CombinedPrFunctionInput(const CombinedPrFunctionInput& o) :
@@ -53,11 +53,11 @@ public:
 		_multiValueBuckets(o._multiValueBuckets),
 		_pdf(o._pdf),
 		_cdf(o._cdf),
-		_interval(o._interval)
+		_domain(o._domain)
 	{
 	}
 
-	CombinedPrFunctionInput<T>& addExactValue(double probability, const T& x)
+	CombinedPrFunctionInput<T>& add(double probability, const T& x)
 	{
 		size_t i = _buckets.size();
 
@@ -67,12 +67,12 @@ public:
 
 		_exactValueBuckets.push_back(i);
 
-		_interval.set(min(_interval.min(), x), max(_interval.max(), x+1));
+		_domain.set(min(_domain.min(), x), max(_domain.max(), x+1));
 
 		return *this;
 	}
 
-	CombinedPrFunctionInput<T>& addBucket(double probability, const T& l, const T& u)
+	CombinedPrFunctionInput<T>& add(double probability, const T& l, const T& u)
 	{
 		size_t i = _buckets.size();
 
@@ -82,9 +82,50 @@ public:
 
 		_multiValueBuckets.push_back(i);
 
-		_interval.set(min(_interval.min(), l), max(_interval.max(), u));
+		_domain.set(min(_domain.min(), l), max(_domain.max(), u));
 
 		return *this;
+	}
+
+	double pdf(const T& x)
+	{
+		if (nullValue<T>() == x)
+		{
+			return _nullProbability;
+		}
+		else if (_domain.contains(x))
+		{
+			size_t i = lookup(x);
+			return _pdf[i]/static_cast<double>(_buckets[i].length());
+		}
+		else
+		{
+			return 0.0;
+		}
+	}
+
+	double cdf(const T& x)
+	{
+		if (_domain.min() > x)
+		{
+			return 0.0;
+		}
+		else if (_domain.max() <= x)
+		{
+			return 1.0 - _nullProbability;
+		}
+		else
+		{
+			size_t i = lookup(x);
+			if (i > 0)
+			{
+				return _cdf[i-1] + _pdf[i] * (x + 1 - _buckets[i].min())/static_cast<double>(_buckets[i].length());
+			}
+			else
+			{
+				return _pdf[i] * (x + 1 - _buckets[i].min())/static_cast<double>(_buckets[i].length());
+			}
+		}
 	}
 
 	std::istream& serialize()
@@ -110,7 +151,47 @@ public:
 		return _in;
 	}
 
+	static CombinedPrFunctionInput<T> factory()
+	{
+		// Unsupported base parameter type T
+		throw std::exception();
+	}
+
 private:
+
+	size_t lookup(const T& x)
+	{
+		// we assert that the value x is in the [_min, _max] range
+		int min = 0;
+		int max = _buckets.size() - 1;
+		int mid = 0;
+
+		// continue searching while [min, max] is not empty
+		while (max >= min)
+		{
+			// calculate the midpoint for roughly equal partition //
+			mid = (min + max) / 2;
+
+			// determine which subarray to search
+			if (_buckets[mid].max() <=  x)
+			{
+				// change min index to search upper subarray
+				min = mid + 1;
+			}
+			else if (_buckets[mid].min() > x)
+			{
+				// change max index to search lower subarray
+				max = mid - 1;
+			}
+			else
+			{
+				// key found at index mid
+				return mid;
+			}
+		}
+
+		return mid;
+	}
 
 	typedef Interval<T> TInterval;
 
@@ -126,10 +207,28 @@ private:
 
 	std::vector<double> _cdf;
 
-	TInterval _interval;
+	TInterval _domain;
 
 	std::stringstream _in;
 };
+
+template<> CombinedPrFunctionInput<I64u> CombinedPrFunctionInput<I64u>::factory()
+{
+	CombinedPrFunctionInput<I64u> prFunctionInput(0.04000);
+
+	prFunctionInput.add(0.1900, 10, 29);
+	prFunctionInput.add(0.0700, 29);
+	prFunctionInput.add(0.0400, 30, 34);
+	prFunctionInput.add(0.0100, 34);
+	prFunctionInput.add(0.0800, 35, 43);
+	prFunctionInput.add(0.0500, 43);
+	prFunctionInput.add(0.0500, 44);
+	prFunctionInput.add(0.1400, 45, 59);
+	prFunctionInput.add(0.0300, 59);
+	prFunctionInput.add(0.3000, 60, 90);
+
+	return prFunctionInput;
+}
 
 class CombinedPrFunctionTest: public TestFixture
 {
@@ -163,139 +262,38 @@ public:
 
 	void testCombinedPrFunctionPDF()
 	{
-		CombinedPrFunctionInput<I64u> prFunctionInput(0.04000);
-		prFunctionInput.addExactValue(0.0700, 29);
-		prFunctionInput.addExactValue(0.0100, 34);
-		prFunctionInput.addExactValue(0.0500, 43);
-		prFunctionInput.addExactValue(0.0500, 44);
-		prFunctionInput.addExactValue(0.0300, 59);
-		prFunctionInput.addBucket(0.1900, 10, 29);
-		prFunctionInput.addBucket(0.0400, 30, 34);
-		prFunctionInput.addBucket(0.0800, 35, 43);
-		prFunctionInput.addBucket(0.1400, 45, 59);
-		prFunctionInput.addBucket(0.3000, 60, 90);
-
-		_probability = new CombinedPrFunction("sample.I64u.combined", prFunctionInput.serialize());
+		CombinedPrFunctionInput<I64u> input = CombinedPrFunctionInput<I64u>::factory();
+		_probability = new CombinedPrFunction("sample.I64u.combined", input.serialize());
 
 		for (int i = 0; i < 100000; i++)
 		{
 			I64u x = rand() % 100;
-			Decimal y = _probability->pdf(x);
+			Decimal yExp = input.pdf(x);
+			Decimal yAct = _probability->pdf(x);
 
-			if (x < 10)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, y, 0.0);
-			}
-			else if (x == 29)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.07, y, _defaultDelta);
-			}
-			else if (x == 34)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _defaultDelta);
-			}
-			else if (x == 43)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05, y, _defaultDelta);
-			}
-			else if (x == 44)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05, y, _defaultDelta);
-			}
-			else if (x == 59)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.03, y, _defaultDelta);
-			}
-			else if (x < 29)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _defaultDelta);
-			}
-			else if (x < 34)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _defaultDelta);
-			}
-			else if (x < 43)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _defaultDelta);
-			}
-			else if (x < 59)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _defaultDelta);
-			}
-			else if (x < 90)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01, y, _defaultDelta);
-			}
-			else
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, y, 0.0);
-			}
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(yExp, yAct, 0.0);
 		}
 	}
 
 	void testCombinedPrFunctionCDF()
 	{
-		_probability = new CombinedPrFunction("sample.I64u.combined", _basePath + "/build/config/sample.I64u.combined.distribution");
+		CombinedPrFunctionInput<I64u> input = CombinedPrFunctionInput<I64u>::factory();
+		_probability = new CombinedPrFunction("sample.I64u.combined", input.serialize());
 
 		for (int i = 0; i < 100000; i++)
 		{
 			I64u x = rand() % 100;
-			Decimal y = _probability->cdf(x);
+			Decimal yExp = input.cdf(x);
+			Decimal yAct = _probability->cdf(x);
 
-			if (x < 10)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, y, 0.0);
-			}
-			else if (x < 29)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.01*(x-9), y, _defaultDelta);
-			}
-			else if (x == 29)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.26, y, _defaultDelta);
-			}
-			else if (x < 34)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.26 + 0.01*(x-29), y, _defaultDelta);
-			}
-			else if (x == 34)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.31, y, _defaultDelta);
-			}
-			else if (x < 43)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.31 + 0.01*(x-34), y, _defaultDelta);
-			}
-			else if (x == 43)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.44, y, _defaultDelta);
-			}
-			else if (x == 44)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.49, y, _defaultDelta);
-			}
-			else if (x < 59)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.49 + 0.01*(x-44), y, _defaultDelta);
-			}
-			else if (x == 59)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.66, y, _defaultDelta);
-			}
-			else if (x < 90)
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.66 + 0.01*(x-59), y, _defaultDelta);
-			}
-			else
-			{
-				CPPUNIT_ASSERT_DOUBLES_EQUAL(0.96, y, 0.0);
-			}
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(yExp, yAct, _defaultDelta);
 		}
 	}
 
 	void testCombinedPrFunctionSampling()
 	{
-		_probability = new CombinedPrFunction("sample.I64u.combined", _basePath + "/build/config/sample.I64u.combined.distribution");
+		CombinedPrFunctionInput<I64u> input = CombinedPrFunctionInput<I64u>::factory();
+		_probability = new CombinedPrFunction("sample.I64u.combined", input.serialize());
 
 		I32u f[100], fNull = 0;
 
@@ -324,11 +322,11 @@ public:
 		// verify the sampled value frequencies
 		for (int x = 0; x < 100; x++)
 		{
-			CPPUNIT_ASSERT_DOUBLES_EQUAL(_probability->pdf(x), f[x]/10000.0, 0.01);
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(input.pdf(x), f[x]/10000.0, 0.01);
 		}
 
 		// verify sampled null values frequency
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(_probability->pdf(nullValue<I64u>()), fNull/10000.0, 0.01);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(input.pdf(nullValue<I64u>()), fNull/10000.0, 0.01);
 	}
 
 	static Test *suite()
@@ -342,34 +340,11 @@ public:
 
 private:
 
-	template <typename T> CombinedPrFunctionInput<T> prFunctionInputFactory()
-	{
-		throw std::exception("Unsupported base parameter type T");
-	}
-
 	double _defaultDelta;
 	string _basePath;
 
 	CombinedPrFunction* _probability;
 };
-
-template<> CombinedPrFunctionInput<I64u> CombinedPrFunctionTest::prFunctionInputFactory<I64u>()
-{
-	CombinedPrFunctionInput<I64u> prFunctionInput(0.04000);
-
-	prFunctionInput.addExactValue(0.0700, 29);
-	prFunctionInput.addExactValue(0.0100, 34);
-	prFunctionInput.addExactValue(0.0500, 43);
-	prFunctionInput.addExactValue(0.0500, 44);
-	prFunctionInput.addExactValue(0.0300, 59);
-	prFunctionInput.addBucket(0.1900, 10, 29);
-	prFunctionInput.addBucket(0.0400, 30, 34);
-	prFunctionInput.addBucket(0.0800, 35, 43);
-	prFunctionInput.addBucket(0.1400, 45, 59);
-	prFunctionInput.addBucket(0.3000, 60, 90);
-
-	return prFunctionInput;
-}
 
 } // namespace Myriad
 
