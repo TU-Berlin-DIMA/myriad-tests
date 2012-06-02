@@ -18,6 +18,7 @@
 
 #include "core/constants.h"
 #include "core/Frontend.h"
+#include "core/types/MyriadDateTest.h"
 #include "config/ObjectBuilderTest.h"
 #include "config/GeneratorConfigTest.h"
 #include "hydrator/ConditionalHydratorTest.h"
@@ -74,8 +75,9 @@ int main(int argc, char **argv)
 //	runner.addTest(RangeSetHydratorTest::suite());
 //	runner.addTest(ConditionalRandomizedHydratorTest::suite());
 //	runner.addTest(SurrogateKeyGeneratorTest::suite());
-	runner.addTest(CombinedPrFunctionTest<I64u>::suite());
-	runner.addTest(CombinedPrFunctionTest<Date>::suite());
+//	runner.addTest(CombinedPrFunctionTest<I64u>::suite());
+//	runner.addTest(CombinedPrFunctionTest<Date>::suite());
+	runner.addTest(MyriadDateTest::suite());
 //	runner.addTest(QHistogramPrFunctionTest::suite());
 //	runner.addTest(ConditionalQHistogramPrFunctionTest::suite());
 //	runner.addTest(ValueGetterTest::suite());
