@@ -39,10 +39,11 @@ template<typename T> class CombinedPrFunctionInput
 {
 public:
 
-	CombinedPrFunctionInput(double nullProbability) :
-		_nullProbability(nullProbability)
+	CombinedPrFunctionInput(double nullProbability, T testRangeMin, T testRangeMax) :
+		_nullProbability(nullProbability),
+		_testRange(testRangeMin, testRangeMax)
 	{
-		_domain.set(numeric_limits<T>::max(), numeric_limits<T>::min());
+		_domain.set(numericLimits<T>::max(), numericLimits<T>::min());
 	}
 
 	CombinedPrFunctionInput(const CombinedPrFunctionInput& o) :
@@ -54,6 +55,16 @@ public:
 		_cdf(o._cdf),
 		_domain(o._domain)
 	{
+	}
+
+	T testRangeMin()
+	{
+		return _testRange.min();
+	}
+
+	T testRangeMax()
+	{
+		return _testRange.max();
 	}
 
 	CombinedPrFunctionInput<T>& add(double probability, const T& x)
@@ -208,12 +219,14 @@ private:
 
 	TInterval _domain;
 
+	TInterval _testRange;
+
 	std::stringstream _in;
 };
 
 template<> CombinedPrFunctionInput<I64u>* CombinedPrFunctionInput<I64u>::factory()
 {
-	CombinedPrFunctionInput<I64u>* input = new CombinedPrFunctionInput<I64u>(0.04000);
+	CombinedPrFunctionInput<I64u>* input = new CombinedPrFunctionInput<I64u>(0.04000, 0, 100);
 
 	input->add(0.1900, 10, 29);
 	input->add(0.0700, 29);
@@ -231,10 +244,18 @@ template<> CombinedPrFunctionInput<I64u>* CombinedPrFunctionInput<I64u>::factory
 
 template<> CombinedPrFunctionInput<Date>* CombinedPrFunctionInput<Date>::factory()
 {
-	CombinedPrFunctionInput<Date>* input = new CombinedPrFunctionInput<Date>(0.30);
+	CombinedPrFunctionInput<Date>* input = new CombinedPrFunctionInput<Date>(0.04000, "1992-04-01", "1992-07-15");
 
-	input->add(0.5000, "1992-01-01", "1992-05-30");
-	input->add(0.2000, "1992-05-31");
+	input->add(0.1900, "1992-04-10", "1992-04-29");
+	input->add(0.0700, "1992-04-29");
+	input->add(0.0400, "1992-04-30", "1992-05-04");
+	input->add(0.0100, "1992-05-04");
+	input->add(0.0800, "1992-05-05", "1992-05-13");
+	input->add(0.0500, "1992-05-13");
+	input->add(0.0500, "1992-05-14");
+	input->add(0.1400, "1992-05-15", "1992-05-29");
+	input->add(0.0300, "1992-05-29");
+	input->add(0.3000, "1992-05-30", "1992-06-29");
 
 	return input;
 }
@@ -259,7 +280,7 @@ public:
 		srand(241231591);
 
 		_input = CombinedPrFunctionInput<T>::factory();
-		_probability = new CombinedPrFunction("sample.<T>.combined", _input->serialize());
+		_probability = new CombinedPrFunction<T>("sample.<T>.combined", _input->serialize());
 	}
 
 	void tearDown()
@@ -279,25 +300,83 @@ public:
 
 	void testPDF()
 	{
-		CPPUNIT_FAIL("testPDF: Not supported for this parameter type T");
+		T testRangeMin = _input->testRangeMin();
+		T testRangeMax = _input->testRangeMax();
+		int N = testRangeMax - testRangeMin;
+
+		for (int i = 0; i < N; i++)
+		{
+			T x = testRangeMin + i;
+			Decimal yExp = _input->pdf(x);
+			Decimal yAct = _probability->pdf(x);
+
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(yExp, yAct, 0.0);
+		}
 	}
 
 	void testCDF()
 	{
-		CPPUNIT_FAIL("testCDF: Not supported for this parameter type T");
+		T testRangeMin = _input->testRangeMin();
+		T testRangeMax = _input->testRangeMax();
+		int N = testRangeMax - testRangeMin;
+
+		for (int i = 0; i < N; i++)
+		{
+			T x = testRangeMin + i;
+			Decimal yExp = _input->cdf(x);
+			Decimal yAct = _probability->cdf(x);
+
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(yExp, yAct, 0.00001);
+		}
 	}
 
 	void testSampling()
 	{
-		CPPUNIT_FAIL("testSampling: Not supported for this parameter type T");
+		I32u f[100], fNull = 0;
+
+		T testRangeMin = _input->testRangeMin();
+		T testRangeMax = _input->testRangeMax();
+		int N = testRangeMax - testRangeMin;
+
+		// initialize the value frequency counters
+		for (int x = 0; x < N; x++)
+		{
+			f[x] = 0;
+		}
+
+		// sample 10000 values from the histogram
+		for (int i = 0; i < 10000; i++)
+		{
+			Decimal y = (rand() % 10000) / 10000.0;
+			T x = _probability->invcdf(y);
+
+			if (x != nullValue<T>())
+			{
+				f[x - testRangeMin]++;
+			}
+			else
+			{
+				fNull++;
+			}
+		}
+
+		// verify the sampled value frequencies
+		for (int i = 0; i < N; i++)
+		{
+			T x = testRangeMin + i;
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(_input->pdf(x), f[i]/10000.0, 0.01);
+		}
+
+		// verify sampled null values frequency
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(_input->pdf(nullValue<T>()), fNull/10000.0, 0.01);
 	}
 
 	static Test *suite()
 	{
 		TestSuite* suite = new TestSuite("CombinedPrFunctionTest");
-		suite->addTest(new TestCaller<CombinedPrFunctionTest> ("testPDF", &CombinedPrFunctionTest::testPDF));
-		suite->addTest(new TestCaller<CombinedPrFunctionTest> ("testCDF", &CombinedPrFunctionTest::testCDF));
-		suite->addTest(new TestCaller<CombinedPrFunctionTest> ("testSampling", &CombinedPrFunctionTest::testSampling));
+		suite->addTest(new TestCaller<CombinedPrFunctionTest> ("testPDF", &CombinedPrFunctionTest<T>::testPDF));
+		suite->addTest(new TestCaller<CombinedPrFunctionTest> ("testCDF", &CombinedPrFunctionTest<T>::testCDF));
+		suite->addTest(new TestCaller<CombinedPrFunctionTest> ("testSampling", &CombinedPrFunctionTest<T>::testSampling));
 		return suite;
 	}
 
@@ -306,68 +385,8 @@ private:
 	string _basePath;
 
 	CombinedPrFunctionInput<T>* _input;
-	CombinedPrFunction* _probability;
+	CombinedPrFunction<T>* _probability;
 };
-
-template<> void CombinedPrFunctionTest<I64u>::testPDF()
-{
-	for (int i = 0; i < 100000; i++)
-	{
-		I64u x = rand() % 100;
-		Decimal yExp = _input->pdf(x);
-		Decimal yAct = _probability->pdf(x);
-
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(yExp, yAct, 0.0);
-	}
-}
-
-template<> void CombinedPrFunctionTest<I64u>::testCDF()
-{
-	for (int i = 0; i < 100000; i++)
-	{
-		I64u x = rand() % 100;
-		Decimal yExp = _input->cdf(x);
-		Decimal yAct = _probability->cdf(x);
-
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(yExp, yAct, 0.00001);
-	}
-}
-
-template<> void CombinedPrFunctionTest<I64u>::testSampling()
-{
-	I32u f[100], fNull = 0;
-
-	// initialize the value frequency counters
-	for (int x = 0; x < 100; x++)
-	{
-		f[x] = 0;
-	}
-
-	// sample 10000 values from the histogram
-	for (int i = 0; i < 10000; i++)
-	{
-		Decimal y = (rand() % 10000) / 10000.0;
-		I64u x = _probability->invcdf(y);
-
-		if (x != nullValue<I64u>())
-		{
-			f[x]++;
-		}
-		else
-		{
-			fNull++;
-		}
-	}
-
-	// verify the sampled value frequencies
-	for (int x = 0; x < 100; x++)
-	{
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(_input->pdf(x), f[x]/10000.0, 0.01);
-	}
-
-	// verify sampled null values frequency
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(_input->pdf(nullValue<I64u>()), fNull/10000.0, 0.01);
-}
 
 } // namespace Myriad
 

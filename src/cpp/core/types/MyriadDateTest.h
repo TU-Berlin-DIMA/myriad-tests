@@ -112,6 +112,8 @@ public:
 		CPPUNIT_ASSERT_MESSAGE("Wrong arithmetic expression", d4 - d3 == u3 && u3 == 365);
 		CPPUNIT_ASSERT_MESSAGE("Wrong arithmetic expression", d4 - d3 == u3 && u3 == 365);
 		CPPUNIT_ASSERT_MESSAGE("Wrong arithmetic expression", d7 - d6 == u6 && u6 == -4);
+		CPPUNIT_ASSERT_MESSAGE("Wrong arithmetic expression", ((t6++)--) == t6);
+		CPPUNIT_ASSERT_MESSAGE("Wrong arithmetic expression", (--(++t6)) == t6);
 
 		t6 += 1;
 		CPPUNIT_ASSERT_MESSAGE("Wrong arithmetic expression", d1 + 421 == t6);

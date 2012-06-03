@@ -62,25 +62,34 @@ int main(int argc, char **argv)
 	/*
      * TODO: these tests need to be updated / removed
 	runner.addTest(IntervalMapTest::suite());
-	runner.addTest(MathUtilitiesTest::suite());
 	runner.addTest(GeneratorConfigTest::suite());
 	runner.addTest(ProbabilityFunctionsTest::suite());
      */
-//	runner.addTest(ObjectBuilderTest::suite());
-//	runner.addTest(CompoundEICGTest::suite());
-//	runner.addTest(HashRandomStreamTest::suite());
+	// core
+	runner.addTest(MyriadDateTest::suite());
+
+	// hydrator
 //	runner.addTest(ConditionalHydratorTest::suite());
 //	runner.addTest(ClusteredEnumSetHydratorTest::suite());
 //	runner.addTest(EnumSetHydratorTest::suite());
 //	runner.addTest(RangeSetHydratorTest::suite());
 //	runner.addTest(ConditionalRandomizedHydratorTest::suite());
 //	runner.addTest(SurrogateKeyGeneratorTest::suite());
-//	runner.addTest(CombinedPrFunctionTest<I64u>::suite());
-//	runner.addTest(CombinedPrFunctionTest<Date>::suite());
-	runner.addTest(MyriadDateTest::suite());
+
+	// math.random
+	runner.addTest(CompoundEICGTest::suite());
+	runner.addTest(HashRandomStreamTest::suite());
+
+	// math.probability
+	runner.addTest(MathUtilitiesTest::suite());
+	runner.addTest(CombinedPrFunctionTest<I64u>::suite());
+	runner.addTest(CombinedPrFunctionTest<Date>::suite());
 //	runner.addTest(QHistogramPrFunctionTest::suite());
 //	runner.addTest(ConditionalQHistogramPrFunctionTest::suite());
+
+	// util
 //	runner.addTest(ValueGetterTest::suite());
+//	runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder
 	runner.run();
 
 	return 0;
