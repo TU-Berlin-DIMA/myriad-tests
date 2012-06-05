@@ -244,7 +244,7 @@ template<> CombinedPrFunctionInput<I64u>* CombinedPrFunctionInput<I64u>::factory
 
 template<> CombinedPrFunctionInput<Date>* CombinedPrFunctionInput<Date>::factory()
 {
-	CombinedPrFunctionInput<Date>* input = new CombinedPrFunctionInput<Date>(0.04000, "1992-04-01", "1992-07-15");
+	CombinedPrFunctionInput<Date>* input = new CombinedPrFunctionInput<Date>(0.04000, Date("1992-04-01"), Date("1992-07-15"));
 
 	input->add(0.1900, "1992-04-10", "1992-04-29");
 	input->add(0.0700, "1992-04-29");
@@ -332,11 +332,10 @@ public:
 
 	void testSampling()
 	{
-		I32u f[100], fNull = 0;
-
 		T testRangeMin = _input->testRangeMin();
 		T testRangeMax = _input->testRangeMax();
 		int N = testRangeMax - testRangeMin;
+		I32u f[N], fNull = 0;
 
 		// initialize the value frequency counters
 		for (int x = 0; x < N; x++)
