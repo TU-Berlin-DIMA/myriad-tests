@@ -35,6 +35,7 @@
 #include "math/random/CompoundEICGTest.h"
 #include "math/random/HashRandomStreamTest.h"
 #include "math/random/SurrogateKeyGeneratorTest.h"
+#include "record/RecordRangePredicateTest.h"
 #include "reflection/getter/ValueGetterTest.h"
 
 #include <cppunit/ui/text/TestRunner.h>
@@ -77,19 +78,22 @@ int main(int argc, char **argv)
 //	runner.addTest(SurrogateKeyGeneratorTest::suite());
 
 	// math.random
-	runner.addTest(CompoundEICGTest::suite());
-	runner.addTest(HashRandomStreamTest::suite());
+//	runner.addTest(CompoundEICGTest::suite());
+//	runner.addTest(HashRandomStreamTest::suite());
 
 	// math.probability
-	runner.addTest(MathUtilitiesTest::suite());
-	runner.addTest(CombinedPrFunctionTest<I64u>::suite());
-	runner.addTest(CombinedPrFunctionTest<Date>::suite());
+//	runner.addTest(MathUtilitiesTest::suite());
+//	runner.addTest(CombinedPrFunctionTest<I64u>::suite());
+//	runner.addTest(CombinedPrFunctionTest<Date>::suite());
 //	runner.addTest(QHistogramPrFunctionTest::suite());
 //	runner.addTest(ConditionalQHistogramPrFunctionTest::suite());
 
 	// util
 //	runner.addTest(ValueGetterTest::suite());
 //	runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder
+
+	// record
+	runner.addTest(RecordRangePredicateTest::suite());
 	runner.run();
 
 	return 0;
