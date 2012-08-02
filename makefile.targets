@@ -9,7 +9,7 @@
 CONFIG_FILES     = $(shell cd ../src && ls config/*properties)
 CONFIG_FILES    += $(shell cd ../src && ls config/*xml)
 CONFIG_FILES    += $(shell cd ../src && ls config/*distribution)
-CONFIG_FILES    += $(shell cd ../vendor/myriad/src && ls config/*xsd)
+CONFIG_FILES    += $(shell cd ../vendor/myriad-toolkit/src && ls config/*xsd)
 
 # All Target
 all: work-dirs config-files lib-poco bin/myriad-tests
@@ -47,11 +47,11 @@ lib-poco:
 	find $(POCO_LIBRARY_PATH) -name "libPoco*" -type l -exec cp -PRf {} ./lib/c++/. \;
 	@echo ' '
 
-config/myriad-frontend.template.xml: ../vendor/myriad/src/config/myriad-frontend.template.xml
+config/myriad-frontend.template.xml: ../vendor/myriad-toolkit/src/config/myriad-frontend.template.xml
 	@echo 'Processing: $@'
 	cp -r $< $@
 	
-config/myriad-frontend.xsd: ../vendor/myriad/src/config/myriad-frontend.xsd
+config/myriad-frontend.xsd: ../vendor/myriad-toolkit/src/config/myriad-frontend.xsd
 	@echo 'Processing: $@'
 	cp -r $< $@
 
@@ -59,7 +59,7 @@ config/%: ../src/config/%
 	@echo 'Processing: $@'
 	cp -r $< $@
 	
-bin/myriad-%: ../vendor/myriad/src/script/myriad-%
+bin/myriad-%: ../vendor/myriad-toolkit/src/script/myriad-%
 	@echo 'Processing: $@'
 	cp $< $@ && chmod 0755 $@
 
