@@ -142,20 +142,29 @@ public:
 	{
 		_in.clear();
 
-		_in << "# numberofexactvals: " << _exactValueBuckets.size() << "\n"
-			<< "# numberofbins: "      << _multiValueBuckets.size()  << "\n"
-			<< "# nullprobability: "   << _nullProbability           << "\n";
+		_in << "@numberofexactvals = " << _exactValueBuckets.size()  << "\n"
+			<< "@numberofbins = "      << _multiValueBuckets.size()  << "\n"
+			<< "@nullprobability = "   << _nullProbability           << "\n";
 
+		_in << "# some empty lines and lines with comments\n"
+			<< "\t\n"
+			<< " \t\n"
+			<< " \t\n"
+			<< "\t \n"
+			<< "\t \t\t \t   \t # comment here \n";
+
+		_in << "# exact value probabilities\n";
 		for (size_t j = 0; j < _exactValueBuckets.size(); j++)
 		{
 			size_t i = _exactValueBuckets[j];
-			_in << _pdf[i] << "\t" << _buckets[i].min() << "\n";
+			_in << "p(X) = " << _pdf[i] << "    for X = { " << _buckets[i].min() << " }\n";
 		}
 
+		_in << "# bucket probabilities\n";
 		for (size_t j = 0; j < _multiValueBuckets.size(); j++)
 		{
 			size_t i = _multiValueBuckets[j];
-			_in << _pdf[i] << "\t" << _buckets[i].min() << "\t" << _buckets[i].max() << "\n";
+			_in << "p(X) = " << _pdf[i] << "    for X = { x in [" << _buckets[i].min() << ", " << _buckets[i].max() << ") }\n";
 		}
 
 		return _in;
@@ -279,8 +288,16 @@ public:
 	{
 		srand(241231591);
 
-		_input = CombinedPrFunctionInput<T>::factory();
-		_probability = new CombinedPrFunction<T>("sample.<T>.combined", _input->serialize());
+		try
+		{
+			_input = CombinedPrFunctionInput<T>::factory();
+			_probability = new CombinedPrFunction<T>("sample.<T>.combined", _input->serialize());
+		}
+		catch(const DataException& e)
+		{
+			std::cout << e.message() << std::endl;
+			throw e;
+		}
 	}
 
 	void tearDown()
