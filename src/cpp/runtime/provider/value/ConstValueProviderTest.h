@@ -86,10 +86,6 @@ public:
         suite->addTest(new TestCaller<ConstValueProviderTest> ("testValueProvider", &ConstValueProviderTest::testValueProvider));
         return suite;
     }
-
-private:
-
-    IntervalMap<ID, I16u>* _intervalMapPtr;
 };
 
 class ConstValueProviderMockRecord : public Record

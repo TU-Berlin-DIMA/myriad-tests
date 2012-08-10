@@ -34,20 +34,6 @@ class CallbackValueProviderMockRecord : public Record
 {
 };
 
-class CallbackValueProviderMockCallback: public Record
-{
-public:
-
-    CallbackValueProviderMockCallback()
-    {
-    }
-
-    const I16u callback(const AutoPtr<CallbackValueProviderMockRecord>& ctxRecordPtr, RandomStream& random)
-    {
-        return random(1, 1000);
-    }
-};
-
 class CallbackValueProviderTest: public TestFixture
 {
 public:
@@ -63,18 +49,23 @@ public:
 
         AutoPtr<CallbackValueProviderMockRecord> mockCxtRecordPtr;
         RandomStream mockRandom1, mockRandom2;
-        CallbackValueProviderMockCallback callbackObject;
+        CallbackValueProviderTest& callbackObject = *this;
 
         mockRandom1.seed(seed);
         mockRandom2.seed(seed);
 
-        CallbackValueProvider<I16u, CallbackValueProviderMockRecord, CallbackValueProviderMockCallback> valueProvider(callbackObject, &CallbackValueProviderMockCallback::callback, 0);
+        CallbackValueProvider<I16u, CallbackValueProviderMockRecord, CallbackValueProviderTest> valueProvider(callbackObject, &CallbackValueProviderTest::callback, 0);
 
         for(int i = 0; i < 1000; i++)
         {
             I16u x = static_cast<I16u>(mockRandom1(1, 1000));
             CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, valueProvider(mockCxtRecordPtr, mockRandom2));
         }
+    }
+
+    const I16u callback(const AutoPtr<CallbackValueProviderMockRecord>& ctxRecordPtr, RandomStream& random)
+    {
+        return random(1, 1000);
     }
 
     static Test *suite()
