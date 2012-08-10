@@ -185,6 +185,9 @@ public:
 	typedef ConstValueProvider<I16u, ConstValueProviderMockRecord> I16uConstValueProvider;
 	typedef ConstValueProvider<I64u, ConstValueProviderMockRecord> I64uConstValueProvider;
 	typedef ConstValueProvider<Decimal, ConstValueProviderMockRecord> DecimalConstValueProvider;
+	typedef FieldSetter<ConstValueProviderMockRecord, RecordTraitsType::MOCK_FIELD_1, I16uConstValueProvider> MockField1Setter;
+	typedef FieldSetter<ConstValueProviderMockRecord, RecordTraitsType::MOCK_FIELD_2, I64uConstValueProvider> MockField2Setter;
+	typedef FieldSetter<ConstValueProviderMockRecord, RecordTraitsType::MOCK_FIELD_3, DecimalConstValueProvider> MockField3Setter;
 
     void setUp()
     {
@@ -286,7 +289,7 @@ public:
             {
                 I16u x = random() % 10000;
                 I16uConstValueProvider valueProvider(x);
-                FieldSetter<ConstValueProviderMockRecord, RecordTraitsType::MOCK_FIELD_1, I16uConstValueProvider> fieldSetter(valueProvider);
+                MockField1Setter fieldSetter(valueProvider);
 
                 for (int i = 0; i < 100; i++)
                 {
@@ -299,7 +302,7 @@ public:
             {
                 I64u x = random() % 6431543129;
                 I64uConstValueProvider valueProvider(x);
-                FieldSetter<ConstValueProviderMockRecord, RecordTraitsType::MOCK_FIELD_2, I64uConstValueProvider> fieldSetter(valueProvider);
+                MockField2Setter fieldSetter(valueProvider);
 
                 for (int i = 0; i < 100; i++)
                 {
@@ -312,7 +315,7 @@ public:
             {
                 Decimal x = (random() % 6431543129)/6431543129.0;
                 DecimalConstValueProvider valueProvider(x);
-                FieldSetter<ConstValueProviderMockRecord, RecordTraitsType::MOCK_FIELD_3, DecimalConstValueProvider> fieldSetter(valueProvider);
+                MockField3Setter fieldSetter(valueProvider);
 
                 for (int i = 0; i < 100; i++)
                 {

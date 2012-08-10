@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 
 	// runtime
 //	runner.addTest(ConstRangeProviderTest::suite());
-//	runner.addTest(ContextFieldRangeProviderTest::suite());
+	runner.addTest(ContextFieldRangeProviderTest::suite());
 	runner.addTest(CallbackValueProviderTest::suite());
 //	runner.addTest(ClusteredValueProviderTest::suite());
 	runner.addTest(ConstValueProviderTest::suite());
