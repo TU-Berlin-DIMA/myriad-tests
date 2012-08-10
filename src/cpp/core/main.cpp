@@ -65,20 +65,20 @@ int main(int argc, char **argv)
 	runner.addTest(ProbabilityFunctionsTest::suite());
      */
 	// core
-//	runner.addTest(MyriadDateTest::suite());
+	runner.addTest(MyriadDateTest::suite());
 
 	// TODO: write unit tests for the new field and reference setter types
 //	runner.addTest(FieldSetterTest::suite());
 //	runner.addTest(ReferenceSetterTest::suite());
 
 	// math.random
-//	runner.addTest(CompoundEICGTest::suite());
-//	runner.addTest(HashRandomStreamTest::suite());
+	runner.addTest(CompoundEICGTest::suite());
+	runner.addTest(HashRandomStreamTest::suite());
 
 	// math.probability
-//	runner.addTest(MathUtilitiesTest::suite());
-//	runner.addTest(CombinedPrFunctionTest<I64u>::suite());
-//	runner.addTest(CombinedPrFunctionTest<Date>::suite());
+	runner.addTest(MathUtilitiesTest::suite());
+	runner.addTest(CombinedPrFunctionTest<I64u>::suite());
+	runner.addTest(CombinedPrFunctionTest<Date>::suite());
 //	runner.addTest(ConditionalCombinedPrFunctionTest::suite()); //TODO: implement this test, reuse the old ConditionalQHistogramPrFunctionTest
 
 	// util
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 //	runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder
 
 	// record
-//	runner.addTest(RecordRangePredicateTest::suite());
+	runner.addTest(RecordRangePredicateTest::suite());
 
 	// runtime
 	runner.addTest(ConstRangeProviderTest::suite());
