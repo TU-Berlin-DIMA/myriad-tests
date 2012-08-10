@@ -36,60 +36,60 @@ class ConstValueProviderTest: public TestFixture
 {
 public:
 
-	void setUp()
-	{
-		srand(54352364);
-	}
+    void setUp()
+    {
+        srand(54352364);
+    }
 
-	void testValueProvider()
-	{
-		AutoPtr<ConstValueProviderMockRecord> mockCxtRecordPtr;
-		RandomStream mockRandom;
+    void testValueProvider()
+    {
+        AutoPtr<ConstValueProviderMockRecord> mockCxtRecordPtr;
+        RandomStream mockRandom;
 
-		for (int i = 0; i < 1000; i++)
-		{
-			I16u x = random() % 10000;
-			ConstValueProvider<I16u, ConstValueProviderMockRecord> valueProvider(x);
+        for (int i = 0; i < 1000; i++)
+        {
+            I16u x = random() % 10000;
+            ConstValueProvider<I16u, ConstValueProviderMockRecord> valueProvider(x);
 
-			for (int i = 0; i < 100; i++)
-			{
-				CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, valueProvider(mockCxtRecordPtr, mockRandom));
-			}
-		}
+            for (int i = 0; i < 100; i++)
+            {
+                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, valueProvider(mockCxtRecordPtr, mockRandom));
+            }
+        }
 
-		for (int i = 0; i < 1000; i++)
-		{
-			I64u x = random() % 6431543129;
-			ConstValueProvider<I64u, ConstValueProviderMockRecord> valueProvider(x);
+        for (int i = 0; i < 1000; i++)
+        {
+            I64u x = random() % 6431543129;
+            ConstValueProvider<I64u, ConstValueProviderMockRecord> valueProvider(x);
 
-			for (int i = 0; i < 100; i++)
-			{
-				CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, valueProvider(mockCxtRecordPtr, mockRandom));
-			}
-		}
+            for (int i = 0; i < 100; i++)
+            {
+                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, valueProvider(mockCxtRecordPtr, mockRandom));
+            }
+        }
 
-		for (int i = 0; i < 1000; i++)
-		{
-			Decimal x = (random() % 6431543129)/6431543129.0;
-			ConstValueProvider<Decimal, ConstValueProviderMockRecord> valueProvider(x);
+        for (int i = 0; i < 1000; i++)
+        {
+            Decimal x = (random() % 6431543129)/6431543129.0;
+            ConstValueProvider<Decimal, ConstValueProviderMockRecord> valueProvider(x);
 
-			for (int i = 0; i < 100; i++)
-			{
-				CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, valueProvider(mockCxtRecordPtr, mockRandom));
-			}
-		}
-	}
+            for (int i = 0; i < 100; i++)
+            {
+                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, valueProvider(mockCxtRecordPtr, mockRandom));
+            }
+        }
+    }
 
-	static Test *suite()
-	{
-		TestSuite* suite = new TestSuite("ConstValueProviderTest");
-		suite->addTest(new TestCaller<ConstValueProviderTest> ("testValueProvider", &ConstValueProviderTest::testValueProvider));
-		return suite;
-	}
+    static Test *suite()
+    {
+        TestSuite* suite = new TestSuite("ConstValueProviderTest");
+        suite->addTest(new TestCaller<ConstValueProviderTest> ("testValueProvider", &ConstValueProviderTest::testValueProvider));
+        return suite;
+    }
 
 private:
 
-	IntervalMap<ID, I16u>* _intervalMapPtr;
+    IntervalMap<ID, I16u>* _intervalMapPtr;
 };
 
 class ConstValueProviderMockRecord : public Record

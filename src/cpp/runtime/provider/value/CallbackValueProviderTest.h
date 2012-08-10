@@ -38,11 +38,11 @@ class CallbackValueProviderMockCallback: public Record
 {
 public:
 
-	CallbackValueProviderMockCallback()
-	{
-	}
+    CallbackValueProviderMockCallback()
+    {
+    }
 
-    const I16u operator()(const AutoPtr<CallbackValueProviderMockRecord>& ctxRecordPtr, RandomStream& random)
+    const I16u callback(const AutoPtr<CallbackValueProviderMockRecord>& ctxRecordPtr, RandomStream& random)
     {
         return random(1, 1000);
     }
@@ -52,41 +52,37 @@ class CallbackValueProviderTest: public TestFixture
 {
 public:
 
-	void setUp()
-	{
-		srand(54352364);
-	}
+    void setUp()
+    {
+        srand(54352364);
+    }
 
-	void testValueProvider()
-	{
-		RandomStream::Seed seed("341235143");
+    void testValueProvider()
+    {
+        RandomStream::Seed seed("341235143");
 
-		AutoPtr<CallbackValueProviderMockRecord> mockCxtRecordPtr;
-		RandomStream mockRandom1, mockRandom2;
-		CallbackValueProviderMockCallback callback;
+        AutoPtr<CallbackValueProviderMockRecord> mockCxtRecordPtr;
+        RandomStream mockRandom1, mockRandom2;
+        CallbackValueProviderMockCallback callbackObject;
 
-		mockRandom1.seed(seed);
-		mockRandom2.seed(seed);
+        mockRandom1.seed(seed);
+        mockRandom2.seed(seed);
 
-		CallbackValueProvider<I16u, CallbackValueProviderMockRecord, CallbackValueProviderMockCallback> valueProvider(callback, 0);
+        CallbackValueProvider<I16u, CallbackValueProviderMockRecord, CallbackValueProviderMockCallback> valueProvider(callbackObject, &CallbackValueProviderMockCallback::callback, 0);
 
-		for(int i = 0; i < 1000; i++)
-		{
-			I16u x = static_cast<I16u>(mockRandom1(1, 1000));
-			CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, valueProvider(mockCxtRecordPtr, mockRandom2));
-		}
-	}
+        for(int i = 0; i < 1000; i++)
+        {
+            I16u x = static_cast<I16u>(mockRandom1(1, 1000));
+            CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, valueProvider(mockCxtRecordPtr, mockRandom2));
+        }
+    }
 
-	static Test *suite()
-	{
-		TestSuite* suite = new TestSuite("CallbackValueProviderTest");
-		suite->addTest(new TestCaller<CallbackValueProviderTest> ("testValueProvider", &CallbackValueProviderTest::testValueProvider));
-		return suite;
-	}
-
-private:
-
-	IntervalMap<ID, I16u>* _intervalMapPtr;
+    static Test *suite()
+    {
+        TestSuite* suite = new TestSuite("CallbackValueProviderTest");
+        suite->addTest(new TestCaller<CallbackValueProviderTest> ("testValueProvider", &CallbackValueProviderTest::testValueProvider));
+        return suite;
+    }
 };
 
 } // namespace Myriad
