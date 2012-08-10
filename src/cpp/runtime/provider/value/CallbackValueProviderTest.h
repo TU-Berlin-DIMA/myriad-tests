@@ -19,7 +19,7 @@
 #ifndef CALLBACKVALUEPROVIDERTEST_H_
 #define CALLBACKVALUEPROVIDERTEST_H_
 
-#include "record/Record.h"
+#include "record/mock/MockRecordA.h"
 #include "runtime/provider/value/CallbackValueProvider.h"
 
 #include <cppunit/TestCaller.h>
@@ -29,10 +29,6 @@
 using namespace CppUnit;
 
 namespace Myriad {
-
-class CallbackValueProviderMockRecord : public Record
-{
-};
 
 class CallbackValueProviderTest: public TestFixture
 {
@@ -47,14 +43,14 @@ public:
     {
         RandomStream::Seed seed("341235143");
 
-        AutoPtr<CallbackValueProviderMockRecord> mockCxtRecordPtr;
+        AutoPtr<MockRecordA> mockCxtRecordPtr;
         RandomStream mockRandom1, mockRandom2;
         CallbackValueProviderTest& callbackObject = *this;
 
         mockRandom1.seed(seed);
         mockRandom2.seed(seed);
 
-        CallbackValueProvider<I16u, CallbackValueProviderMockRecord, CallbackValueProviderTest> valueProvider(callbackObject, &CallbackValueProviderTest::callback, 0);
+        CallbackValueProvider<I16u, MockRecordA, CallbackValueProviderTest> valueProvider(callbackObject, &CallbackValueProviderTest::callback, 0);
 
         for(int i = 0; i < 1000; i++)
         {
@@ -65,11 +61,11 @@ public:
 
     void testFieldValueRange()
     {
-        AutoPtr<CallbackValueProviderMockRecord> mockCxtRecordPtr;
+        AutoPtr<MockRecordA> mockCxtRecordPtr;
         RandomStream mockRandom;
         CallbackValueProviderTest& callbackObject = *this;
 
-        CallbackValueProvider<I16u, CallbackValueProviderMockRecord, CallbackValueProviderTest> valueProvider(callbackObject, &CallbackValueProviderTest::callback, 0);
+        CallbackValueProvider<I16u, MockRecordA, CallbackValueProviderTest> valueProvider(callbackObject, &CallbackValueProviderTest::callback, 0);
 
         for (int i = 0; i < 100; i++)
         {
@@ -78,7 +74,7 @@ public:
         }
     }
 
-    const I16u callback(const AutoPtr<CallbackValueProviderMockRecord>& ctxRecordPtr, RandomStream& random)
+    const I16u callback(const AutoPtr<MockRecordA>& ctxRecordPtr, RandomStream& random)
     {
         return random(1, 1000);
     }

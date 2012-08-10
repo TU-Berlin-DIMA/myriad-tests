@@ -19,7 +19,7 @@
 #ifndef CLUSTEREDVALUEPROVIDERTEST_H_
 #define CLUSTEREDVALUEPROVIDERTEST_H_
 
-#include "record/Record.h"
+#include "record/mock/MockRecordA.h"
 #include "runtime/provider/value/ClusteredValueProvider.h"
 
 #include <cppunit/TestCaller.h>
@@ -29,44 +29,6 @@
 using namespace CppUnit;
 
 namespace Myriad {
-
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// mock record traits
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-class ClusteredValueProviderMockRecord;
-
-template<>
-struct RecordTraits<ClusteredValueProviderMockRecord>
-{
-	typedef RecordMeta<ClusteredValueProviderMockRecord> MetaType;
-	typedef RecordFactory<ClusteredValueProviderMockRecord> FactoryType;
-};
-
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// mock record
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-class ClusteredValueProviderMockRecord : public Record
-{
-public:
-
-	typedef RecordTraits<ClusteredValueProviderMockRecord>::MetaType RecordMetaType;
-
-	ClusteredValueProviderMockRecord(const RecordMetaType& meta) :
-		_meta(meta)
-	{
-	}
-
-	const RecordMetaType& meta() const
-	{
-		return _meta;
-	}
-
-private:
-
-	const RecordMetaType& _meta;
-};
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 // unit tests
@@ -83,7 +45,7 @@ public:
 
     void testClusteredValueProviderWithConstRangeProviderForCardinality()
     {
-        AutoPtr<ClusteredValueProviderMockRecord> mockCxtRecordPtr;
+        AutoPtr<MockRecordA> mockCxtRecordPtr;
         RandomStream mockRandom;
 
         // TODO: implement
@@ -91,7 +53,7 @@ public:
 
     void testClusteredValueProviderWithUnsupportedRangeProviderForCardinality()
     {
-        AutoPtr<ClusteredValueProviderMockRecord> mockCxtRecordPtr;
+        AutoPtr<MockRecordA> mockCxtRecordPtr;
         RandomStream mockRandom;
 
         // TODO: implement

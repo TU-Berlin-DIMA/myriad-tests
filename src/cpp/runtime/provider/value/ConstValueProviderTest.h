@@ -19,7 +19,7 @@
 #ifndef CONSTVALUEPROVIDERTEST_H_
 #define CONSTVALUEPROVIDERTEST_H_
 
-#include "record/Record.h"
+#include "record/mock/MockRecordA.h"
 #include "runtime/provider/value/ConstValueProvider.h"
 #include "runtime/setter/FieldSetter.h"
 
@@ -32,146 +32,6 @@ using namespace CppUnit;
 namespace Myriad {
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// mock record traits
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-class ConstValueProviderMockRecord;
-
-template<>
-struct RecordTraits<ConstValueProviderMockRecord>
-{
-	typedef RecordMeta<ConstValueProviderMockRecord> MetaType;
-	typedef RecordFactory<ConstValueProviderMockRecord> FactoryType;
-
-	enum Field { UNKNOWN, GEN_ID, MOCK_FIELD_1, MOCK_FIELD_2, MOCK_FIELD_3 };
-};
-
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// mock record
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-class ConstValueProviderMockRecord : public Record
-{
-public:
-
-	typedef RecordTraits<ConstValueProviderMockRecord>::MetaType RecordMetaType;
-
-	ConstValueProviderMockRecord(const RecordMetaType& meta) :
-		_meta(meta)
-	{
-	}
-
-	const RecordMetaType& meta() const
-	{
-		return _meta;
-	}
-
-	inline void mockField1(const I16u& v)
-	{
-		_mock_field_1 = v;
-	}
-
-	inline const I16u& mockField1() const
-	{
-		return _mock_field_1;
-	}
-
-	inline void mockField2(const I64u& v)
-	{
-		_mock_field_2 = v;
-	}
-
-	inline const I64u& mockField2() const
-	{
-		return _mock_field_2;
-	}
-
-	inline void mockField3(const Decimal& v)
-	{
-		_mock_field_3 = v;
-	}
-
-	inline const Decimal& mockField3() const
-	{
-		return _mock_field_3;
-	}
-
-private:
-
-	// meta reference
-	const RecordMetaType& _meta;
-
-	// fields
-	I16u _mock_field_1;
-	I64u _mock_field_2;
-	Decimal _mock_field_3;
-};
-
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// mock record field inspection structures
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-// mock_field_1
-template<>
-struct RecordFieldTraits<RecordTraits<ConstValueProviderMockRecord>::MOCK_FIELD_1, ConstValueProviderMockRecord>
-{
-    typedef I16u FieldType;
-    // record field getter / setter types
-    typedef typename MethodTraits<ConstValueProviderMockRecord, FieldType>::Setter FieldSetterType;
-    typedef typename MethodTraits<ConstValueProviderMockRecord, FieldType>::Getter FieldGetterType;
-
-    static inline FieldSetterType setter()
-    {
-        return static_cast<FieldSetterType>(&ConstValueProviderMockRecord::mockField1);
-    }
-
-    static inline FieldGetterType getter()
-    {
-        return static_cast<FieldGetterType>(&ConstValueProviderMockRecord::mockField1);
-    }
-};
-
-// mock_field_2
-template<>
-struct RecordFieldTraits<RecordTraits<ConstValueProviderMockRecord>::MOCK_FIELD_2, ConstValueProviderMockRecord>
-{
-    typedef I64u FieldType;
-    // record field getter / setter types
-    typedef typename MethodTraits<ConstValueProviderMockRecord, FieldType>::Setter FieldSetterType;
-    typedef typename MethodTraits<ConstValueProviderMockRecord, FieldType>::Getter FieldGetterType;
-
-    static inline FieldSetterType setter()
-    {
-        return static_cast<FieldSetterType>(&ConstValueProviderMockRecord::mockField2);
-    }
-
-    static inline FieldGetterType getter()
-    {
-        return static_cast<FieldGetterType>(&ConstValueProviderMockRecord::mockField2);
-    }
-};
-
-// mock_field_3
-template<>
-struct RecordFieldTraits<RecordTraits<ConstValueProviderMockRecord>::MOCK_FIELD_3, ConstValueProviderMockRecord>
-{
-    typedef Decimal FieldType;
-    // record field getter / setter types
-    typedef typename MethodTraits<ConstValueProviderMockRecord, FieldType>::Setter FieldSetterType;
-    typedef typename MethodTraits<ConstValueProviderMockRecord, FieldType>::Getter FieldGetterType;
-
-    static inline FieldSetterType setter()
-    {
-        return static_cast<FieldSetterType>(&ConstValueProviderMockRecord::mockField3);
-    }
-
-    static inline FieldGetterType getter()
-    {
-        return static_cast<FieldGetterType>(&ConstValueProviderMockRecord::mockField3);
-    }
-};
-
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 // unit tests
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
@@ -179,15 +39,15 @@ class ConstValueProviderTest: public TestFixture
 {
 public:
 
-	typedef RecordTraits<ConstValueProviderMockRecord> RecordTraitsType;
+	typedef RecordTraits<MockRecordA> RecordTraitsType;
 	typedef RecordTraitsType::MetaType RecordMetaType;
 	typedef RecordTraitsType::FactoryType RecordFactoryType;
-	typedef ConstValueProvider<I16u, ConstValueProviderMockRecord> I16uConstValueProvider;
-	typedef ConstValueProvider<I64u, ConstValueProviderMockRecord> I64uConstValueProvider;
-	typedef ConstValueProvider<Decimal, ConstValueProviderMockRecord> DecimalConstValueProvider;
-	typedef FieldSetter<ConstValueProviderMockRecord, RecordTraitsType::MOCK_FIELD_1, I16uConstValueProvider> MockField1Setter;
-	typedef FieldSetter<ConstValueProviderMockRecord, RecordTraitsType::MOCK_FIELD_2, I64uConstValueProvider> MockField2Setter;
-	typedef FieldSetter<ConstValueProviderMockRecord, RecordTraitsType::MOCK_FIELD_3, DecimalConstValueProvider> MockField3Setter;
+	typedef ConstValueProvider<I16u, MockRecordA> I16uConstValueProvider;
+	typedef ConstValueProvider<I64u, MockRecordA> I64uConstValueProvider;
+	typedef ConstValueProvider<Decimal, MockRecordA> DecimalConstValueProvider;
+	typedef FieldSetter<MockRecordA, RecordTraitsType::MOCK_FIELD_1, I16uConstValueProvider> MockField1Setter;
+	typedef FieldSetter<MockRecordA, RecordTraitsType::MOCK_FIELD_2, I64uConstValueProvider> MockField2Setter;
+	typedef FieldSetter<MockRecordA, RecordTraitsType::MOCK_FIELD_3, DecimalConstValueProvider> MockField3Setter;
 
     void setUp()
     {
@@ -199,7 +59,7 @@ public:
     	RecordMetaType recordMeta(4096);
     	RecordFactoryType recordFactory(recordMeta);
 
-        AutoPtr<ConstValueProviderMockRecord> mockCxtRecordPtr = recordFactory();
+        AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
         RandomStream mockRandom;
 
         for (int i = 0; i < 1000; i++)
@@ -244,7 +104,7 @@ public:
 			RecordMetaType recordMeta(sequenceCardinality);
 			RecordFactoryType recordFactory(recordMeta);
 
-			AutoPtr<ConstValueProviderMockRecord> mockCxtRecordPtr = recordFactory();
+			AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
 			RandomStream mockRandom;
 
 	        for (int i = 0; i < 100; i++)
@@ -280,7 +140,7 @@ public:
     	RecordMetaType recordMeta(4096);
     	RecordFactoryType recordFactory(recordMeta);
 
-        AutoPtr<ConstValueProviderMockRecord> mockCxtRecordPtr = recordFactory();
+        AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
         RandomStream mockRandom;
 
         for (int j = 0; j < 10; j++)
