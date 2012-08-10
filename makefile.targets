@@ -51,7 +51,7 @@ config/myriad-frontend.template.xml: ../vendor/myriad-toolkit/src/config/myriad-
 	@echo 'Processing: $@'
 	cp -r $< $@
 	
-config/myriad-frontend.xsd: ../vendor/myriad-toolkit/src/config/myriad-frontend.xsd
+config/%.xsd: ../vendor/myriad-toolkit/src/config/%.xsd
 	@echo 'Processing: $@'
 	cp -r $< $@
 

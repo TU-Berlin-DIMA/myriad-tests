@@ -21,22 +21,16 @@
 #include "core/types/MyriadDateTest.h"
 #include "config/ObjectBuilderTest.h"
 #include "config/GeneratorConfigTest.h"
-#include "hydrator/ConditionalHydratorTest.h"
-#include "hydrator/ClusteredEnumSetHydratorTest.h"
-#include "hydrator/EnumSetHydratorTest.h"
-#include "hydrator/RangeSetHydratorTest.h"
-#include "hydrator/ConditionalRandomizedHydratorTest.h"
 #include "math/MathUtilitiesTest.h"
 #include "math/IntervalMapTest.h"
 #include "math/probability/CombinedPrFunctionTest.h"
 #include "math/probability/ProbabilityFunctionsTest.h"
-#include "math/probability/QHistogramPrFunctionTest.h"
-#include "math/probability/ConditionalQHistogramPrFunctionTest.h"
 #include "math/random/CompoundEICGTest.h"
 #include "math/random/HashRandomStreamTest.h"
 #include "math/random/SurrogateKeyGeneratorTest.h"
 #include "record/RecordRangePredicateTest.h"
 #include "reflection/getter/ValueGetterTest.h"
+#include "runtime/provider/value/ConstValueProviderTest.h"
 
 #include <cppunit/ui/text/TestRunner.h>
 
@@ -67,15 +61,11 @@ int main(int argc, char **argv)
 	runner.addTest(ProbabilityFunctionsTest::suite());
      */
 	// core
-	runner.addTest(MyriadDateTest::suite());
+//	runner.addTest(MyriadDateTest::suite());
 
-	// hydrator
-//	runner.addTest(ConditionalHydratorTest::suite());
-//	runner.addTest(ClusteredEnumSetHydratorTest::suite());
-//	runner.addTest(EnumSetHydratorTest::suite());
-//	runner.addTest(RangeSetHydratorTest::suite());
-//	runner.addTest(ConditionalRandomizedHydratorTest::suite());
-//	runner.addTest(SurrogateKeyGeneratorTest::suite());
+	// TODO: write unit tests for the new field and reference setter types
+//	runner.addTest(FieldSetterTest::suite());
+//	runner.addTest(ReferenceSetterTest::suite());
 
 	// math.random
 //	runner.addTest(CompoundEICGTest::suite());
@@ -85,15 +75,18 @@ int main(int argc, char **argv)
 //	runner.addTest(MathUtilitiesTest::suite());
 //	runner.addTest(CombinedPrFunctionTest<I64u>::suite());
 //	runner.addTest(CombinedPrFunctionTest<Date>::suite());
-//	runner.addTest(QHistogramPrFunctionTest::suite());
-//	runner.addTest(ConditionalQHistogramPrFunctionTest::suite());
+//	runner.addTest(ConditionalCombinedPrFunctionTest::suite()); //TODO: implement this test, reuse the old ConditionalQHistogramPrFunctionTest
 
 	// util
-//	runner.addTest(ValueGetterTest::suite());
+//	runner.addTest(ValueGetterTest::suite()); // TODO: refactor value getter logic and update the unit test
 //	runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder
 
 	// record
-	runner.addTest(RecordRangePredicateTest::suite());
+//	runner.addTest(RecordRangePredicateTest::suite());
+
+	// runtime
+	runner.addTest(ConstValueProviderTest::suite());
+
 	runner.run();
 
 	return 0;
