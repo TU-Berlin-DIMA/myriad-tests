@@ -30,6 +30,8 @@
 #include "math/random/SurrogateKeyGeneratorTest.h"
 #include "record/RecordRangePredicateTest.h"
 #include "reflection/getter/ValueGetterTest.h"
+#include "runtime/provider/range/ConstRangeProviderTest.h"
+#include "runtime/provider/range/ContextFieldRangeProviderTest.h"
 #include "runtime/provider/value/CallbackValueProviderTest.h"
 #include "runtime/provider/value/ClusteredValueProviderTest.h"
 #include "runtime/provider/value/ConstValueProviderTest.h"
@@ -87,8 +89,10 @@ int main(int argc, char **argv)
 //	runner.addTest(RecordRangePredicateTest::suite());
 
 	// runtime
+//	runner.addTest(ConstRangeProviderTest::suite());
+//	runner.addTest(ContextFieldRangeProviderTest::suite());
 	runner.addTest(CallbackValueProviderTest::suite());
-	runner.addTest(ClusteredValueProviderTest::suite());
+//	runner.addTest(ClusteredValueProviderTest::suite());
 	runner.addTest(ConstValueProviderTest::suite());
 
 	runner.run();

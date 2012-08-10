@@ -43,7 +43,7 @@ public:
         srand(54352364);
     }
 
-    void testValueProvider()
+    void testValueProviderFunctor()
     {
         RandomStream::Seed seed("341235143");
 
@@ -63,6 +63,21 @@ public:
         }
     }
 
+    void testFieldValueRange()
+    {
+        AutoPtr<CallbackValueProviderMockRecord> mockCxtRecordPtr;
+        RandomStream mockRandom;
+        CallbackValueProviderTest& callbackObject = *this;
+
+        CallbackValueProvider<I16u, CallbackValueProviderMockRecord, CallbackValueProviderTest> valueProvider(callbackObject, &CallbackValueProviderTest::callback, 0);
+
+        for (int i = 0; i < 100; i++)
+        {
+            I16u x = random() % 10000;
+            CPPUNIT_ASSERT_THROW(valueProvider.fieldValueRange(x, mockCxtRecordPtr), RuntimeException);
+        }
+    }
+
     const I16u callback(const AutoPtr<CallbackValueProviderMockRecord>& ctxRecordPtr, RandomStream& random)
     {
         return random(1, 1000);
@@ -71,7 +86,8 @@ public:
     static Test *suite()
     {
         TestSuite* suite = new TestSuite("CallbackValueProviderTest");
-        suite->addTest(new TestCaller<CallbackValueProviderTest> ("testValueProvider", &CallbackValueProviderTest::testValueProvider));
+        suite->addTest(new TestCaller<CallbackValueProviderTest> ("testValueProviderFunctor", &CallbackValueProviderTest::testValueProviderFunctor));
+        suite->addTest(new TestCaller<CallbackValueProviderTest> ("testFieldValueRange", &CallbackValueProviderTest::testFieldValueRange));
         return suite;
     }
 };
