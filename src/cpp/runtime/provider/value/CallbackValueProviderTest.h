@@ -74,7 +74,7 @@ public:
         for (int i = 0; i < 100; i++)
         {
             I16u x = random() % 10000;
-            CPPUNIT_ASSERT_THROW(valueProvider.fieldValueRange(x, mockCxtRecordPtr), RuntimeException);
+            CPPUNIT_ASSERT_THROW(valueProvider.fieldValueRange(x, mockCxtRecordPtr, mockRandom), RuntimeException);
         }
     }
 
