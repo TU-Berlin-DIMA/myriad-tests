@@ -10,7 +10,7 @@
 #ifndef RECORDRANGEPREDICATEST_H_
 #define RECORDRANGEPREDICATEST_H_
 
-#include "record/Merchant.h"
+#include "record/mock/MockRecordB.h"
 
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestFixture.h>
@@ -28,11 +28,11 @@ class RecordRangePredicateTest: public TestFixture
 {
 public:
 
-	typedef RecordTraits<Merchant>::MetaType MerchantMetaType;
-	typedef RecordTraits<Merchant>::FactoryType MerchantFactoryType;
+	typedef RecordTraits<MockRecordB>::MetaType MockRecordBMetaType;
+	typedef RecordTraits<MockRecordB>::FactoryType MockRecordBFactoryType;
 
 	RecordRangePredicateTest()
-		: _merchantFactory(MerchantMetaType())
+		: _merchantFactory(MockRecordBMetaType())
 	{
 	}
 
@@ -71,10 +71,10 @@ public:
 	{
 //		for (I64u i = 0; i < 10000; i++)
 //		{
-//			AutoPtr<Merchant> merchantPtr = _merchantFactory();
+//			AutoPtr<MockRecordB> merchantPtr = _merchantFactory();
 //
 //			merchantPtr->riskRating(rand() % 10000000);
-//			I16u genIDAct = applySpecificGetter<RecordTraits<Merchant>::GEN_ID>(merchantPtr);
+//			I16u genIDAct = applySpecificGetter<RecordTraits<MockRecordB>::GEN_ID>(merchantPtr);
 //			I16u genIDExp = merchantPtr->genIDRef();
 //
 //			CPPUNIT_ASSERT_MESSAGE("Wrong comparison", genIDExp == genIDAct);
@@ -82,22 +82,22 @@ public:
 //
 //		for (I64u i = 0; i < 10000; i++)
 //		{
-//			AutoPtr<Merchant> merchantPtr = _merchantFactory();
+//			AutoPtr<MockRecordB> merchantPtr = _merchantFactory();
 //
 //			merchantPtr->riskRating(rand() % 100);
-//			I16u riskRatingAct = applySpecificGetter<RecordTraits<Merchant>::RISK_RATING>(merchantPtr);
+//			I16u riskRatingAct = applySpecificGetter<RecordTraits<MockRecordB>::RISK_RATING>(merchantPtr);
 //			I16u riskRatingExp = merchantPtr->riskRating();
 //
 //			CPPUNIT_ASSERT_MESSAGE("Wrong comparison", riskRatingExp == riskRatingAct);
 //		}
 	}
 
-//	template<int fid> const typename RecordFieldTraits<fid, Merchant>::FieldType& applySpecificGetter(const AutoPtr<Merchant>& merchantPtr)
+//	template<int fid> const typename RecordFieldTraits<fid, MockRecordB>::FieldType& applySpecificGetter(const AutoPtr<MockRecordB>& merchantPtr)
 //	{
-//		typedef typename RecordFieldTraits<fid, Merchant>::FieldType FieldType;
-//		typedef typename RecordFieldTraits<fid, Merchant>::GetterType GetterType;
+//		typedef typename RecordFieldTraits<fid, MockRecordB>::FieldType FieldType;
+//		typedef typename RecordFieldTraits<fid, MockRecordB>::GetterType GetterType;
 //
-//		const GetterType getter = RecordFieldTraits<fid, Merchant>::getter();
+//		const GetterType getter = RecordFieldTraits<fid, MockRecordB>::getter();
 //
 //		return (merchantPtr->*getter)();
 //	}
@@ -111,7 +111,7 @@ public:
 
 private:
 
-	MerchantFactoryType _merchantFactory;
+	MockRecordBFactoryType _merchantFactory;
 };
 
 } // namespace Myriad

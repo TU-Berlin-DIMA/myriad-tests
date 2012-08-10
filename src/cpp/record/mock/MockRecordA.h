@@ -20,6 +20,7 @@
 #define MOCKRECORDA_H_
 
 #include "record/Record.h"
+#include "record/mock/MockRecordAMeta.h"
 
 namespace Myriad {
 
@@ -32,7 +33,7 @@ class MockRecordA;
 template<>
 struct RecordTraits<MockRecordA>
 {
-	typedef RecordMeta<MockRecordA> MetaType;
+	typedef MockRecordAMeta MetaType;
 	typedef RecordFactory<MockRecordA> FactoryType;
 
 	enum Field { UNKNOWN, GEN_ID, MOCK_FIELD_1, MOCK_FIELD_2, MOCK_FIELD_3 };
