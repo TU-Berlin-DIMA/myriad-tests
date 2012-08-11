@@ -30,9 +30,15 @@ using namespace std;
 
 namespace Myriad {
 
+// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// utility class for storing and checking CombinedPrFunction configurations
+// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
 template<typename T> class CombinedPrFunctionInput : public RefCountedObject
 {
 public:
+
+    typedef Interval<T> TInterval;
 
     CombinedPrFunctionInput(double nullProbability, T testRangeMin, T testRangeMax) :
         _nullProbability(nullProbability),
@@ -165,10 +171,9 @@ public:
         return _in;
     }
 
-    static CombinedPrFunctionInput<T>* factory()
+    const TInterval& activeDomain() const
     {
-        // Unsupported base parameter type T
-        throw std::exception();
+    	return _domain;
     }
 
 private:
@@ -207,8 +212,6 @@ private:
         return mid;
     }
 
-    typedef Interval<T> TInterval;
-
     double _nullProbability;
 
     std::vector<TInterval> _buckets;
@@ -228,7 +231,24 @@ private:
     std::stringstream _in;
 };
 
-template<> CombinedPrFunctionInput<I16u>* CombinedPrFunctionInput<I16u>::factory()
+template<typename T>
+class CombinedPrFunctionInputFactory
+{
+public:
+
+    template<I16u functionID> CombinedPrFunctionInput<T>* getFunction()
+    {
+        // Unsupported base parameter type T
+        throw std::exception();
+    }
+};
+
+// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// factory specializations with various CombinedPrFunction configurations
+// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+template<> template<>
+CombinedPrFunctionInput<I16u>* CombinedPrFunctionInputFactory<I16u>::getFunction<0>()
 {
     CombinedPrFunctionInput<I16u>* input = new CombinedPrFunctionInput<I16u>(0.04000, 0, 100);
 
@@ -246,7 +266,19 @@ template<> CombinedPrFunctionInput<I16u>* CombinedPrFunctionInput<I16u>::factory
     return input;
 }
 
-template<> CombinedPrFunctionInput<I64u>* CombinedPrFunctionInput<I64u>::factory()
+template<> template<>
+CombinedPrFunctionInput<I16u>* CombinedPrFunctionInputFactory<I16u>::getFunction<1>()
+{
+    CombinedPrFunctionInput<I16u>* input = new CombinedPrFunctionInput<I16u>(0.100, 0, 9);
+
+    input->add(0.100, 0, 5);
+    input->add(0.800, 5, 9);
+
+    return input;
+}
+
+template<> template<>
+CombinedPrFunctionInput<I64u>* CombinedPrFunctionInputFactory<I64u>::getFunction<0>()
 {
     CombinedPrFunctionInput<I64u>* input = new CombinedPrFunctionInput<I64u>(0.04000, 0, 100);
 
@@ -264,7 +296,8 @@ template<> CombinedPrFunctionInput<I64u>* CombinedPrFunctionInput<I64u>::factory
     return input;
 }
 
-template<> CombinedPrFunctionInput<Date>* CombinedPrFunctionInput<Date>::factory()
+template<> template<>
+CombinedPrFunctionInput<Date>* CombinedPrFunctionInputFactory<Date>::getFunction<0>()
 {
     CombinedPrFunctionInput<Date>* input = new CombinedPrFunctionInput<Date>(0.04000, Date("1992-04-01"), Date("1992-07-15"));
 

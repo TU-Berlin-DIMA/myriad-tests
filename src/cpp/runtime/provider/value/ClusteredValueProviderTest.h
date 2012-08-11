@@ -67,7 +67,8 @@ public:
         AutoPtr<MockRecordA> mockCxtRecordPtr;
         RandomStream mockRandom;
 
-        PrFunctionInputType* prFunctionInput = CombinedPrFunctionInput<I16u>::factory();
+        CombinedPrFunctionInputFactory<I16u> functionInputFactory;
+        PrFunctionInputType* prFunctionInput = functionInputFactory.getFunction<0>();
         PrFunctionType* prFunction(new PrFunctionType(prFunctionInput->serialize()));
 
         I64u scale = 4;
@@ -79,8 +80,8 @@ public:
         ClusteredValueProvider<RecordFieldTraits<RecordTraitsType::MOCK_FIELD_1, MockRecordA>::FieldType, MockRecordA, PrFunctionType, ConstRangeProvider<I64u, MockRecordA> > clusteredValueProvider(*prFunction, constRangeProvider);
 
         // test range parameters
-        I16u testRangeMin = prFunctionInput->testRangeMin();
-        I16u testRangeMax = prFunctionInput->testRangeMax();
+        I16u testRangeMin = prFunctionInput->activeDomain().min();
+        I16u testRangeMax = prFunctionInput->activeDomain().max();
         I32u testRangeLength = testRangeMax - testRangeMin;
 
         // a vector for the computed absolute frequencies
@@ -115,7 +116,7 @@ public:
             else if (currValue == nullValue<I16u>() && i == max - 1)
             {
                 CPPUNIT_ASSERT_MESSAGE(format("Value cluster for value %hu is already processed", currValue), !clusterProcessed[lastValue - testRangeMin]);
-                clusterProcessed[testRangeMax] = true;
+                clusterProcessed[testRangeMax - testRangeMin] = true;
             }
 
             // update last currValue
@@ -143,20 +144,159 @@ public:
         }
     }
 
-    void testClusteredValueProviderWithUnsupportedRangeProviderForCardinality()
+    void testClusteredValueProviderWithContextFieldRangeProviderForCardinality()
     {
+        // type shortcuts for this test
+        typedef ConstRangeProvider<I64u, MockRecordA> MockField1RangeProviderType;
+        typedef ClusteredValueProvider<RecordFieldTraits<RecordTraitsType::MOCK_FIELD_1, MockRecordA>::FieldType, MockRecordA, PrFunctionType, MockField1RangeProviderType> MockField1ValueProviderType;
+        typedef FieldSetter<MockRecordA, RecordTraitsType::MOCK_FIELD_1, MockField1ValueProviderType> MockField1FieldSetterType;
+
+        typedef ContextFieldRangeProvider<I64u, MockRecordA, MockField1FieldSetterType> MockField4RangeProviderType;
+        typedef ClusteredValueProvider<RecordFieldTraits<RecordTraitsType::MOCK_FIELD_4, MockRecordA>::FieldType, MockRecordA, PrFunctionType, MockField4RangeProviderType> MockField4ValueProviderType;
+        typedef FieldSetter<MockRecordA, RecordTraitsType::MOCK_FIELD_4, MockField4ValueProviderType> MockField4FieldSetterType;
+
+        typedef pair<I16u, I16u> FieldsPairType;
+
+        RecordMetaType recordMeta(4096);
+        RecordFactoryType recordFactory(recordMeta);
+
         AutoPtr<MockRecordA> mockCxtRecordPtr;
         RandomStream mockRandom;
 
-        // TODO: implement
+        CombinedPrFunctionInputFactory<I16u> functionInputFactory;
+        PrFunctionInputType* prFunctionInput = functionInputFactory.getFunction<1>();
+        PrFunctionType* prFunction(new PrFunctionType(prFunctionInput->serialize()));
+
+        I64u scale = 4;
+
+        I64u min = 0;
+        I64u max = power(10, scale);
+
+        MockField1RangeProviderType mockField1RangeProvider(min, max);
+        MockField1ValueProviderType mockField1ValueProvider(*prFunction, mockField1RangeProvider);
+        MockField1FieldSetterType mockField1FieldSetter(mockField1ValueProvider);
+
+        MockField4RangeProviderType mockField4RangeProvider(mockField1FieldSetter);
+        MockField4ValueProviderType mockField4ValueProvider(*prFunction, mockField4RangeProvider);
+        MockField4FieldSetterType mockField4FieldSetter(mockField4ValueProvider);
+
+        // test range parameters
+        I16u testRangeMin = prFunctionInput->activeDomain().min();
+        I16u testRangeMax = prFunctionInput->activeDomain().max();
+        I32u testRangeLength = testRangeMax - testRangeMin;
+
+        // a vector for the computed absolute frequencies
+        vector<I64u> absoluteFrequencies((testRangeLength+1)*(testRangeLength+1), 0);
+        vector<bool> clusterProcessed((testRangeLength+1)*(testRangeLength+1), false);
+
+        FieldsPairType testRangePair(testRangeMin, testRangeMax);
+        FieldsPairType nullValuePair(nullValue<I16u>(), nullValue<I16u>());
+        FieldsPairType lastValuePair(nullValuePair);
+
+//        std::cout << "test range is " << testRangeMin << ", " << testRangeMax << std::endl;
+//        std::cout << "test range index length is " << (testRangeLength+1)*(testRangeLength+1) << std::endl;
+//
+//        for (I64u i = testRangeMin; i <= testRangeMax; i++)
+//        {
+//            for (I64u j = testRangeMin; j <= testRangeMax; j++)
+//            {
+//                FieldsPairType pair((i < testRangeMax) ? i : nullValue<I16u>(), (j < testRangeMax) ? j : nullValue<I16u>());
+//                std::cout << "index for value pair (" << pair.first << ", " << pair.second << ") is " << valuePairIndex(pair, testRangePair) << '\n';
+//            }
+//            std::cout << std::endl;
+//        }
+
+        for (I64u i = min; i < max; i++)
+        {
+            // create a new record
+            mockCxtRecordPtr = recordFactory(i);
+
+            // set mockField1 value
+            mockField1FieldSetter(mockCxtRecordPtr, mockRandom);
+            // grab mockField1 value
+            I16u currMockField1Value = mockCxtRecordPtr->mockField1();
+
+            // set mockField4 value
+            mockField4FieldSetter(mockCxtRecordPtr, mockRandom);
+            // grab mockField4 value
+            I16u currMockField4Value = mockCxtRecordPtr->mockField4();
+
+            // create the curr value pair
+            FieldsPairType currValuePair(currMockField1Value, currMockField4Value);
+
+//            std::cout << format("record[#%06Lu] = (%hu, %hu)", i, currValuePair.first, currValuePair.second) << std::endl;
+
+            // check range
+            CPPUNIT_ASSERT_MESSAGE(format("Value %hu at position %Lu out of range", currValuePair.second, i), (currMockField4Value >= testRangeMin && currMockField4Value < testRangeMax) || (currMockField4Value == nullValue<I16u>()));
+
+            // update absolute frequency count
+            absoluteFrequencies[valuePairIndex(currValuePair, testRangePair)]++;
+
+            // mark previous value cluster as processed
+            if (lastValuePair != nullValuePair && lastValuePair != currValuePair)
+            {
+                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for value pair (%hu, %hu) at index %z for genID = %Lu is already processed", currValuePair.first, currValuePair.second, valuePairIndex(lastValuePair, testRangePair), i), !clusterProcessed[valuePairIndex(lastValuePair, testRangePair)]);
+                clusterProcessed[valuePairIndex(lastValuePair, testRangePair)] = true;
+            }
+            else if (currValuePair == nullValuePair && i == max - 1)
+            {
+                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for null value pair is already processed", currValuePair.first, currValuePair.second), !clusterProcessed[valuePairIndex(lastValuePair, testRangePair)]);
+                clusterProcessed[valuePairIndex(currValuePair, testRangePair)] = true;
+            }
+
+            // update last currValue
+            lastValuePair = currValuePair;
+        }
+
+        // check whether all value clusters are processed
+        for (I16u X = testRangeMin; X <= testRangeMax; X++)
+        {
+            for (I16u Y = testRangeMin; Y <= testRangeMax; Y++)
+            {
+                FieldsPairType pair((X < testRangeMax) ? X : nullValue<I16u>(), (Y < testRangeMax) ? Y : nullValue<I16u>());
+                if (absoluteFrequencies[valuePairIndex(pair, testRangePair)] == 0)
+                {
+                    continue;
+                }
+
+                CPPUNIT_ASSERT_MESSAGE(format("Cluster for value pair (%hu, %hu) is not processed", pair.first, pair.second), clusterProcessed[valuePairIndex(pair, testRangePair)]);
+            }
+        }
+
+        // check frequencies
+        for (I16u X = testRangeMin; X <= testRangeMax; X++)
+        {
+            for (I16u Y = testRangeMin; Y <= testRangeMax; Y++)
+            {
+                FieldsPairType pair((X < testRangeMax) ? X : nullValue<I16u>(), (Y < testRangeMax) ? Y : nullValue<I16u>());
+
+                double pdfXExp = prFunctionInput->pdf(pair.first) * prFunctionInput->pdf(pair.second);
+                double pdfXAct = absoluteFrequencies[valuePairIndex(pair, testRangePair)]/static_cast<double>(max-min);
+
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Relative frequencies do not match", pdfXExp, pdfXAct, 5 * pow(10.0, -static_cast<double>(scale/2)));
+            }
+        }
     }
 
     static Test *suite()
     {
         TestSuite* suite = new TestSuite("ClusteredValueProviderTest");
         suite->addTest(new TestCaller<ClusteredValueProviderTest> ("testClusteredValueProviderWithConstRangeProviderForCardinality", &ClusteredValueProviderTest::testClusteredValueProviderWithConstRangeProviderForCardinality));
-        suite->addTest(new TestCaller<ClusteredValueProviderTest> ("testClusteredValueProviderWithUnsupportedRangeProviderForCardinality", &ClusteredValueProviderTest::testClusteredValueProviderWithUnsupportedRangeProviderForCardinality));
+        suite->addTest(new TestCaller<ClusteredValueProviderTest> ("testClusteredValueProviderWithContextFieldRangeProviderForCardinality", &ClusteredValueProviderTest::testClusteredValueProviderWithContextFieldRangeProviderForCardinality));
         return suite;
+    }
+
+private:
+
+    template<typename T> static size_t valuePairIndex(const std::pair<T, T> pair, const std::pair<T, T> valueRangePair)
+    {
+        size_t i, j, s;
+
+        s = static_cast<size_t>(valueRangePair.second - valueRangePair.first + 1);
+        i = (nullValue<T>() != pair.first) ? (pair.first - valueRangePair.first) : s-1;
+        j = (nullValue<T>() != pair.second) ? (pair.second - valueRangePair.first) : s-1;
+
+        return i * s + j;
     }
 };
 

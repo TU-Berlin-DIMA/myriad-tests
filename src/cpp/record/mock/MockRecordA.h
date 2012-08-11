@@ -36,7 +36,7 @@ struct RecordTraits<MockRecordA>
 	typedef MockRecordAMeta MetaType;
 	typedef RecordFactory<MockRecordA> FactoryType;
 
-	enum Field { UNKNOWN, GEN_ID, MOCK_FIELD_1, MOCK_FIELD_2, MOCK_FIELD_3 };
+	enum Field { UNKNOWN, GEN_ID, MOCK_FIELD_1, MOCK_FIELD_2, MOCK_FIELD_3, MOCK_FIELD_4 };
 };
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -89,6 +89,16 @@ public:
 		return _mock_field_3;
 	}
 
+	inline void mockField4(const I16u& v)
+	{
+		_mock_field_4 = v;
+	}
+
+	inline const I16u& mockField4() const
+	{
+		return _mock_field_4;
+	}
+
 private:
 
 	// meta reference
@@ -98,6 +108,7 @@ private:
 	I16u _mock_field_1;
 	I64u _mock_field_2;
 	Decimal _mock_field_3;
+	I16u _mock_field_4;
 };
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -161,6 +172,26 @@ struct RecordFieldTraits<RecordTraits<MockRecordA>::MOCK_FIELD_3, MockRecordA>
     static inline FieldGetterType getter()
     {
         return static_cast<FieldGetterType>(&MockRecordA::mockField3);
+    }
+};
+
+// mock_field_1
+template<>
+struct RecordFieldTraits<RecordTraits<MockRecordA>::MOCK_FIELD_4, MockRecordA>
+{
+    typedef I16u FieldType;
+    // record field getter / setter types
+    typedef typename MethodTraits<MockRecordA, FieldType>::Setter FieldSetterType;
+    typedef typename MethodTraits<MockRecordA, FieldType>::Getter FieldGetterType;
+
+    static inline FieldSetterType setter()
+    {
+        return static_cast<FieldSetterType>(&MockRecordA::mockField4);
+    }
+
+    static inline FieldGetterType getter()
+    {
+        return static_cast<FieldGetterType>(&MockRecordA::mockField4);
     }
 };
 
