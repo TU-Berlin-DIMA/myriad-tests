@@ -36,6 +36,7 @@
 #include "runtime/provider/value/ClusteredValueProviderTest.h"
 #include "runtime/provider/value/ConstValueProviderTest.h"
 #include "runtime/provider/value/ContextFieldValueProviderTest.h"
+#include "runtime/provider/value/RandomValueProviderTest.h"
 
 #include <cppunit/ui/text/TestRunner.h>
 
@@ -59,43 +60,42 @@ const String Constant::APP_VERSION = "0.1.0";
 int main(int argc, char **argv)
 {
     TextUi::TestRunner runner;
+
     /*
      * TODO: these tests need to be updated / removed
     runner.addTest(IntervalMapTest::suite());
     runner.addTest(GeneratorConfigTest::suite());
-    runner.addTest(ProbabilityFunctionsTest::suite());
      */
-    // core
-    runner.addTest(MyriadDateTest::suite());
 
-    // TODO: write unit tests for the new field and reference setter types
-//    runner.addTest(FieldSetterTest::suite());
-//    runner.addTest(ReferenceSetterTest::suite());
-
-    // math.random
+    // core/types
+//    runner.addTest(MyriadDateTest::suite());
+    // math/random
     runner.addTest(CompoundEICGTest::suite());
     runner.addTest(HashRandomStreamTest::suite());
-
-    // math.probability
+    // math/probability
     runner.addTest(MathUtilitiesTest::suite());
     runner.addTest(CombinedPrFunctionTest<I64u>::suite());
     runner.addTest(CombinedPrFunctionTest<Date>::suite());
 //    runner.addTest(ConditionalCombinedPrFunctionTest::suite()); //TODO: implement this test, reuse the old ConditionalQHistogramPrFunctionTest
-
+//    runner.addTest(ProbabilityFunctionsTest::suite()); //TODO: disable function output and add result verification code to this test suite
     // util
 //    runner.addTest(ValueGetterTest::suite()); // TODO: refactor value getter logic and update the unit test
 //    runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder
-
     // record
     runner.addTest(RecordRangePredicateTest::suite());
-
-    // runtime
+    // runtime/provider/range
     runner.addTest(ConstRangeProviderTest::suite());
     runner.addTest(ContextFieldRangeProviderTest::suite());
+    // runtime/provider/reference (TODO: implement tests)
+    // runtime/provider/value
     runner.addTest(CallbackValueProviderTest::suite());
     runner.addTest(ClusteredValueProviderTest::suite());
     runner.addTest(ConstValueProviderTest::suite());
     runner.addTest(ContextFieldValueProviderTest::suite());
+    runner.addTest(RandomValueProviderTest::suite());
+    // runtime/setter (TODO: write unit tests for the field and reference setter types)
+//    runner.addTest(FieldSetterTest::suite());
+//    runner.addTest(ReferenceSetterTest::suite());
 
     runner.run();
 

@@ -35,11 +35,6 @@ public:
 	void setUp()
 	{
 		_seed.v[0] = 0;
-		_seed.v[1] = 0;
-		_seed.v[2] = 0;
-		_seed.v[3] = 0;
-		_seed.v[4] = 0;
-		_seed.v[5] = 0;
 
 		_random.seed(_seed);
 
@@ -53,19 +48,19 @@ public:
 	void testParetoSampling()
 	{
 		ParetoPrFunction pr(10, 0.0625);
-		createHistogram(pr, "pr_test_pareto.dat", _numberOfSamples, 1);
+		createHistogram(pr, "/tmp/pr_test_pareto.dat", _numberOfSamples, 1);
 	}
 
 	void testNormalSampling()
 	{
 		NormalPrFunction pr(50, 50);
-		createHistogram(pr, "pr_test_normal.dat", _numberOfSamples, 1);
+		createHistogram(pr, "/tmp/pr_test_normal.dat", _numberOfSamples, 1);
 	}
 
 	void testBoundedNormalSampling()
 	{
 		BoundedNormalPrFunction pr(50, 50, 0, 200);
-		createHistogram(pr, "pr_test_boundednormal.dat", _numberOfSamples, 1);
+		createHistogram(pr, "/tmp/pr_test_boundednormal.dat", _numberOfSamples, 1);
 	}
 
 	void testNormalGeneration()

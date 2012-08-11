@@ -61,6 +61,10 @@ public:
 
     void testClusteredValueProviderWithConstRangeProviderForCardinality()
     {
+        I64u scale = 4;
+        I64u min = 0;
+        I64u max = power(10, scale);
+
         RecordMetaType recordMeta(4096);
         RecordFactoryType recordFactory(recordMeta);
 
@@ -68,25 +72,22 @@ public:
         RandomStream mockRandom;
 
         CombinedPrFunctionInputFactory<I16u> functionInputFactory;
-        PrFunctionInputType* prFunctionInput = functionInputFactory.getFunction<0>();
-        PrFunctionType* prFunction(new PrFunctionType(prFunctionInput->serialize()));
+        AutoPtr<PrFunctionInputType> prFunctionInput = functionInputFactory.getFunction<0>();
+        AutoPtr<PrFunctionType> prFunction(new PrFunctionType(prFunctionInput->serialize()));
 
-        I64u scale = 4;
-
-        I64u min = 0;
-        I64u max = power(10, scale);
         ConstRangeProvider<I64u, MockRecordA> constRangeProvider(min, max);
 
-        ClusteredValueProvider<RecordFieldTraits<RecordTraitsType::MOCK_FIELD_1, MockRecordA>::FieldType, MockRecordA, PrFunctionType, ConstRangeProvider<I64u, MockRecordA> > clusteredValueProvider(*prFunction, constRangeProvider);
+        ClusteredValueProvider<RecordFieldTraits<RecordTraitsType::MOCK_FIELD_1, MockRecordA>::FieldType, MockRecordA, PrFunctionType, ConstRangeProvider<I64u, MockRecordA> > clusteredValueProvider(*prFunction.get(), constRangeProvider);
 
         // test range parameters
-        I16u testRangeMin = prFunctionInput->activeDomain().min();
-        I16u testRangeMax = prFunctionInput->activeDomain().max();
-        I32u testRangeLength = testRangeMax - testRangeMin;
+        I16u valueDomainMin = prFunctionInput->domain().min();
+        I16u valueDomainMax = prFunctionInput->domain().max();
+        I32u valueDomainLength = valueDomainMax - valueDomainMin;
 
         // a vector for the computed absolute frequencies
-        vector<I64u> absoluteFrequencies(testRangeLength+1, 0);
-        vector<bool> clusterProcessed(testRangeLength+1, false);
+        vector<I64u> absoluteFrequencies(valueDomainLength+1, 0);
+        // a vector of boolean flags for all seen value clusters
+        vector<bool> clusterProcessed(valueDomainLength+1, false);
 
         I16u lastValue = nullValue<I16u>();
         for (I64u i = min; i < max; i++)
@@ -95,28 +96,28 @@ public:
             I16u currValue = clusteredValueProvider(mockCxtRecordPtr, mockRandom);
 
             // check range
-            CPPUNIT_ASSERT_MESSAGE("Value out of range", (currValue >= testRangeMin && currValue < testRangeMax) || (currValue == nullValue<I16u>()));
+            CPPUNIT_ASSERT_MESSAGE("Value out of range", (currValue >= valueDomainMin && currValue < valueDomainMax) || (currValue == nullValue<I16u>()));
 
             // update absolute frequency count
             if (currValue == nullValue<I16u>())
             {
-                absoluteFrequencies[testRangeLength]++;
+                absoluteFrequencies[valueDomainLength]++;
             }
             else
             {
-                absoluteFrequencies[currValue - testRangeMin]++;
+                absoluteFrequencies[currValue - valueDomainMin]++;
             }
 
             // mark previous value cluster as processed
             if (lastValue != nullValue<I16u>() && lastValue != currValue)
             {
-                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for value %hu is already processed", currValue), !clusterProcessed[lastValue - testRangeMin]);
-                clusterProcessed[lastValue - testRangeMin] = true;
+                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for value %hu is already processed", currValue), !clusterProcessed[lastValue - valueDomainMin]);
+                clusterProcessed[lastValue - valueDomainMin] = true;
             }
             else if (currValue == nullValue<I16u>() && i == max - 1)
             {
-                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for value %hu is already processed", currValue), !clusterProcessed[lastValue - testRangeMin]);
-                clusterProcessed[testRangeMax - testRangeMin] = true;
+                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for value %hu is already processed", currValue), !clusterProcessed[lastValue - valueDomainMin]);
+                clusterProcessed[valueDomainMax - valueDomainMin] = true;
             }
 
             // update last currValue
@@ -124,21 +125,21 @@ public:
         }
 
         // check whether all value clusters are processed
-        for (I16u X = testRangeMin; X < testRangeMax + 1U; X++)
+        for (I16u X = valueDomainMin; X < valueDomainMax + 1U; X++)
         {
-            if (absoluteFrequencies[X - testRangeMin] == 0)
+            if (absoluteFrequencies[X - valueDomainMin] == 0)
             {
                 continue;
             }
 
-            CPPUNIT_ASSERT_MESSAGE(format("Cluster for value %hu is not processed", (X == testRangeMax) ? X : nullValue<I16u>()), clusterProcessed[X - testRangeMin]);
+            CPPUNIT_ASSERT_MESSAGE(format("Cluster for value %hu is not processed", (X == valueDomainMax) ? X : nullValue<I16u>()), clusterProcessed[X - valueDomainMin]);
         }
 
         // check frequencies
-        for (I16u X = testRangeMin; X < testRangeMax + 1U; X++)
+        for (I16u X = valueDomainMin; X < valueDomainMax + 1U; X++)
         {
-            double pdfXExp = (X < testRangeMax) ? prFunctionInput->pdf(X) : prFunctionInput->pdf(nullValue<I16u>());
-            double pdfXAct = absoluteFrequencies[X - testRangeMin]/static_cast<double>(max-min);
+            double pdfXExp = (X < valueDomainMax) ? prFunctionInput->pdf(X) : prFunctionInput->pdf(nullValue<I16u>());
+            double pdfXAct = absoluteFrequencies[X - valueDomainMin]/static_cast<double>(max-min);
 
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Relative frequencies do not match", pdfXExp, pdfXAct, 5 * pow(10.0, -static_cast<double>(scale/2)));
         }
@@ -157,6 +158,10 @@ public:
 
         typedef pair<I16u, I16u> FieldsPairType;
 
+        I64u scale = 4;
+        I64u min = 0;
+        I64u max = power(10, scale);
+
         RecordMetaType recordMeta(4096);
         RecordFactoryType recordFactory(recordMeta);
 
@@ -164,44 +169,40 @@ public:
         RandomStream mockRandom;
 
         CombinedPrFunctionInputFactory<I16u> functionInputFactory;
-        PrFunctionInputType* prFunctionInput = functionInputFactory.getFunction<1>();
-        PrFunctionType* prFunction(new PrFunctionType(prFunctionInput->serialize()));
-
-        I64u scale = 4;
-
-        I64u min = 0;
-        I64u max = power(10, scale);
+        AutoPtr<PrFunctionInputType> prFunctionInput = functionInputFactory.getFunction<1>();
+        AutoPtr<PrFunctionType> prFunction(new PrFunctionType(prFunctionInput->serialize()));
 
         MockField1RangeProviderType mockField1RangeProvider(min, max);
-        MockField1ValueProviderType mockField1ValueProvider(*prFunction, mockField1RangeProvider);
+        MockField1ValueProviderType mockField1ValueProvider(*prFunction.get(), mockField1RangeProvider);
         MockField1FieldSetterType mockField1FieldSetter(mockField1ValueProvider);
 
         MockField4RangeProviderType mockField4RangeProvider(mockField1FieldSetter);
-        MockField4ValueProviderType mockField4ValueProvider(*prFunction, mockField4RangeProvider);
+        MockField4ValueProviderType mockField4ValueProvider(*prFunction.get(), mockField4RangeProvider);
         MockField4FieldSetterType mockField4FieldSetter(mockField4ValueProvider);
 
         // test range parameters
-        I16u testRangeMin = prFunctionInput->activeDomain().min();
-        I16u testRangeMax = prFunctionInput->activeDomain().max();
-        I32u testRangeLength = testRangeMax - testRangeMin;
+        I16u valueDomainMin = prFunctionInput->domain().min();
+        I16u valueDomainMax = prFunctionInput->domain().max();
+        I32u valueDomainLength = valueDomainMax - valueDomainMin;
 
         // a vector for the computed absolute frequencies
-        vector<I64u> absoluteFrequencies((testRangeLength+1)*(testRangeLength+1), 0);
-        vector<bool> clusterProcessed((testRangeLength+1)*(testRangeLength+1), false);
+        vector<I64u> absoluteFrequencies((valueDomainLength+1)*(valueDomainLength+1), 0);
+        // a vector of boolean flags for all seen value pair clusters
+        vector<bool> clusterProcessed((valueDomainLength+1)*(valueDomainLength+1), false);
 
-        FieldsPairType testRangePair(testRangeMin, testRangeMax);
+        FieldsPairType valueDomainPair(valueDomainMin, valueDomainMax);
         FieldsPairType nullValuePair(nullValue<I16u>(), nullValue<I16u>());
         FieldsPairType lastValuePair(nullValuePair);
 
-//        std::cout << "test range is " << testRangeMin << ", " << testRangeMax << std::endl;
-//        std::cout << "test range index length is " << (testRangeLength+1)*(testRangeLength+1) << std::endl;
+//        std::cout << "test range is " << valueDomainMin << ", " << valueDomainMax << std::endl;
+//        std::cout << "test range index length is " << (valueDomainLength+1)*(valueDomainLength+1) << std::endl;
 //
-//        for (I64u i = testRangeMin; i <= testRangeMax; i++)
+//        for (I64u i = valueDomainMin; i <= valueDomainMax; i++)
 //        {
-//            for (I64u j = testRangeMin; j <= testRangeMax; j++)
+//            for (I64u j = valueDomainMin; j <= valueDomainMax; j++)
 //            {
-//                FieldsPairType pair((i < testRangeMax) ? i : nullValue<I16u>(), (j < testRangeMax) ? j : nullValue<I16u>());
-//                std::cout << "index for value pair (" << pair.first << ", " << pair.second << ") is " << valuePairIndex(pair, testRangePair) << '\n';
+//                FieldsPairType pair((i < valueDomainMax) ? i : nullValue<I16u>(), (j < valueDomainMax) ? j : nullValue<I16u>());
+//                std::cout << "index for value pair (" << pair.first << ", " << pair.second << ") is " << valuePairIndex(pair, valueDomainPair) << '\n';
 //            }
 //            std::cout << std::endl;
 //        }
@@ -227,21 +228,21 @@ public:
 //            std::cout << format("record[#%06Lu] = (%hu, %hu)", i, currValuePair.first, currValuePair.second) << std::endl;
 
             // check range
-            CPPUNIT_ASSERT_MESSAGE(format("Value %hu at position %Lu out of range", currValuePair.second, i), (currMockField4Value >= testRangeMin && currMockField4Value < testRangeMax) || (currMockField4Value == nullValue<I16u>()));
+            CPPUNIT_ASSERT_MESSAGE(format("Value %hu at position %Lu out of range", currValuePair.second, i), (currMockField4Value >= valueDomainMin && currMockField4Value < valueDomainMax) || (currMockField4Value == nullValue<I16u>()));
 
             // update absolute frequency count
-            absoluteFrequencies[valuePairIndex(currValuePair, testRangePair)]++;
+            absoluteFrequencies[valuePairIndex(currValuePair, valueDomainPair)]++;
 
             // mark previous value cluster as processed
             if (lastValuePair != nullValuePair && lastValuePair != currValuePair)
             {
-                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for value pair (%hu, %hu) at index %z for genID = %Lu is already processed", currValuePair.first, currValuePair.second, valuePairIndex(lastValuePair, testRangePair), i), !clusterProcessed[valuePairIndex(lastValuePair, testRangePair)]);
-                clusterProcessed[valuePairIndex(lastValuePair, testRangePair)] = true;
+                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for value pair (%hu, %hu) at index %z for genID = %Lu is already processed", currValuePair.first, currValuePair.second, valuePairIndex(lastValuePair, valueDomainPair), i), !clusterProcessed[valuePairIndex(lastValuePair, valueDomainPair)]);
+                clusterProcessed[valuePairIndex(lastValuePair, valueDomainPair)] = true;
             }
             else if (currValuePair == nullValuePair && i == max - 1)
             {
-                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for null value pair is already processed", currValuePair.first, currValuePair.second), !clusterProcessed[valuePairIndex(lastValuePair, testRangePair)]);
-                clusterProcessed[valuePairIndex(currValuePair, testRangePair)] = true;
+                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for null value pair is already processed", currValuePair.first, currValuePair.second), !clusterProcessed[valuePairIndex(lastValuePair, valueDomainPair)]);
+                clusterProcessed[valuePairIndex(currValuePair, valueDomainPair)] = true;
             }
 
             // update last currValue
@@ -249,29 +250,29 @@ public:
         }
 
         // check whether all value clusters are processed
-        for (I16u X = testRangeMin; X <= testRangeMax; X++)
+        for (I16u X = valueDomainMin; X <= valueDomainMax; X++)
         {
-            for (I16u Y = testRangeMin; Y <= testRangeMax; Y++)
+            for (I16u Y = valueDomainMin; Y <= valueDomainMax; Y++)
             {
-                FieldsPairType pair((X < testRangeMax) ? X : nullValue<I16u>(), (Y < testRangeMax) ? Y : nullValue<I16u>());
-                if (absoluteFrequencies[valuePairIndex(pair, testRangePair)] == 0)
+                FieldsPairType pair((X < valueDomainMax) ? X : nullValue<I16u>(), (Y < valueDomainMax) ? Y : nullValue<I16u>());
+                if (absoluteFrequencies[valuePairIndex(pair, valueDomainPair)] == 0)
                 {
                     continue;
                 }
 
-                CPPUNIT_ASSERT_MESSAGE(format("Cluster for value pair (%hu, %hu) is not processed", pair.first, pair.second), clusterProcessed[valuePairIndex(pair, testRangePair)]);
+                CPPUNIT_ASSERT_MESSAGE(format("Cluster for value pair (%hu, %hu) is not processed", pair.first, pair.second), clusterProcessed[valuePairIndex(pair, valueDomainPair)]);
             }
         }
 
         // check frequencies
-        for (I16u X = testRangeMin; X <= testRangeMax; X++)
+        for (I16u X = valueDomainMin; X <= valueDomainMax; X++)
         {
-            for (I16u Y = testRangeMin; Y <= testRangeMax; Y++)
+            for (I16u Y = valueDomainMin; Y <= valueDomainMax; Y++)
             {
-                FieldsPairType pair((X < testRangeMax) ? X : nullValue<I16u>(), (Y < testRangeMax) ? Y : nullValue<I16u>());
+                FieldsPairType pair((X < valueDomainMax) ? X : nullValue<I16u>(), (Y < valueDomainMax) ? Y : nullValue<I16u>());
 
                 double pdfXExp = prFunctionInput->pdf(pair.first) * prFunctionInput->pdf(pair.second);
-                double pdfXAct = absoluteFrequencies[valuePairIndex(pair, testRangePair)]/static_cast<double>(max-min);
+                double pdfXAct = absoluteFrequencies[valuePairIndex(pair, valueDomainPair)]/static_cast<double>(max-min);
 
                 CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Relative frequencies do not match", pdfXExp, pdfXAct, 5 * pow(10.0, -static_cast<double>(scale/2)));
             }

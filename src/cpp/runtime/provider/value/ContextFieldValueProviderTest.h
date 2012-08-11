@@ -39,13 +39,13 @@ class ContextFieldValueProviderTest: public TestFixture
 {
 public:
 
-	typedef RecordTraits<MockRecordA> RecordTraitsType;
-	typedef RecordTraitsType::MetaType RecordMetaType;
-	typedef RecordTraitsType::FactoryType RecordFactoryType;
-	typedef ContextFieldValueProvider<I16u, MockRecordA, RecordTraitsType::MOCK_FIELD_1> MockField1ValueProvider;
-	typedef ContextFieldValueProvider<I64u, MockRecordA, RecordTraitsType::MOCK_FIELD_2> MockField2ValueProvider;
-	typedef ContextFieldValueProvider<Decimal, MockRecordA, RecordTraitsType::MOCK_FIELD_3> MockField3ValueProvider;
-	typedef FieldSetter<MockRecordA, RecordTraitsType::MOCK_FIELD_4, MockField1ValueProvider> MockField4Setter;
+    typedef RecordTraits<MockRecordA> RecordTraitsType;
+    typedef RecordTraitsType::MetaType RecordMetaType;
+    typedef RecordTraitsType::FactoryType RecordFactoryType;
+    typedef ContextFieldValueProvider<I16u, MockRecordA, RecordTraitsType::MOCK_FIELD_1> MockField1ValueProvider;
+    typedef ContextFieldValueProvider<I64u, MockRecordA, RecordTraitsType::MOCK_FIELD_2> MockField2ValueProvider;
+    typedef ContextFieldValueProvider<Decimal, MockRecordA, RecordTraitsType::MOCK_FIELD_3> MockField3ValueProvider;
+    typedef FieldSetter<MockRecordA, RecordTraitsType::MOCK_FIELD_4, MockField1ValueProvider> MockField4Setter;
 
     void setUp()
     {
@@ -54,8 +54,8 @@ public:
 
     void testValueProviderFunctor()
     {
-    	RecordMetaType recordMeta(4096);
-    	RecordFactoryType recordFactory(recordMeta);
+        RecordMetaType recordMeta(4096);
+        RecordFactoryType recordFactory(recordMeta);
 
         AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
         RandomStream mockRandom;
@@ -69,7 +69,7 @@ public:
 
             for (int i = 0; i < 100; i++)
             {
-            	mockCxtRecordPtr->mockField1(x);
+                mockCxtRecordPtr->mockField1(x);
                 CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockField1ValueProvider(mockCxtRecordPtr, mockRandom));
             }
         }
@@ -81,7 +81,7 @@ public:
 
             for (int i = 0; i < 100; i++)
             {
-            	mockCxtRecordPtr->mockField2(x);
+                mockCxtRecordPtr->mockField2(x);
                 CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockField2ValueProvider(mockCxtRecordPtr, mockRandom));
             }
         }
@@ -91,7 +91,7 @@ public:
             Decimal x = (random() % 6431543129)/6431543129.0;
             for (int i = 0; i < 100; i++)
             {
-            	mockCxtRecordPtr->mockField3(x);
+                mockCxtRecordPtr->mockField3(x);
                 CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockField3ValueProvider(mockCxtRecordPtr, mockRandom));
             }
         }
@@ -99,54 +99,54 @@ public:
 
     void testFieldValueRange()
     {
-		RecordMetaType recordMeta(4096);
-		RecordFactoryType recordFactory(recordMeta);
+        RecordMetaType recordMeta(4096);
+        RecordFactoryType recordFactory(recordMeta);
 
-		AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
-		RandomStream mockRandom;
-		MockField1ValueProvider mockField1ValueProvider;
-		MockField2ValueProvider mockField2ValueProvider;
+        AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
+        RandomStream mockRandom;
+        MockField1ValueProvider mockField1ValueProvider;
+        MockField2ValueProvider mockField2ValueProvider;
 
-		for (int i = 0; i < 100; i++)
-		{
-			I16u x = random() % 10000;
-			I16u y = x + 1;
+        for (int i = 0; i < 100; i++)
+        {
+            I16u x = random() % 10000;
+            I16u y = x + 1;
 
-			CPPUNIT_ASSERT_THROW_MESSAGE("fieldValueRange() is not supported", mockField1ValueProvider.fieldValueRange(x, mockCxtRecordPtr, mockRandom), RuntimeException);
-			CPPUNIT_ASSERT_THROW_MESSAGE("fieldValueRange() is not supported", mockField1ValueProvider.fieldValueRange(y, mockCxtRecordPtr, mockRandom), RuntimeException);
-		}
+            CPPUNIT_ASSERT_THROW_MESSAGE("fieldValueRange() is not supported", mockField1ValueProvider.fieldValueRange(x, mockCxtRecordPtr, mockRandom), RuntimeException);
+            CPPUNIT_ASSERT_THROW_MESSAGE("fieldValueRange() is not supported", mockField1ValueProvider.fieldValueRange(y, mockCxtRecordPtr, mockRandom), RuntimeException);
+        }
 
-		for (int i = 0; i < 100; i++)
-		{
-			I64u x = random() % 6431543129;
-			I64u y = x + 1;
+        for (int i = 0; i < 100; i++)
+        {
+            I64u x = random() % 6431543129;
+            I64u y = x + 1;
 
-			CPPUNIT_ASSERT_THROW_MESSAGE("fieldValueRange() is not supported", mockField2ValueProvider.fieldValueRange(x, mockCxtRecordPtr, mockRandom), RuntimeException);
-			CPPUNIT_ASSERT_THROW_MESSAGE("fieldValueRange() is not supported", mockField2ValueProvider.fieldValueRange(y, mockCxtRecordPtr, mockRandom), RuntimeException);
-		}
+            CPPUNIT_ASSERT_THROW_MESSAGE("fieldValueRange() is not supported", mockField2ValueProvider.fieldValueRange(x, mockCxtRecordPtr, mockRandom), RuntimeException);
+            CPPUNIT_ASSERT_THROW_MESSAGE("fieldValueRange() is not supported", mockField2ValueProvider.fieldValueRange(y, mockCxtRecordPtr, mockRandom), RuntimeException);
+        }
     }
 
     void testFieldSetterInstance()
     {
-    	RecordMetaType recordMeta(4096);
-    	RecordFactoryType recordFactory(recordMeta);
+        RecordMetaType recordMeta(4096);
+        RecordFactoryType recordFactory(recordMeta);
 
         AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
         RandomStream mockRandom;
         MockField1ValueProvider mockField1Provider;
         MockField4Setter mockField4Setter(mockField1Provider);
 
-		for (int i = 0; i < 1000; i++)
-		{
-			I16u x = random() % 10000;
+        for (int i = 0; i < 1000; i++)
+        {
+            I16u x = random() % 10000;
 
-			for (int i = 0; i < 100; i++)
-			{
-				mockCxtRecordPtr->mockField1(x);
-				mockField4Setter(mockCxtRecordPtr, mockRandom);
-				CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockCxtRecordPtr->mockField4());
-			}
-		}
+            for (int i = 0; i < 100; i++)
+            {
+                mockCxtRecordPtr->mockField1(x);
+                mockField4Setter(mockCxtRecordPtr, mockRandom);
+                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockCxtRecordPtr->mockField4());
+            }
+        }
     }
 
     static Test *suite()

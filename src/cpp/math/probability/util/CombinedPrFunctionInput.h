@@ -171,7 +171,7 @@ public:
         return _in;
     }
 
-    const TInterval& activeDomain() const
+    const TInterval& domain() const
     {
     	return _domain;
     }
