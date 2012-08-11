@@ -35,6 +35,7 @@
 #include "runtime/provider/value/CallbackValueProviderTest.h"
 #include "runtime/provider/value/ClusteredValueProviderTest.h"
 #include "runtime/provider/value/ConstValueProviderTest.h"
+#include "runtime/provider/value/ContextFieldValueProviderTest.h"
 
 #include <cppunit/ui/text/TestRunner.h>
 
@@ -94,6 +95,7 @@ int main(int argc, char **argv)
     runner.addTest(CallbackValueProviderTest::suite());
     runner.addTest(ClusteredValueProviderTest::suite());
     runner.addTest(ConstValueProviderTest::suite());
+    runner.addTest(ContextFieldValueProviderTest::suite());
 
     runner.run();
 
