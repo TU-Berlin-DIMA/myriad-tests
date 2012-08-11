@@ -115,8 +115,8 @@ public:
 
 	            for (int i = 0; i < 100; i++)
 	            {
-	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, sequenceCardinality), valueProvider.fieldValueRange(x, mockCxtRecordPtr, mockRandom));
-	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, 0), valueProvider.fieldValueRange(y, mockCxtRecordPtr, mockRandom));
+	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, sequenceCardinality), valueProvider.valueRange(x, mockCxtRecordPtr, mockRandom));
+	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, 0), valueProvider.valueRange(y, mockCxtRecordPtr, mockRandom));
 	            }
 	        }
 
@@ -128,8 +128,8 @@ public:
 
 	            for (int i = 0; i < 100; i++)
 	            {
-	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, sequenceCardinality), valueProvider.fieldValueRange(x, mockCxtRecordPtr, mockRandom));
-	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, 0), valueProvider.fieldValueRange(y, mockCxtRecordPtr, mockRandom));
+	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, sequenceCardinality), valueProvider.valueRange(x, mockCxtRecordPtr, mockRandom));
+	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, 0), valueProvider.valueRange(y, mockCxtRecordPtr, mockRandom));
 	            }
 	        }
 		}

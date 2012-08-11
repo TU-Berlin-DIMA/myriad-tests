@@ -70,11 +70,11 @@ public:
         for (int i = 0; i < 100; i++)
         {
             I16u x = random() % 10000;
-            CPPUNIT_ASSERT_THROW(valueProvider.fieldValueRange(x, mockCxtRecordPtr, mockRandom), RuntimeException);
+            CPPUNIT_ASSERT_THROW(valueProvider.valueRange(x, mockCxtRecordPtr, mockRandom), RuntimeException);
         }
     }
 
-    const I16u callback(const AutoPtr<MockRecordA>& ctxRecordPtr, RandomStream& random)
+    const I16u callback(const AutoPtr<MockRecordA>& cxtRecordPtr, RandomStream& random)
     {
         return random(1, 1000);
     }
