@@ -68,7 +68,7 @@ int main(int argc, char **argv)
      */
 
     // core/types
-//    runner.addTest(MyriadDateTest::suite());
+    runner.addTest(MyriadDateTest::suite());
     // math/random
     runner.addTest(CompoundEICGTest::suite());
     runner.addTest(HashRandomStreamTest::suite());
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
     runner.addTest(CombinedPrFunctionTest<I64u>::suite());
     runner.addTest(CombinedPrFunctionTest<Date>::suite());
 //    runner.addTest(ConditionalCombinedPrFunctionTest::suite()); //TODO: implement this test, reuse the old ConditionalQHistogramPrFunctionTest
-//    runner.addTest(ProbabilityFunctionsTest::suite()); //TODO: disable function output and add result verification code to this test suite
+    runner.addTest(ProbabilityFunctionsTest::suite()); //TODO: disable function output and add result verification code to this test suite
     // util
 //    runner.addTest(ValueGetterTest::suite()); // TODO: refactor value getter logic and update the unit test
 //    runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder
