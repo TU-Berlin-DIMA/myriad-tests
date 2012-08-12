@@ -7,7 +7,7 @@
 
 using namespace Myriad;
 
-namespace MyriadTestMock {
+namespace Myriad {
 
 // forward declarations
 class MockRecordA;

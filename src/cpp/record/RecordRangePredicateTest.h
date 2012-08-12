@@ -20,7 +20,6 @@
 
 using namespace std;
 using namespace CppUnit;
-using namespace MyriadTestMock;
 
 namespace Myriad {
 

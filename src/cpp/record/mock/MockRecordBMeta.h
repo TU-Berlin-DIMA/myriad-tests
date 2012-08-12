@@ -5,9 +5,7 @@
 
 #include "record/Record.h"
 
-using namespace Myriad;
-
-namespace MyriadTestMock {
+namespace Myriad {
 
 // forward declarations
 class MockRecordB;
@@ -20,8 +18,13 @@ public:
 		RecordMeta<MockRecordB>(cardinality) // FIXME: mandatory cardinality
 	{
 	}
+
+    MockRecordBMeta(const map<string, vector<string> >& enumSets, const I64u cardinality = 0) :
+		RecordMeta<MockRecordB>(cardinality) // FIXME: mandatory cardinality
+	{
+	}
 };
 
-} // namespace MyriadTest
+} // namespace Myriad
 
 #endif /* MOCKRECORDBMETA_H_ */

@@ -32,6 +32,7 @@
 #include "reflection/getter/ValueGetterTest.h"
 #include "runtime/provider/range/ConstRangeProviderTest.h"
 #include "runtime/provider/range/ContextFieldRangeProviderTest.h"
+#include "runtime/provider/reference/ClusteredReferenceProviderTest.h"
 #include "runtime/provider/value/CallbackValueProviderTest.h"
 #include "runtime/provider/value/ClusteredValueProviderTest.h"
 #include "runtime/provider/value/ConstValueProviderTest.h"
@@ -86,7 +87,8 @@ int main(int argc, char **argv)
     // runtime/provider/range
     runner.addTest(ConstRangeProviderTest::suite());
     runner.addTest(ContextFieldRangeProviderTest::suite());
-    // runtime/provider/reference (TODO: implement tests)
+    // runtime/provider/reference
+    runner.addTest(ClusteredReferenceProviderTest::suite());
     // runtime/provider/value
     runner.addTest(CallbackValueProviderTest::suite());
     runner.addTest(ClusteredValueProviderTest::suite());

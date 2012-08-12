@@ -6,18 +6,32 @@
 #include "record/Record.h"
 #include "record/mock/MockRecordBMeta.h"
 
-using namespace Myriad;
-
-namespace MyriadTestMock {
+namespace Myriad {
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 // forward declarations
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 class MockRecordB;
-class MockRecordBConfig;
 class MockRecordBGenerator;
 class MockRecordBHydratorChain;
+
+// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// record traits specialization
+// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+// record traits specialization
+template<> struct
+RecordTraits<MockRecordB>
+{
+    typedef MockRecordBMeta MetaType;
+    typedef MockRecordBGenerator GeneratorType;
+    typedef MockRecordBHydratorChain HydratorChainType;
+    typedef RecordFactory<MockRecordB> FactoryType;
+	typedef RecordRangePredicate<MockRecordB> RangePredicateType;
+
+	enum Field { UNKNOWN, GEN_ID, CATALOG_SIZE, RISK_RATING, CATEGORY, TYPE };
+};
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 // record type
@@ -32,17 +46,45 @@ public:
     {
     }
 
-    void riskRating(const I16u& v);
-    const I16u& riskRating() const;
+    inline void catalogSize(const I32u& v)
+    {
+        _catalog_size = v;
+    }
 
-    void category(const Enum& v);
-    const Enum& category() const;
+    inline const I32u& catalogSize() const
+    {
+        return _catalog_size;
+    }
 
-    void catalogSize(const I32u& v);
-    const I32u& catalogSize() const;
+    inline void riskRating(const I16u& v)
+    {
+        _risk_rating = v;
+    }
 
-    void type(const Enum& v);
-    const Enum& type() const;
+    inline const I16u& riskRating() const
+    {
+        return _risk_rating;
+    }
+
+    inline void category(const Enum& v)
+    {
+        _category = v;
+    }
+
+    inline const Enum& category() const
+    {
+        return _category;
+    }
+
+    inline void type(const Enum& v)
+    {
+        _type = v;
+    }
+
+    inline const Enum& type() const
+    {
+        return _type;
+    }
 
 protected:
 
@@ -50,105 +92,97 @@ protected:
     const MockRecordBMeta& _meta;
 
     // fields
+    I32u _catalog_size;
     I16u _risk_rating;
     Enum _category;
-    I32u _catalog_size;
     Enum _type;
-};
-
-inline void MockRecordB::riskRating(const I16u& v)
-{
-    _risk_rating = v;
-}
-
-inline const I16u& MockRecordB::riskRating() const
-{
-    return _risk_rating;
-}
-
-inline void MockRecordB::category(const Enum& v)
-{
-    _category = v;
-}
-
-inline const Enum& MockRecordB::category() const
-{
-    return _category;
-}
-
-inline void MockRecordB::catalogSize(const I32u& v)
-{
-    _catalog_size = v;
-}
-
-inline const I32u& MockRecordB::catalogSize() const
-{
-    return _catalog_size;
-}
-
-inline void MockRecordB::type(const Enum& v)
-{
-    _type = v;
-}
-
-inline const Enum& MockRecordB::type() const
-{
-    return _type;
-}
-
-} // namespace MyriadTest
-
-namespace Myriad {
-
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// record traits specialization
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-// record traits specialization
-template<> struct
-RecordTraits<MyriadTestMock::MockRecordB>
-{
-    typedef MyriadTestMock::MockRecordBMeta MetaType;
-    typedef MyriadTestMock::MockRecordBGenerator GeneratorType;
-    typedef MyriadTestMock::MockRecordBHydratorChain HydratorChainType;
-    typedef RecordFactory<MyriadTestMock::MockRecordB> FactoryType;
-	typedef RecordRangePredicate<MyriadTestMock::MockRecordB> RangePredicateType;
-
-	enum Field { UNKNOWN, GEN_ID, RISK_RATING };
 };
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 // record field inspection structures
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-// risk_rating
+// catalog size
 template<>
-struct RecordFieldTraits<RecordTraits<MyriadTestMock::MockRecordB>::RISK_RATING, MyriadTestMock::MockRecordB>
+struct RecordFieldTraits<RecordTraits<MockRecordB>::CATALOG_SIZE, MockRecordB>
 {
-	typedef I16u FieldType;
-	typedef typename MethodTraits<MyriadTestMock::MockRecordB, FieldType>::Getter GetterType;
-	typedef typename MethodTraits<MyriadTestMock::MockRecordB, FieldType>::Setter SetterType;
+	typedef I32u FieldType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::Getter FieldGetterType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::Setter FieldSetterType;
 
-	static const char* name;
-
-	static SetterType setter()
+	static FieldSetterType setter()
 	{
-		return static_cast<SetterType>(&MyriadTestMock::MockRecordB::riskRating);
+		return static_cast<FieldSetterType>(&MockRecordB::catalogSize);
 	}
 
-	static GetterType getter()
+	static FieldGetterType getter()
 	{
-		return static_cast<GetterType>(&MyriadTestMock::MockRecordB::riskRating);
+		return static_cast<FieldGetterType>(&MockRecordB::catalogSize);
 	}
 };
 
-const char* RecordFieldTraits<2, MyriadTestMock::MockRecordB>::name = "risk_rating";
+// risk_rating
+template<>
+struct RecordFieldTraits<RecordTraits<MockRecordB>::RISK_RATING, MockRecordB>
+{
+	typedef I16u FieldType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::Getter FieldGetterType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::Setter FieldSetterType;
+
+	static FieldSetterType setter()
+	{
+		return static_cast<FieldSetterType>(&MockRecordB::riskRating);
+	}
+
+	static FieldGetterType getter()
+	{
+		return static_cast<FieldGetterType>(&MockRecordB::riskRating);
+	}
+};
+
+// category
+template<>
+struct RecordFieldTraits<RecordTraits<MockRecordB>::CATEGORY, MockRecordB>
+{
+	typedef Enum FieldType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::Getter FieldGetterType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::Setter FieldSetterType;
+
+	static FieldSetterType setter()
+	{
+		return static_cast<FieldSetterType>(&MockRecordB::category);
+	}
+
+	static FieldGetterType getter()
+	{
+		return static_cast<FieldGetterType>(&MockRecordB::category);
+	}
+};
+
+// type
+template<>
+struct RecordFieldTraits<RecordTraits<MockRecordB>::TYPE, MockRecordB>
+{
+	typedef Enum FieldType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::Getter FieldGetterType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::Setter FieldSetterType;
+
+	static FieldSetterType setter()
+	{
+		return static_cast<FieldSetterType>(&MockRecordB::type);
+	}
+
+	static FieldGetterType getter()
+	{
+		return static_cast<FieldGetterType>(&MockRecordB::type);
+	}
+};
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 // serialize method specialization
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-template<> inline void OutputCollector<MyriadTestMock::MockRecordB>::CollectorType::serialize(OutputCollector<MyriadTestMock::MockRecordB>::CollectorType::StreamType& out, const MyriadTestMock::MockRecordB& record)
+template<> inline void OutputCollector<MockRecordB>::CollectorType::serialize(OutputCollector<MockRecordB>::CollectorType::StreamType& out, const MockRecordB& record)
 {
     write(out, record.riskRating(), false);
     out << '|';

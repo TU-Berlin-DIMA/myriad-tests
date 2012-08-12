@@ -21,8 +21,17 @@
 
 #include "record/Record.h"
 #include "record/mock/MockRecordAMeta.h"
+#include "record/mock/MockRecordB.h"
 
 namespace Myriad {
+
+// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+// forward declarations
+// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+class MockRecordA;
+class MockRecordAGenerator;
+class MockRecordAHydratorChain;
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 // mock record traits
@@ -34,9 +43,12 @@ template<>
 struct RecordTraits<MockRecordA>
 {
 	typedef MockRecordAMeta MetaType;
+    typedef MockRecordAGenerator GeneratorType;
+    typedef MockRecordAHydratorChain HydratorChainType;
 	typedef RecordFactory<MockRecordA> FactoryType;
+	typedef RecordRangePredicate<MockRecordA> RangePredicateType;
 
-	enum Field { UNKNOWN, GEN_ID, MOCK_FIELD_1, MOCK_FIELD_2, MOCK_FIELD_3, MOCK_FIELD_4 };
+	enum Field { UNKNOWN, GEN_ID, MOCK_FIELD_1, MOCK_FIELD_2, MOCK_FIELD_3, MOCK_FIELD_4, POSITION, MOCK_RECORD_B };
 };
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -99,6 +111,26 @@ public:
 		return _mock_field_4;
 	}
 
+	inline void position(const I32u& v)
+	{
+		_position = v;
+	}
+
+	inline const I32u& position() const
+	{
+		return _position;
+	}
+
+	inline void mockRecordB(const AutoPtr<MockRecordB>& v)
+	{
+		_mock_record_b = v;
+	}
+
+	inline const AutoPtr<MockRecordB>& mockRecordB() const
+	{
+		return _mock_record_b;
+	}
+
 private:
 
 	// meta reference
@@ -109,6 +141,10 @@ private:
 	I64u _mock_field_2;
 	Decimal _mock_field_3;
 	I16u _mock_field_4;
+	I32u _position;
+
+	// references
+	AutoPtr<MockRecordB> _mock_record_b;
 };
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -175,7 +211,7 @@ struct RecordFieldTraits<RecordTraits<MockRecordA>::MOCK_FIELD_3, MockRecordA>
     }
 };
 
-// mock_field_1
+// mock_field_4
 template<>
 struct RecordFieldTraits<RecordTraits<MockRecordA>::MOCK_FIELD_4, MockRecordA>
 {
@@ -192,6 +228,46 @@ struct RecordFieldTraits<RecordTraits<MockRecordA>::MOCK_FIELD_4, MockRecordA>
     static inline FieldGetterType getter()
     {
         return static_cast<FieldGetterType>(&MockRecordA::mockField4);
+    }
+};
+
+// position
+template<>
+struct RecordFieldTraits<RecordTraits<MockRecordA>::POSITION, MockRecordA>
+{
+    typedef I32u FieldType;
+    // record field getter / setter types
+    typedef typename MethodTraits<MockRecordA, FieldType>::Setter FieldSetterType;
+    typedef typename MethodTraits<MockRecordA, FieldType>::Getter FieldGetterType;
+
+    static inline FieldSetterType setter()
+    {
+        return static_cast<FieldSetterType>(&MockRecordA::position);
+    }
+
+    static inline FieldGetterType getter()
+    {
+        return static_cast<FieldGetterType>(&MockRecordA::position);
+    }
+};
+
+// mock_record_b
+template<>
+struct RecordFieldTraits<RecordTraits<MockRecordA>::MOCK_RECORD_B, MockRecordA>
+{
+    typedef MockRecordB FieldType;
+    // record field getter / setter types
+    typedef typename MethodTraits<MockRecordA, AutoPtr<MockRecordB> >::Setter FieldSetterType;
+    typedef typename MethodTraits<MockRecordA, AutoPtr<MockRecordB> >::Getter FieldGetterType;
+
+    static inline FieldSetterType setter()
+    {
+        return static_cast<FieldSetterType>(&MockRecordA::mockRecordB);
+    }
+
+    static inline FieldGetterType getter()
+    {
+        return static_cast<FieldGetterType>(&MockRecordA::mockRecordB);
     }
 };
 
