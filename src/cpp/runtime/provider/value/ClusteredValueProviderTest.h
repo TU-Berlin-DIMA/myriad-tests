@@ -69,7 +69,7 @@ public:
         RecordFactoryType recordFactory(recordMeta);
 
         AutoPtr<MockRecordA> mockCxtRecordPtr;
-        RandomStream mockRandom;
+        RandomStream randomStream;
 
         CombinedPrFunctionInputFactory<I16u> functionInputFactory;
         AutoPtr<PrFunctionInputType> prFunctionInput = functionInputFactory.getFunction<0>();
@@ -93,7 +93,7 @@ public:
         for (I64u i = min; i < max; i++)
         {
             mockCxtRecordPtr = recordFactory(i);
-            I16u currValue = clusteredValueProvider(mockCxtRecordPtr, mockRandom);
+            I16u currValue = clusteredValueProvider(mockCxtRecordPtr, randomStream);
 
             // check range
             CPPUNIT_ASSERT_MESSAGE("Value out of range", (currValue >= valueDomainMin && currValue < valueDomainMax) || (currValue == nullValue<I16u>()));
@@ -166,7 +166,7 @@ public:
         RecordFactoryType recordFactory(recordMeta);
 
         AutoPtr<MockRecordA> mockCxtRecordPtr;
-        RandomStream mockRandom;
+        RandomStream randomStream;
 
         CombinedPrFunctionInputFactory<I16u> functionInputFactory;
         AutoPtr<PrFunctionInputType> prFunctionInput = functionInputFactory.getFunction<1>();
@@ -213,12 +213,12 @@ public:
             mockCxtRecordPtr = recordFactory(i);
 
             // set mockField1 value
-            mockField1FieldSetter(mockCxtRecordPtr, mockRandom);
+            mockField1FieldSetter(mockCxtRecordPtr, randomStream);
             // grab mockField1 value
             I16u currMockField1Value = mockCxtRecordPtr->mockField1();
 
             // set mockField4 value
-            mockField4FieldSetter(mockCxtRecordPtr, mockRandom);
+            mockField4FieldSetter(mockCxtRecordPtr, randomStream);
             // grab mockField4 value
             I16u currMockField4Value = mockCxtRecordPtr->mockField4();
 

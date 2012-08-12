@@ -64,7 +64,7 @@ public:
 			RecordFactoryType recordFactory(recordMeta);
 
             AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
-            RandomStream mockRandom;
+            RandomStream randomStream;
 
             for (int i = 0; i < 1000; i++)
             {
@@ -76,7 +76,7 @@ public:
 
                 for (int i = 0; i < 100; i++)
                 {
-                	fieldSetter(mockCxtRecordPtr, mockRandom);
+                	fieldSetter(mockCxtRecordPtr, randomStream);
                     CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, sequenceCardinality), contextFieldRangeProvider(mockCxtRecordPtr));
                 }
             }

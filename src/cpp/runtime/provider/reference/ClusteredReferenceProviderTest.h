@@ -86,7 +86,7 @@ public:
         MockRecordAMetaType recordMeta(4096);
         MockRecordAFactoryType recordFactory(recordMeta);
 
-        RandomStream mockRandom = generatorConfig.masterPRNG();
+        RandomStream randomStream = generatorConfig.masterPRNG();
 
         MaxChildrenValueProvider maxChildrenValueProvider(maxChildrenPerParent);
         ChildrenCountValueProviderType childrenCountValueProvider;
@@ -105,12 +105,12 @@ public:
         AutoPtr<MockRecordB> lastReference, currReference;
         for (I64u i = min; i < max; i++)
         {
-            mockRandom.atChunk(i);
+            randomStream.atChunk(i);
             mockCxtRecordPtr = recordFactory(i);
 
             try
             {
-                currReference = clusteredReferenceProvider(mockCxtRecordPtr, mockRandom);
+                currReference = clusteredReferenceProvider(mockCxtRecordPtr, randomStream);
             }
             catch(const InvalidRecordException& e)
             {

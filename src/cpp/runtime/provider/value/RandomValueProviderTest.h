@@ -64,7 +64,7 @@ public:
         RecordFactoryType recordFactory(recordMeta);
 
         AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
-        RandomStream mockRandom;
+        RandomStream randomStream;
 
         CombinedPrFunctionInputFactory<I16u> functionInputFactory;
         AutoPtr<PrFunctionInputType> prFunctionInput(functionInputFactory.getFunction<0>());
@@ -80,7 +80,7 @@ public:
         for (I64u i = min; i < max; i++)
         {
             // grab mockField1 value
-            I16u value = mockField1ValueProvider(mockCxtRecordPtr, mockRandom);
+            I16u value = mockField1ValueProvider(mockCxtRecordPtr, randomStream);
 
             // check range
             CPPUNIT_ASSERT_MESSAGE(format("Value %hu at position %Lu out of range", value, i), (value >= valueDomain.min() && value < valueDomain.max()) || (value == nullValue<I16u>()));
@@ -112,7 +112,7 @@ public:
         RecordFactoryType recordFactory(recordMeta);
 
         AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
-        RandomStream mockRandom;
+        RandomStream randomStream;
 
         CombinedPrFunctionInputFactory<I16u> functionInputFactory;
         AutoPtr<PrFunctionInputType> prFunctionInput(functionInputFactory.getFunction<0>());
@@ -140,7 +140,7 @@ public:
         RecordFactoryType recordFactory(recordMeta);
 
         AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
-        RandomStream mockRandom, mockRandomCopy;
+        RandomStream randomStream, randomStreamCopy;
 
         CombinedPrFunctionInputFactory<I16u> functionInputFactory;
         AutoPtr<PrFunctionInputType> prFunctionInput(functionInputFactory.getFunction<0>());
@@ -153,8 +153,8 @@ public:
         {
             mockCxtRecordPtr = recordFactory(i);
 
-            I16u x = prFunction->sample(mockRandomCopy());
-            mockField1Setter(mockCxtRecordPtr, mockRandom);
+            I16u x = prFunction->sample(randomStreamCopy());
+            mockField1Setter(mockCxtRecordPtr, randomStream);
 
             CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockCxtRecordPtr->mockField1());
         }

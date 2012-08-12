@@ -58,7 +58,7 @@ public:
         RecordFactoryType recordFactory(recordMeta);
 
         AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
-        RandomStream mockRandom;
+        RandomStream randomStream;
         MockField1ValueProvider mockField1ValueProvider;
         MockField2ValueProvider mockField2ValueProvider;
         MockField3ValueProvider mockField3ValueProvider;
@@ -70,7 +70,7 @@ public:
             for (int i = 0; i < 100; i++)
             {
                 mockCxtRecordPtr->mockField1(x);
-                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockField1ValueProvider(mockCxtRecordPtr, mockRandom));
+                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockField1ValueProvider(mockCxtRecordPtr, randomStream));
             }
         }
 
@@ -82,7 +82,7 @@ public:
             for (int i = 0; i < 100; i++)
             {
                 mockCxtRecordPtr->mockField2(x);
-                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockField2ValueProvider(mockCxtRecordPtr, mockRandom));
+                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockField2ValueProvider(mockCxtRecordPtr, randomStream));
             }
         }
 
@@ -92,7 +92,7 @@ public:
             for (int i = 0; i < 100; i++)
             {
                 mockCxtRecordPtr->mockField3(x);
-                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockField3ValueProvider(mockCxtRecordPtr, mockRandom));
+                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockField3ValueProvider(mockCxtRecordPtr, randomStream));
             }
         }
     }
@@ -103,7 +103,7 @@ public:
         RecordFactoryType recordFactory(recordMeta);
 
         AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
-        RandomStream mockRandom;
+        RandomStream randomStream;
         MockField1ValueProvider mockField1ValueProvider;
         MockField2ValueProvider mockField2ValueProvider;
 
@@ -132,7 +132,7 @@ public:
         RecordFactoryType recordFactory(recordMeta);
 
         AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
-        RandomStream mockRandom;
+        RandomStream randomStream;
         MockField1ValueProvider mockField1Provider;
         MockField4Setter mockField4Setter(mockField1Provider);
 
@@ -143,7 +143,7 @@ public:
             for (int i = 0; i < 100; i++)
             {
                 mockCxtRecordPtr->mockField1(x);
-                mockField4Setter(mockCxtRecordPtr, mockRandom);
+                mockField4Setter(mockCxtRecordPtr, randomStream);
                 CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, mockCxtRecordPtr->mockField4());
             }
         }

@@ -44,18 +44,18 @@ public:
         RandomStream::Seed seed("341235143");
 
         AutoPtr<MockRecordA> mockCxtRecordPtr;
-        RandomStream mockRandom1, mockRandom2;
+        RandomStream randomStream1, randomStream2;
         CallbackValueProviderTest& callbackObject = *this;
 
-        mockRandom1.seed(seed);
-        mockRandom2.seed(seed);
+        randomStream1.seed(seed);
+        randomStream2.seed(seed);
 
         CallbackValueProvider<I16u, MockRecordA, CallbackValueProviderTest> valueProvider(callbackObject, &CallbackValueProviderTest::callback, 0);
 
         for(int i = 0; i < 1000; i++)
         {
-            I16u x = static_cast<I16u>(mockRandom1(1, 1000));
-            CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, valueProvider(mockCxtRecordPtr, mockRandom2));
+            I16u x = static_cast<I16u>(randomStream1(1, 1000));
+            CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", x, valueProvider(mockCxtRecordPtr, randomStream2));
         }
     }
 
