@@ -112,8 +112,8 @@ public:
             I16u x = random() % 10000;
             I16u y = x + 1;
 
-            CPPUNIT_ASSERT_THROW_MESSAGE("valueRange() is not supported", mockField1ValueProvider.valueRange(x, mockCxtRecordPtr, mockRandom), RuntimeException);
-            CPPUNIT_ASSERT_THROW_MESSAGE("valueRange() is not supported", mockField1ValueProvider.valueRange(y, mockCxtRecordPtr, mockRandom), RuntimeException);
+            CPPUNIT_ASSERT_THROW_MESSAGE("valueRange() is not supported", mockField1ValueProvider.valueRange(x, mockCxtRecordPtr), RuntimeException);
+            CPPUNIT_ASSERT_THROW_MESSAGE("valueRange() is not supported", mockField1ValueProvider.valueRange(y, mockCxtRecordPtr), RuntimeException);
         }
 
         for (int i = 0; i < 100; i++)
@@ -121,8 +121,8 @@ public:
             I64u x = random() % 6431543129;
             I64u y = x + 1;
 
-            CPPUNIT_ASSERT_THROW_MESSAGE("valueRange() is not supported", mockField2ValueProvider.valueRange(x, mockCxtRecordPtr, mockRandom), RuntimeException);
-            CPPUNIT_ASSERT_THROW_MESSAGE("valueRange() is not supported", mockField2ValueProvider.valueRange(y, mockCxtRecordPtr, mockRandom), RuntimeException);
+            CPPUNIT_ASSERT_THROW_MESSAGE("valueRange() is not supported", mockField2ValueProvider.valueRange(x, mockCxtRecordPtr), RuntimeException);
+            CPPUNIT_ASSERT_THROW_MESSAGE("valueRange() is not supported", mockField2ValueProvider.valueRange(y, mockCxtRecordPtr), RuntimeException);
         }
     }
 

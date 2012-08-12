@@ -105,7 +105,6 @@ public:
 			RecordFactoryType recordFactory(recordMeta);
 
 			AutoPtr<MockRecordA> mockCxtRecordPtr = recordFactory();
-			RandomStream mockRandom;
 
 	        for (int i = 0; i < 100; i++)
 	        {
@@ -115,8 +114,8 @@ public:
 
 	            for (int i = 0; i < 100; i++)
 	            {
-	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, sequenceCardinality), valueProvider.valueRange(x, mockCxtRecordPtr, mockRandom));
-	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, 0), valueProvider.valueRange(y, mockCxtRecordPtr, mockRandom));
+	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, sequenceCardinality), valueProvider.valueRange(x, mockCxtRecordPtr));
+	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, 0), valueProvider.valueRange(y, mockCxtRecordPtr));
 	            }
 	        }
 
@@ -128,8 +127,8 @@ public:
 
 	            for (int i = 0; i < 100; i++)
 	            {
-	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, sequenceCardinality), valueProvider.valueRange(x, mockCxtRecordPtr, mockRandom));
-	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, 0), valueProvider.valueRange(y, mockCxtRecordPtr, mockRandom));
+	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, sequenceCardinality), valueProvider.valueRange(x, mockCxtRecordPtr));
+	                CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, 0), valueProvider.valueRange(y, mockCxtRecordPtr));
 	            }
 	        }
 		}

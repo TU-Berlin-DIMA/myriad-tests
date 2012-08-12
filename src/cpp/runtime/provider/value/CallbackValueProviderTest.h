@@ -62,7 +62,6 @@ public:
     void testFieldValueRange()
     {
         AutoPtr<MockRecordA> mockCxtRecordPtr;
-        RandomStream mockRandom;
         CallbackValueProviderTest& callbackObject = *this;
 
         CallbackValueProvider<I16u, MockRecordA, CallbackValueProviderTest> valueProvider(callbackObject, &CallbackValueProviderTest::callback, 0);
@@ -70,7 +69,7 @@ public:
         for (int i = 0; i < 100; i++)
         {
             I16u x = random() % 10000;
-            CPPUNIT_ASSERT_THROW(valueProvider.valueRange(x, mockCxtRecordPtr, mockRandom), RuntimeException);
+            CPPUNIT_ASSERT_THROW(valueProvider.valueRange(x, mockCxtRecordPtr), RuntimeException);
         }
     }
 

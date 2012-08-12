@@ -77,7 +77,7 @@ public:
                 for (int i = 0; i < 100; i++)
                 {
                 	fieldSetter(mockCxtRecordPtr, mockRandom);
-                    CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, sequenceCardinality), contextFieldRangeProvider(mockCxtRecordPtr, mockRandom));
+                    CPPUNIT_ASSERT_EQUAL_MESSAGE("Values don't match", Interval<I64u>(0, sequenceCardinality), contextFieldRangeProvider(mockCxtRecordPtr));
                 }
             }
         }

@@ -42,7 +42,6 @@ public:
     void testRangeProviderFunctor()
     {
         AutoPtr<MockRecordA> mockCxtRecordPtr;
-        RandomStream mockRandom;
 
         for (int i = 0; i < 1000; i++)
         {
@@ -51,7 +50,7 @@ public:
 
             for (int i = 0; i < 100; i++)
             {
-                CPPUNIT_ASSERT_EQUAL_MESSAGE("Ranges don't match", x, rangeProvider(mockCxtRecordPtr, mockRandom));
+                CPPUNIT_ASSERT_EQUAL_MESSAGE("Ranges don't match", x, rangeProvider(mockCxtRecordPtr));
             }
         }
 
@@ -62,7 +61,7 @@ public:
 
             for (int i = 0; i < 100; i++)
             {
-                CPPUNIT_ASSERT_EQUAL_MESSAGE("Ranges don't match", x, rangeProvider(mockCxtRecordPtr, mockRandom));
+                CPPUNIT_ASSERT_EQUAL_MESSAGE("Ranges don't match", x, rangeProvider(mockCxtRecordPtr));
             }
         }
 
@@ -73,7 +72,7 @@ public:
 
             for (int i = 0; i < 100; i++)
             {
-                CPPUNIT_ASSERT_EQUAL_MESSAGE("Ranges don't match", x, rangeProvider(mockCxtRecordPtr, mockRandom));
+                CPPUNIT_ASSERT_EQUAL_MESSAGE("Ranges don't match", x, rangeProvider(mockCxtRecordPtr));
             }
         }
     }
