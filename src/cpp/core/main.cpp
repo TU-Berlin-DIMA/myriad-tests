@@ -30,6 +30,8 @@
 #include "math/random/SurrogateKeyGeneratorTest.h"
 #include "record/RecordRangePredicateTest.h"
 #include "reflection/getter/ValueGetterTest.h"
+#include "runtime/predicate/EqualityPredicateTest.h"
+#include "runtime/provider/predicate/EqualityPredicateProviderTest.h"
 #include "runtime/provider/range/ConstRangeProviderTest.h"
 #include "runtime/provider/range/ContextFieldRangeProviderTest.h"
 #include "runtime/provider/reference/ClusteredReferenceProviderTest.h"
@@ -84,6 +86,10 @@ int main(int argc, char **argv)
 //    runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder
     // record
     runner.addTest(RecordRangePredicateTest::suite());
+    // runtime/predicate
+    runner.addTest(EqualityPredicateTest::suite());
+    // runtime/provider/predicate
+    runner.addTest(EqualityPredicateProviderTest::suite());
     // runtime/provider/range
     runner.addTest(ConstRangeProviderTest::suite());
     runner.addTest(ContextFieldRangeProviderTest::suite());

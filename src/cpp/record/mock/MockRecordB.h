@@ -41,9 +41,16 @@ class MockRecordB: public Record
 {
 public:
 
+    typedef RecordTraits<MockRecordB>::MetaType RecordMetaType;
+
     MockRecordB(const MockRecordBMeta& meta) :
         _meta(meta)
     {
+    }
+
+    const RecordMetaType& meta() const
+    {
+        return _meta;
     }
 
     inline void catalogSize(const I32u& v)
