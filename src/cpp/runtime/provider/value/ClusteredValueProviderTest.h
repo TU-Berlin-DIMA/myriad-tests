@@ -61,6 +61,8 @@ public:
 
     void testClusteredValueProviderWithConstRangeProviderForCardinality()
     {
+        typedef pair<I16u, I16u> FieldsPairType;
+
         I64u scale = 4;
         I64u min = 0;
         I64u max = power(10, scale);
@@ -84,6 +86,8 @@ public:
         I16u valueDomainMax = prFunctionInput->domain().max();
         I32u valueDomainLength = valueDomainMax - valueDomainMin;
 
+        FieldsPairType valueDomainPair(valueDomainMin, valueDomainMax);
+
         // a vector for the computed absolute frequencies
         vector<I64u> absoluteFrequencies(valueDomainLength+1, 0);
         // a vector of boolean flags for all seen value clusters
@@ -99,47 +103,39 @@ public:
             CPPUNIT_ASSERT_MESSAGE("Value out of range", (currValue >= valueDomainMin && currValue < valueDomainMax) || (currValue == nullValue<I16u>()));
 
             // update absolute frequency count
-            if (currValue == nullValue<I16u>())
-            {
-                absoluteFrequencies[valueDomainLength]++;
-            }
-            else
-            {
-                absoluteFrequencies[currValue - valueDomainMin]++;
-            }
+            absoluteFrequencies[valueIndex(currValue, valueDomainPair)]++;
 
             // mark previous value cluster as processed
             if (lastValue != nullValue<I16u>() && lastValue != currValue)
             {
-                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for value %hu is already processed", currValue), !clusterProcessed[lastValue - valueDomainMin]);
-                clusterProcessed[lastValue - valueDomainMin] = true;
-            }
-            else if (currValue == nullValue<I16u>() && i == max - 1)
-            {
-                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for value %hu is already processed", currValue), !clusterProcessed[lastValue - valueDomainMin]);
-                clusterProcessed[valueDomainMax - valueDomainMin] = true;
+                CPPUNIT_ASSERT_MESSAGE(format("Value cluster for value %hu is already processed", currValue), !clusterProcessed[valueIndex(lastValue, valueDomainPair)]);
+                clusterProcessed[valueIndex(lastValue, valueDomainPair)] = true;
             }
 
             // update last currValue
             lastValue = currValue;
         }
 
+        // mark last value cluster as processed
+        CPPUNIT_ASSERT_MESSAGE(format("Value cluster for value %hu is already processed", lastValue), !clusterProcessed[valueIndex(lastValue, valueDomainPair)]);
+        clusterProcessed[valueIndex(lastValue, valueDomainPair)] = true;
+
         // check whether all value clusters are processed
         for (I16u X = valueDomainMin; X < valueDomainMax + 1U; X++)
         {
-            if (absoluteFrequencies[X - valueDomainMin] == 0)
+            if (absoluteFrequencies[valueIndex(X, valueDomainPair)] == 0)
             {
                 continue;
             }
 
-            CPPUNIT_ASSERT_MESSAGE(format("Cluster for value %hu is not processed", (X == valueDomainMax) ? X : nullValue<I16u>()), clusterProcessed[X - valueDomainMin]);
+            CPPUNIT_ASSERT_MESSAGE(format("Cluster for value %hu is not processed", (X == valueDomainMax) ? X : nullValue<I16u>()), clusterProcessed[valueIndex(X, valueDomainPair)]);
         }
 
         // check frequencies
         for (I16u X = valueDomainMin; X < valueDomainMax + 1U; X++)
         {
             double pdfXExp = (X < valueDomainMax) ? prFunctionInput->pdf(X) : prFunctionInput->pdf(nullValue<I16u>());
-            double pdfXAct = absoluteFrequencies[X - valueDomainMin]/static_cast<double>(max-min);
+            double pdfXAct = absoluteFrequencies[valueIndex(X, valueDomainPair)]/static_cast<double>(max-min);
 
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Relative frequencies do not match", pdfXExp, pdfXAct, 5 * pow(10.0, -static_cast<double>(scale/2)));
         }
@@ -298,6 +294,12 @@ private:
         j = (nullValue<T>() != pair.second) ? (pair.second - valueRangePair.first) : s-1;
 
         return i * s + j;
+    }
+
+    template<typename T> static size_t valueIndex(const T value, const std::pair<T, T> valueRangePair)
+    {
+        size_t s = static_cast<size_t>(valueRangePair.second - valueRangePair.first + 1);
+        return (nullValue<T>() != value) ? (value - valueRangePair.first) : s-1;
     }
 };
 
