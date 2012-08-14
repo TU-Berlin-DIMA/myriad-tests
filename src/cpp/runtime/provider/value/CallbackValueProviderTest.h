@@ -73,7 +73,7 @@ public:
         }
     }
 
-    const I16u callback(const AutoPtr<MockRecordA>& cxtRecordPtr, RandomStream& random)
+    I16u callback(const AutoPtr<MockRecordA>& cxtRecordPtr, RandomStream& random)
     {
         return random(1, 1000);
     }

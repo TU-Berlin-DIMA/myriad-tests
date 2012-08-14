@@ -58,7 +58,7 @@ public:
 		try
 		{
 			CombinedPrFunctionInputFactory<T> functionInputFactory;
-			_input = functionInputFactory.template getFunction<0>();
+			_input = functionInputFactory.template getFunctionInput<0>();
 			_probability = new CombinedPrFunction<T>("sample.<T>.combined", _input->serialize());
 		}
 		catch(const DataException& e)

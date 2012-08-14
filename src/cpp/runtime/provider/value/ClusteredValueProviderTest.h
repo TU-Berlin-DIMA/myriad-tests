@@ -74,7 +74,7 @@ public:
         RandomStream randomStream;
 
         CombinedPrFunctionInputFactory<I16u> functionInputFactory;
-        AutoPtr<PrFunctionInputType> prFunctionInput = functionInputFactory.getFunction<0>();
+        AutoPtr<PrFunctionInputType> prFunctionInput = functionInputFactory.getFunctionInput<0>();
         AutoPtr<PrFunctionType> prFunction(new PrFunctionType(prFunctionInput->serialize()));
 
         ConstRangeProvider<I64u, MockRecordA> constRangeProvider(min, max);
@@ -165,7 +165,7 @@ public:
         RandomStream randomStream;
 
         CombinedPrFunctionInputFactory<I16u> functionInputFactory;
-        AutoPtr<PrFunctionInputType> prFunctionInput = functionInputFactory.getFunction<1>();
+        AutoPtr<PrFunctionInputType> prFunctionInput = functionInputFactory.getFunctionInput<1>();
         AutoPtr<PrFunctionType> prFunction(new PrFunctionType(prFunctionInput->serialize()));
 
         MockField1RangeProviderType mockField1RangeProvider(min, max);

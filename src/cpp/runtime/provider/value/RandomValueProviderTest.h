@@ -67,7 +67,7 @@ public:
         RandomStream randomStream;
 
         CombinedPrFunctionInputFactory<I16u> functionInputFactory;
-        AutoPtr<PrFunctionInputType> prFunctionInput(functionInputFactory.getFunction<0>());
+        AutoPtr<PrFunctionInputType> prFunctionInput(functionInputFactory.getFunctionInput<0>());
         AutoPtr<PrFunctionType> prFunction(new PrFunctionType(prFunctionInput->serialize()));
 
         MockField1ValueProvider mockField1ValueProvider(*prFunction.get());
@@ -115,7 +115,7 @@ public:
         RandomStream randomStream;
 
         CombinedPrFunctionInputFactory<I16u> functionInputFactory;
-        AutoPtr<PrFunctionInputType> prFunctionInput(functionInputFactory.getFunction<0>());
+        AutoPtr<PrFunctionInputType> prFunctionInput(functionInputFactory.getFunctionInput<0>());
         AutoPtr<PrFunctionType> prFunction(new PrFunctionType(prFunctionInput->serialize()));
 
         MockField1ValueProvider mockField1ValueProvider(*prFunction.get());
@@ -143,7 +143,7 @@ public:
         RandomStream randomStream, randomStreamCopy;
 
         CombinedPrFunctionInputFactory<I16u> functionInputFactory;
-        AutoPtr<PrFunctionInputType> prFunctionInput(functionInputFactory.getFunction<0>());
+        AutoPtr<PrFunctionInputType> prFunctionInput(functionInputFactory.getFunctionInput<0>());
         AutoPtr<PrFunctionType> prFunction(new PrFunctionType(prFunctionInput->serialize()));
 
         MockField1ValueProvider mockField1ValueProvider(*prFunction.get());

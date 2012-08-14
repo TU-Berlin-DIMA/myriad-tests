@@ -236,10 +236,16 @@ class CombinedPrFunctionInputFactory
 {
 public:
 
-    template<I16u functionID> CombinedPrFunctionInput<T>* getFunction()
+    template<I16u functionID> CombinedPrFunctionInput<T>* getFunctionInput()
     {
         // Unsupported base parameter type T
         throw std::exception();
+    }
+
+    template<I16u functionID> CombinedPrFunction<T>* getFunction()
+    {
+    	AutoPtr< CombinedPrFunctionInput<T> > prFunctionInput = getFunctionInput<functionID>();
+    	return new CombinedPrFunction<T>(prFunctionInput->serialize());
     }
 };
 
@@ -248,7 +254,7 @@ public:
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 template<> template<>
-CombinedPrFunctionInput<I16u>* CombinedPrFunctionInputFactory<I16u>::getFunction<0>()
+CombinedPrFunctionInput<I16u>* CombinedPrFunctionInputFactory<I16u>::getFunctionInput<0>()
 {
     CombinedPrFunctionInput<I16u>* input = new CombinedPrFunctionInput<I16u>(0.04000, 0, 100);
 
@@ -267,7 +273,7 @@ CombinedPrFunctionInput<I16u>* CombinedPrFunctionInputFactory<I16u>::getFunction
 }
 
 template<> template<>
-CombinedPrFunctionInput<I16u>* CombinedPrFunctionInputFactory<I16u>::getFunction<1>()
+CombinedPrFunctionInput<I16u>* CombinedPrFunctionInputFactory<I16u>::getFunctionInput<1>()
 {
     CombinedPrFunctionInput<I16u>* input = new CombinedPrFunctionInput<I16u>(0.100, 0, 9);
 
@@ -278,7 +284,7 @@ CombinedPrFunctionInput<I16u>* CombinedPrFunctionInputFactory<I16u>::getFunction
 }
 
 template<> template<>
-CombinedPrFunctionInput<I64u>* CombinedPrFunctionInputFactory<I64u>::getFunction<0>()
+CombinedPrFunctionInput<I64u>* CombinedPrFunctionInputFactory<I64u>::getFunctionInput<0>()
 {
     CombinedPrFunctionInput<I64u>* input = new CombinedPrFunctionInput<I64u>(0.04000, 0, 100);
 
@@ -297,7 +303,32 @@ CombinedPrFunctionInput<I64u>* CombinedPrFunctionInputFactory<I64u>::getFunction
 }
 
 template<> template<>
-CombinedPrFunctionInput<Date>* CombinedPrFunctionInputFactory<Date>::getFunction<0>()
+CombinedPrFunctionInput<Enum>* CombinedPrFunctionInputFactory<Enum>::getFunctionInput<10>()
+{
+    CombinedPrFunctionInput<Enum>* input = new CombinedPrFunctionInput<Enum>(0.0, 0, 5);
+
+    input->add(0.200, 0);
+    input->add(0.200, 1);
+    input->add(0.200, 2);
+    input->add(0.200, 3);
+    input->add(0.200, 4);
+
+    return input;
+}
+
+template<> template<>
+CombinedPrFunctionInput<Enum>* CombinedPrFunctionInputFactory<Enum>::getFunctionInput<11>()
+{
+    CombinedPrFunctionInput<Enum>* input = new CombinedPrFunctionInput<Enum>(0.0, 0, 2);
+
+    input->add(0.500, 0);
+    input->add(0.500, 1);
+
+    return input;
+}
+
+template<> template<>
+CombinedPrFunctionInput<Date>* CombinedPrFunctionInputFactory<Date>::getFunctionInput<0>()
 {
     CombinedPrFunctionInput<Date>* input = new CombinedPrFunctionInput<Date>(0.04000, Date("1992-04-01"), Date("1992-07-15"));
 
