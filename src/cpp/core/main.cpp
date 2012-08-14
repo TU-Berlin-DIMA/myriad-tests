@@ -71,41 +71,38 @@ int main(int argc, char **argv)
     runner.addTest(GeneratorConfigTest::suite());
      */
 
-//    // core/types
-//    runner.addTest(MyriadDateTest::suite());
-//    // math/random
-//    runner.addTest(CompoundEICGTest::suite());
-//    runner.addTest(HashRandomStreamTest::suite());
-//    // math/probability
-//    runner.addTest(MathUtilitiesTest::suite());
-//    runner.addTest(CombinedPrFunctionTest<I64u>::suite());
-//    runner.addTest(CombinedPrFunctionTest<Date>::suite());
-////    runner.addTest(ConditionalCombinedPrFunctionTest::suite()); //TODO: implement this test, reuse the old ConditionalQHistogramPrFunctionTest
-//    runner.addTest(ProbabilityFunctionsTest::suite()); //TODO: disable function output and add result verification code to this test suite
-//    // util
-////    runner.addTest(ValueGetterTest::suite()); // TODO: refactor value getter logic and update the unit test
-////    runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder
-//    // record
-//    runner.addTest(RecordRangePredicateTest::suite());
-//    // runtime/predicate
-//    runner.addTest(EqualityPredicateTest::suite());
-//    // runtime/provider/predicate
-//    runner.addTest(EqualityPredicateProviderTest::suite());
-//    // runtime/provider/range
-//    runner.addTest(ConstRangeProviderTest::suite());
-//    runner.addTest(ContextFieldRangeProviderTest::suite());
-//    // runtime/provider/reference
-//    runner.addTest(ClusteredReferenceProviderTest::suite());
+    // core/types
+    runner.addTest(MyriadDateTest::suite());
+    // math/random
+    runner.addTest(CompoundEICGTest::suite());
+    runner.addTest(HashRandomStreamTest::suite());
+    // math/probability
+    runner.addTest(MathUtilitiesTest::suite());
+    runner.addTest(CombinedPrFunctionTest<I64u>::suite());
+    runner.addTest(CombinedPrFunctionTest<Date>::suite());
+//    runner.addTest(ConditionalCombinedPrFunctionTest::suite()); //TODO: implement this test, reuse the old ConditionalQHistogramPrFunctionTest
+    runner.addTest(ProbabilityFunctionsTest::suite()); //TODO: disable function output and add result verification code to this test suite
+    // util
+//    runner.addTest(ValueGetterTest::suite()); // TODO: refactor value getter logic and update the unit test
+//    runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder
+    // record
+    runner.addTest(RecordRangePredicateTest::suite());
+    // runtime/predicate
+    runner.addTest(EqualityPredicateTest::suite());
+    // runtime/provider/predicate
+    runner.addTest(EqualityPredicateProviderTest::suite());
+    // runtime/provider/range
+    runner.addTest(ConstRangeProviderTest::suite());
+    runner.addTest(ContextFieldRangeProviderTest::suite());
+    // runtime/provider/reference
+    runner.addTest(ClusteredReferenceProviderTest::suite());
     runner.addTest(RandomReferenceProviderTest::suite());
-//    // runtime/provider/value
-//    runner.addTest(CallbackValueProviderTest::suite());
-//    runner.addTest(ClusteredValueProviderTest::suite());
-//    runner.addTest(ConstValueProviderTest::suite());
-//    runner.addTest(ContextFieldValueProviderTest::suite());
-//    runner.addTest(RandomValueProviderTest::suite());
-//    // runtime/setter (TODO: write unit tests for the field and reference setter types)
-////    runner.addTest(FieldSetterTest::suite());
-////    runner.addTest(ReferenceSetterTest::suite());
+    // runtime/provider/value
+    runner.addTest(CallbackValueProviderTest::suite());
+    runner.addTest(ClusteredValueProviderTest::suite());
+    runner.addTest(ConstValueProviderTest::suite());
+    runner.addTest(ContextFieldValueProviderTest::suite());
+    runner.addTest(RandomValueProviderTest::suite());
 
     runner.run();
 

@@ -284,6 +284,20 @@ CombinedPrFunctionInput<I16u>* CombinedPrFunctionInputFactory<I16u>::getFunction
 }
 
 template<> template<>
+CombinedPrFunctionInput<I16u>* CombinedPrFunctionInputFactory<I16u>::getFunctionInput<2>()
+{
+    CombinedPrFunctionInput<I16u>* input = new CombinedPrFunctionInput<I16u>(0.000, 1, 50);
+
+    input->add(0.150,  1, 10);
+    input->add(0.250, 10, 20);
+    input->add(0.300, 20, 30);
+    input->add(0.250, 30, 40);
+    input->add(0.150, 40, 50);
+
+    return input;
+}
+
+template<> template<>
 CombinedPrFunctionInput<I64u>* CombinedPrFunctionInputFactory<I64u>::getFunctionInput<0>()
 {
     CombinedPrFunctionInput<I64u>* input = new CombinedPrFunctionInput<I64u>(0.04000, 0, 100);

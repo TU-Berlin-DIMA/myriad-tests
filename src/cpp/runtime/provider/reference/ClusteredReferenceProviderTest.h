@@ -134,6 +134,11 @@ public:
                 clusterProcessed[lastReference->genID()] = true;
             }
 
+            if (lastReference != currReference)
+            {
+            	lastMockCxtRecordPtr.assign(NULL);
+            }
+
             CPPUNIT_ASSERT_EQUAL_MESSAGE(format("Wrong position value of nested record #%Lu", mockCxtRecordPtr->genID()), lastMockCxtRecordPtr.isNull() ? 0 : lastMockCxtRecordPtr->position()+1, mockCxtRecordPtr->position());
 
             // update last currReference

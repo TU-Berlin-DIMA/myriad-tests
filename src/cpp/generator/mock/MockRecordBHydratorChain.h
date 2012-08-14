@@ -15,6 +15,7 @@
 #include "record/mock/MockRecordB.h"
 #include "math/probability/util/CombinedPrFunctionInput.h"
 #include "runtime/provider/value/ClusteredValueProvider.h"
+#include "runtime/provider/value/RandomValueProvider.h"
 
 namespace Myriad {
 
@@ -28,6 +29,11 @@ namespace Myriad {
 class MockRecordBHydratorChain : public HydratorChain<MockRecordB>
 {
 public:
+
+	// typedefs for the 'catalog_size' field
+	typedef CombinedPrFunction<I16u> CatalogSizePrFunctionType;
+	typedef RandomValueProvider<I16u, MockRecordB, CatalogSizePrFunctionType> CatalogSizeValueProviderType;
+	typedef FieldSetter<MockRecordB, RecordTraits<MockRecordB>::CATALOG_SIZE, CatalogSizeValueProviderType> CatalogSizeFieldSetterType;
 
 	// typedefs for the 'category' field
 	typedef CombinedPrFunction<Enum> CategoryPrFunctionType;
@@ -45,6 +51,10 @@ public:
         HydratorChain<MockRecordB>(opMode, random),
         // cardinality
         _sequenceCardinality(config.cardinality("mock_record_b")),
+        // components for the 'catalog_size' field
+    	_catalogSizePrFunction((CombinedPrFunctionInputFactory<I16u>()).getFunction<2>()),
+    	_catalogSizeValueProvider(*_catalogSizePrFunction.get()),
+    	_catalogSizeFieldSetter(_catalogSizeValueProvider),
         // components for the 'category' field
     	_categoryPrFunction((CombinedPrFunctionInputFactory<Enum>()).getFunction<10>()),
     	_categoryRangeProvider(0, _sequenceCardinality),
@@ -73,6 +83,7 @@ public:
         MockRecordBHydratorChain* me = const_cast<MockRecordBHydratorChain*>(this);
 
         // apply setter chain
+        me->_catalogSizeFieldSetter(recordPtr, me->_random);
         me->_categoryFieldSetter(recordPtr, me->_random);
         me->_typeFieldSetter(recordPtr, me->_random);
     }
@@ -95,6 +106,12 @@ protected:
 
 	// cardinality
 	I64u _sequenceCardinality;
+
+
+	// components for the 'catalog_size' field
+	AutoPtr<CatalogSizePrFunctionType> _catalogSizePrFunction;
+	CatalogSizeValueProviderType _catalogSizeValueProvider;
+	CatalogSizeFieldSetterType _catalogSizeFieldSetter;
 
 	// components for the 'category' field
 	AutoPtr<CategoryPrFunctionType> _categoryPrFunction;
