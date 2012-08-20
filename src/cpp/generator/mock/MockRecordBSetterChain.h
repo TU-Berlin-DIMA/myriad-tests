@@ -7,32 +7,35 @@
  * file that was distributed with this source code.
  */
 
-#ifndef MOCKRECORDBHYDRATORCHAIN_H_
-#define MOCKRECORDBHYDRATORCHAIN_H_
+#ifndef MOCKRECORDBSETTERCHAIN_H_
+#define MOCKRECORDBSETTERCHAIN_H_
 
-#include "generator/RandomSetGenerator.h"
-#include "generator/mock/MockRecordBHydratorChain.h"
+#include "generator/RandomSequenceGenerator.h"
+#include "generator/mock/MockRecordBSetterChain.h"
 #include "record/mock/MockRecordB.h"
 #include "math/probability/util/CombinedPrFunctionInput.h"
+#include "runtime/provider/range/ConstRangeProvider.h"
+#include "runtime/provider/range/ContextFieldRangeProvider.h"
 #include "runtime/provider/value/ClusteredValueProvider.h"
 #include "runtime/provider/value/RandomValueProvider.h"
+#include "runtime/setter/FieldSetter.h"
 
 namespace Myriad {
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// HydratorChain specialization
+// SetterChain specialization
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 /**
  * Hydrator specialization for User.
  */
-class MockRecordBHydratorChain : public HydratorChain<MockRecordB>
+class MockRecordBSetterChain : public SetterChain<MockRecordB>
 {
 public:
 
 	// typedefs for the 'catalog_size' field
 	typedef CombinedPrFunction<I16u> CatalogSizePrFunctionType;
-	typedef RandomValueProvider<I16u, MockRecordB, CatalogSizePrFunctionType> CatalogSizeValueProviderType;
+	typedef RandomValueProvider<I16u, MockRecordB, CatalogSizePrFunctionType, static_cast<I16u>(0)> CatalogSizeValueProviderType;
 	typedef FieldSetter<MockRecordB, RecordTraits<MockRecordB>::CATALOG_SIZE, CatalogSizeValueProviderType> CatalogSizeFieldSetterType;
 
 	// typedefs for the 'category' field
@@ -47,8 +50,8 @@ public:
 	typedef ClusteredValueProvider<Enum, MockRecordB, TypePrFunctionType, TypeRangeProviderType> TypeValueProviderType;
 	typedef FieldSetter<MockRecordB, RecordTraits<MockRecordB>::TYPE, TypeValueProviderType> TypeFieldSetterType;
 
-    MockRecordBHydratorChain(OperationMode& opMode, RandomStream& random, GeneratorConfig& config) :
-        HydratorChain<MockRecordB>(opMode, random),
+    MockRecordBSetterChain(OperationMode& opMode, RandomStream& random, GeneratorConfig& config) :
+        SetterChain<MockRecordB>(opMode, random),
         // cardinality
         _sequenceCardinality(config.cardinality("mock_record_b")),
         // components for the 'catalog_size' field
@@ -69,7 +72,7 @@ public:
     {
     }
 
-    virtual ~MockRecordBHydratorChain()
+    virtual ~MockRecordBSetterChain()
     {
     }
 
@@ -80,7 +83,7 @@ public:
     {
         ensurePosition(recordPtr->genID());
 
-        MockRecordBHydratorChain* me = const_cast<MockRecordBHydratorChain*>(this);
+        MockRecordBSetterChain* me = const_cast<MockRecordBSetterChain*>(this);
 
         // apply setter chain
         me->_catalogSizeFieldSetter(recordPtr, me->_random);
@@ -133,4 +136,4 @@ protected:
 
 }  // namespace Myriad
 
-#endif /* MOCKRECORDBHYDRATORCHAIN_H_ */
+#endif /* MOCKRECORDBSETTERCHAIN_H_ */

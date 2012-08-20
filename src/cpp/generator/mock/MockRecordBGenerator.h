@@ -19,8 +19,8 @@
 #ifndef MOCKRECORDAGENERATOR_H_
 #define MOCKRECORDAGENERATOR_H_
 
-#include "generator/RandomSetGenerator.h"
-#include "generator/mock/MockRecordBHydratorChain.h"
+#include "generator/RandomSequenceGenerator.h"
+#include "generator/mock/MockRecordBSetterChain.h"
 #include "record/mock/MockRecordB.h"
 
 namespace Myriad {
@@ -29,29 +29,29 @@ namespace Myriad {
 // RecordGenerator specialization
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-class MockRecordBGenerator: public RandomSetGenerator<MockRecordB>
+class MockRecordBGenerator: public RandomSequenceGenerator<MockRecordB>
 {
 public:
 
     MockRecordBGenerator(const string& name, GeneratorConfig& config, NotificationCenter& notificationCenter) :
-        RandomSetGenerator<MockRecordB>(name, config, notificationCenter)
+        RandomSequenceGenerator<MockRecordB>(name, config, notificationCenter)
     {
     }
 
     void prepare(Stage stage, const GeneratorPool& pool)
     {
         // call generator implementation
-        RandomSetGenerator<MockRecordB>::prepare(stage, pool);
+        RandomSequenceGenerator<MockRecordB>::prepare(stage, pool);
 
         if (stage.name() == name())
         {
-            registerTask(new RandomSetDefaultGeneratingTask< MockRecordB > (*this, _config));
+            registerTask(new PartitionedSequenceIteratorTask< MockRecordB > (*this, _config));
         }
     }
 
-    MockRecordBHydratorChain hydratorChain(BaseHydratorChain::OperationMode opMode, RandomStream& random)
+    MockRecordBSetterChain setterChain(BaseSetterChain::OperationMode opMode, RandomStream& random)
     {
-        return MockRecordBHydratorChain(opMode, random, _config);
+        return MockRecordBSetterChain(opMode, random, _config);
     }
 };
 

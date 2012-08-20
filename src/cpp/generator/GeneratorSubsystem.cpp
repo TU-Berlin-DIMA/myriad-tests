@@ -6,19 +6,19 @@ using namespace Poco;
 namespace Myriad {
 
 // the initial stage ID should always be zero
-I32u RecordGenerator::Stage::NEXT_STAGE_ID = 0;
+I32u AbstractSequenceGenerator::Stage::NEXT_STAGE_ID = 0;
 
 // register the valid stages for the Myriad generator extension
-RecordGenerator::StageList initList()
+AbstractSequenceGenerator::StageList initList()
 {
-    RecordGenerator::StageList tmp;
+    AbstractSequenceGenerator::StageList tmp;
 
-    tmp.push_back(RecordGenerator::Stage("card"));
+    tmp.push_back(AbstractSequenceGenerator::Stage("card"));
 
     return tmp;
 }
 
-const RecordGenerator::StageList RecordGenerator::STAGES(initList());
+const AbstractSequenceGenerator::StageList AbstractSequenceGenerator::STAGES(initList());
 
 // register the record sequence generators
 void GeneratorSubsystem::registerGenerators()

@@ -81,7 +81,7 @@ public:
         MockRecordBGenerator mockRecordBGenerator("mock_record_b", generatorConfig, notificationCenter);
         mockRecordBGenerator.initialize();
         // MockRecordB sequence inspector
-        RandomSetInspector<MockRecordB> mockRecordBSequence(mockRecordBGenerator.inspector());
+        RandomSequenceInspector<MockRecordB> mockRecordBSequence(mockRecordBGenerator.inspector());
 
         MockRecordAMetaType recordMeta(4096);
         MockRecordAFactoryType recordFactory(recordMeta);

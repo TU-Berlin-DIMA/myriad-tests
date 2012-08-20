@@ -22,14 +22,12 @@
 #include "config/ObjectBuilderTest.h"
 #include "config/GeneratorConfigTest.h"
 #include "math/MathUtilitiesTest.h"
-#include "math/IntervalMapTest.h"
 #include "math/probability/CombinedPrFunctionTest.h"
 #include "math/probability/ProbabilityFunctionsTest.h"
 #include "math/random/CompoundEICGTest.h"
 #include "math/random/HashRandomStreamTest.h"
 #include "math/random/SurrogateKeyGeneratorTest.h"
 #include "record/RecordRangePredicateTest.h"
-#include "reflection/getter/ValueGetterTest.h"
 #include "runtime/predicate/EqualityPredicateTest.h"
 #include "runtime/provider/predicate/EqualityPredicateProviderTest.h"
 #include "runtime/provider/range/ConstRangeProviderTest.h"
@@ -67,7 +65,6 @@ int main(int argc, char **argv)
 
     /*
      * TODO: these tests need to be updated / removed
-    runner.addTest(IntervalMapTest::suite());
     runner.addTest(GeneratorConfigTest::suite());
      */
 
@@ -83,7 +80,6 @@ int main(int argc, char **argv)
 //    runner.addTest(ConditionalCombinedPrFunctionTest::suite()); //TODO: implement this test, reuse the old ConditionalQHistogramPrFunctionTest
     runner.addTest(ProbabilityFunctionsTest::suite()); //TODO: disable function output and add result verification code to this test suite
     // util
-//    runner.addTest(ValueGetterTest::suite()); // TODO: refactor value getter logic and update the unit test
 //    runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder
     // record
     runner.addTest(RecordRangePredicateTest::suite());

@@ -14,7 +14,7 @@ namespace Myriad {
 
 class MockRecordB;
 class MockRecordBGenerator;
-class MockRecordBHydratorChain;
+class MockRecordBSetterChain;
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 // record traits specialization
@@ -26,7 +26,7 @@ RecordTraits<MockRecordB>
 {
     typedef MockRecordBMeta MetaType;
     typedef MockRecordBGenerator GeneratorType;
-    typedef MockRecordBHydratorChain HydratorChainType;
+    typedef MockRecordBSetterChain SetterChainType;
     typedef RecordFactory<MockRecordB> FactoryType;
 	typedef RecordRangePredicate<MockRecordB> RangePredicateType;
 
@@ -184,23 +184,6 @@ struct RecordFieldTraits<RecordTraits<MockRecordB>::TYPE, MockRecordB>
 		return static_cast<FieldGetterType>(&MockRecordB::type);
 	}
 };
-
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-// serialize method specialization
-// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-template<> inline void OutputCollector<MockRecordB>::CollectorType::serialize(OutputCollector<MockRecordB>::CollectorType::StreamType& out, const MockRecordB& record)
-{
-    write(out, record.riskRating(), false);
-    out << '|';
-    write(out, record.category(), false);
-    out << '|';
-    write(out, record.type(), false);
-    out << '|';
-    write(out, record.catalogSize(), false);
-    out << '|';
-    out << '\n';
-}
 
 } // namespace Myriad
 

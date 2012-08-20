@@ -22,7 +22,6 @@
 #include "core/types.h"
 #include "config/GeneratorConfig.h"
 #include "generator/GeneratorPool.h"
-#include "math/DiscreteMap.h"
 #include "math/probability/ParetoPrFunction.h"
 
 #include <cppunit/TestCaller.h>

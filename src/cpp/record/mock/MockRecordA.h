@@ -31,7 +31,7 @@ namespace Myriad {
 
 class MockRecordA;
 class MockRecordAGenerator;
-class MockRecordAHydratorChain;
+class MockRecordASetterChain;
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 // mock record traits
@@ -44,7 +44,7 @@ struct RecordTraits<MockRecordA>
 {
 	typedef MockRecordAMeta MetaType;
     typedef MockRecordAGenerator GeneratorType;
-    typedef MockRecordAHydratorChain HydratorChainType;
+    typedef MockRecordASetterChain SetterChainType;
 	typedef RecordFactory<MockRecordA> FactoryType;
 	typedef RecordRangePredicate<MockRecordA> RangePredicateType;
 

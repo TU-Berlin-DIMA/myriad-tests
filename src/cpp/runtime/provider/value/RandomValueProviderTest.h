@@ -46,7 +46,7 @@ public:
     typedef CombinedPrFunction<I16u> PrFunctionType;
     typedef CombinedPrFunctionInput<I16u> PrFunctionInputType;
 
-    typedef RandomValueProvider<I16u, MockRecordA, PrFunctionType> MockField1ValueProvider;
+    typedef RandomValueProvider<I16u, MockRecordA, PrFunctionType, static_cast<I16u>(0)> MockField1ValueProvider;
     typedef FieldSetter<MockRecordA, RecordTraits<MockRecordA>::MOCK_FIELD_1, MockField1ValueProvider> MockField1Setter;
 
     void setUp()
