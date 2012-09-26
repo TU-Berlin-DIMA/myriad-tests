@@ -7,10 +7,10 @@
  * file that was distributed with this source code.
  */
 
-#ifndef SURROGATEKEYGENERATORTEST_H_
-#define SURROGATEKEYGENERATORTEST_H_
+#ifndef MULTIPLICATIVEGROUPTEST_H_
+#define MULTIPLICATIVEGROUPTEST_H_
 
-#include "math/random/SurrogateKeyGenerator.h"
+#include "math/algebra/MultiplicativeGroup.h"
 
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestFixture.h>
@@ -22,7 +22,7 @@ using namespace Poco;
 
 namespace Myriad {
 
-class SurrogateKeyGeneratorTest: public TestFixture
+class MultiplicativeGroupTest: public TestFixture
 {
 public:
 	void setUp()
@@ -52,7 +52,7 @@ public:
 	{
 		skGen.configure(100003);
 
-		SurrogateKeyGenerator::iterator it = skGen[0];
+		MultiplicativeGroup::iterator it = skGen[0];
 
 		I64u i = 0;
 		I64u x = 1;
@@ -72,11 +72,11 @@ public:
 	{
 		I64u N = 2343763; //171877;
 		I64u a = 44; //45;
-		SurrogateKeyGenerator skGen(N);
+		MultiplicativeGroup skGen(N);
 
 		// test postfix incremet it++
 		I64u i = 0;
-		SurrogateKeyGenerator::iterator it = skGen[i];
+		MultiplicativeGroup::iterator it = skGen[i];
 
 		do
 		{
@@ -94,7 +94,7 @@ public:
 		CPPUNIT_ASSERT(i == N-1);
 
 		I64u begin = 1234567, end = 1244567, j = begin;
-		for (SurrogateKeyGenerator::iterator it = skGen[begin]; it != skGen[end]; ++it)
+		for (MultiplicativeGroup::iterator it = skGen[begin]; it != skGen[end]; ++it)
 		{
 			I64u x = modexp(a, j, N);
 
@@ -112,7 +112,7 @@ public:
 		I64u N = 8832000017ULL;
 		skGen.configure(N);
 
-		SurrogateKeyGenerator::iterator it = skGen[1];
+		MultiplicativeGroup::iterator it = skGen[1];
 
 		I64u i = 1;
 		while (static_cast<I64u>(it) != 1)
@@ -137,20 +137,20 @@ public:
 
 	static Test *suite()
 	{
-		TestSuite* suite = new TestSuite("SurrogateKeyGeneratorTest");
-		suite->addTest(new TestCaller<SurrogateKeyGeneratorTest> ("testRandomAccess", &SurrogateKeyGeneratorTest::testRandomAccess));
-		suite->addTest(new TestCaller<SurrogateKeyGeneratorTest> ("testLargeIntervals", &SurrogateKeyGeneratorTest::testLargeIntervals));
-		suite->addTest(new TestCaller<SurrogateKeyGeneratorTest> ("testIterator", &SurrogateKeyGeneratorTest::testIterator));
-//		suite->addTest(new TestCaller<SurrogateKeyGeneratorTest> ("testLargeIntegers", &SurrogateKeyGeneratorTest::testLargeIntegers));
+		TestSuite* suite = new TestSuite("MultiplicativeGroupTest");
+		suite->addTest(new TestCaller<MultiplicativeGroupTest> ("testRandomAccess", &MultiplicativeGroupTest::testRandomAccess));
+		suite->addTest(new TestCaller<MultiplicativeGroupTest> ("testLargeIntervals", &MultiplicativeGroupTest::testLargeIntervals));
+		suite->addTest(new TestCaller<MultiplicativeGroupTest> ("testIterator", &MultiplicativeGroupTest::testIterator));
+//		suite->addTest(new TestCaller<MultiplicativeGroupTest> ("testLargeIntegers", &MultiplicativeGroupTest::testLargeIntegers));
 		return suite;
 	}
 
 private:
 
 	I64u N;
-	SurrogateKeyGenerator skGen;
+	MultiplicativeGroup skGen;
 };
 
 } // namespace Myriad
 
-#endif /* SURROGATEKEYGENERATORTEST_H_ */
+#endif /* MULTIPLICATIVEGROUPTEST_H_ */
