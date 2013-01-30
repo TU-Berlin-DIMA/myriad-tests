@@ -19,7 +19,7 @@ public:
 	{
 	}
 
-    MockRecordBMeta(const map<string, vector<string> >& enumSets, const I64u cardinality = 0) :
+    MockRecordBMeta(const EnumSetPool& enumSets, const I64u cardinality = 0) :
 		RecordMeta<MockRecordB>(cardinality) // FIXME: mandatory cardinality
 	{
 	}

@@ -42,9 +42,9 @@ public:
     typedef RecordTraits<MockRecordA> RecordTraitsType;
     typedef RecordTraitsType::MetaType RecordMetaType;
     typedef RecordTraitsType::FactoryType RecordFactoryType;
-    typedef ContextFieldValueProvider<I16u, MockRecordA, RecordTraitsType::MOCK_FIELD_1> MockField1ValueProvider;
-    typedef ContextFieldValueProvider<I64u, MockRecordA, RecordTraitsType::MOCK_FIELD_2> MockField2ValueProvider;
-    typedef ContextFieldValueProvider<Decimal, MockRecordA, RecordTraitsType::MOCK_FIELD_3> MockField3ValueProvider;
+    typedef ContextFieldValueProvider<I16u, MockRecordA, RecordTraitsType::MOCK_FIELD_1, 0, 0> MockField1ValueProvider;
+    typedef ContextFieldValueProvider<I64u, MockRecordA, RecordTraitsType::MOCK_FIELD_2, 0, 0> MockField2ValueProvider;
+    typedef ContextFieldValueProvider<Decimal, MockRecordA, RecordTraitsType::MOCK_FIELD_3, 0, 0> MockField3ValueProvider;
     typedef FieldSetter<MockRecordA, RecordTraitsType::MOCK_FIELD_4, MockField1ValueProvider> MockField4Setter;
 
     void setUp()

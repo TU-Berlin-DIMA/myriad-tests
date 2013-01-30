@@ -45,7 +45,7 @@ public:
     typedef MockRecordBTraitsType::MetaType MockRecordBMetaType;
     typedef MockRecordBTraitsType::FactoryType MockRecordBFactoryType;
 
-    typedef ContextFieldValueProvider<I16u, MockRecordB, MockRecordBTraitsType::RISK_RATING> PredicateMockField1ValueProviderType;
+    typedef ContextFieldValueProvider<I16u, MockRecordB, MockRecordBTraitsType::RISK_RATING, 0, 0> PredicateMockField1ValueProviderType;
     typedef ConstValueProvider<Decimal, MockRecordB> PredicateMockField3ValueProviderType;
 
     typedef EqualityPredicate<MockRecordA> EqualityPredicateType;

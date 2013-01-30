@@ -45,7 +45,7 @@ public:
     typedef RecordTraits<MockRecordB> MockRecordBTraitsType;
 
     typedef ConstValueProvider<I32u, MockRecordA> MaxChildrenValueProvider;
-    typedef ContextFieldValueProvider<I32u, MockRecordB, MockRecordBTraitsType::CATALOG_SIZE> ChildrenCountValueProviderType;
+    typedef ContextFieldValueProvider<I32u, MockRecordB, MockRecordBTraitsType::CATALOG_SIZE, 0, 0> ChildrenCountValueProviderType;
     typedef ClusteredReferenceProvider<MockRecordB, MockRecordA, ChildrenCountValueProviderType, MockRecordATraitsType::POSITION> MockRecordBReferenceProviderType;
 
     typedef MockRecordATraitsType::MetaType MockRecordAMetaType;
