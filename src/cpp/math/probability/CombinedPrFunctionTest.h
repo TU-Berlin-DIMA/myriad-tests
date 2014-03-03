@@ -19,6 +19,7 @@
 #ifndef COMBINEDPRFUNCTIONTEST_H_
 #define COMBINEDPRFUNCTIONTEST_H_
 
+#include <unistd.h>
 #include "math/probability/CombinedPrFunction.h"
 #include "math/probability/util/CombinedPrFunctionInput.h"
 

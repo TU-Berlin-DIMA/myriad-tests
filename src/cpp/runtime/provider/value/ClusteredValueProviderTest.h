@@ -24,8 +24,6 @@
 #include "runtime/provider/value/ClusteredValueProvider.h"
 #include "runtime/provider/value/ContextFieldValueProvider.h"
 
-#include <bits/stream_iterator.h>
-
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestSuite.h>
