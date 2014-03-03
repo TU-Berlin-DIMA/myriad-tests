@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(myriad-tests)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
 include_directories("src/cpp" "vendor/myriad-toolkit/src/cpp")
 
