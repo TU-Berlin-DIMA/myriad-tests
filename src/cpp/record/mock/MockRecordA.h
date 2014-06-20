@@ -19,7 +19,7 @@
 #ifndef MOCKRECORDA_H_
 #define MOCKRECORDA_H_
 
-#include "record/Record.h"
+#include "record/AbstractRecord.h"
 #include "record/mock/MockRecordAMeta.h"
 #include "record/mock/MockRecordB.h"
 
@@ -55,7 +55,7 @@ struct RecordTraits<MockRecordA>
 // mock record
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-class MockRecordA : public Record
+class MockRecordA : public AbstractRecord
 {
 public:
 
@@ -157,8 +157,8 @@ struct RecordFieldTraits<RecordTraits<MockRecordA>::MOCK_FIELD_1, MockRecordA>
 {
     typedef I16u FieldType;
     // record field getter / setter types
-    typedef typename MethodTraits<MockRecordA, FieldType>::Setter FieldSetterType;
-    typedef typename MethodTraits<MockRecordA, FieldType>::Getter FieldGetterType;
+    typedef typename MethodTraits<MockRecordA, FieldType>::RefSetter FieldSetterType;
+    typedef typename MethodTraits<MockRecordA, FieldType>::RefGetter FieldGetterType;
 
     static inline FieldSetterType setter()
     {
@@ -177,8 +177,8 @@ struct RecordFieldTraits<RecordTraits<MockRecordA>::MOCK_FIELD_2, MockRecordA>
 {
     typedef I64u FieldType;
     // record field getter / setter types
-    typedef typename MethodTraits<MockRecordA, FieldType>::Setter FieldSetterType;
-    typedef typename MethodTraits<MockRecordA, FieldType>::Getter FieldGetterType;
+    typedef typename MethodTraits<MockRecordA, FieldType>::RefSetter FieldSetterType;
+    typedef typename MethodTraits<MockRecordA, FieldType>::RefGetter FieldGetterType;
 
     static inline FieldSetterType setter()
     {
@@ -197,8 +197,8 @@ struct RecordFieldTraits<RecordTraits<MockRecordA>::MOCK_FIELD_3, MockRecordA>
 {
     typedef Decimal FieldType;
     // record field getter / setter types
-    typedef typename MethodTraits<MockRecordA, FieldType>::Setter FieldSetterType;
-    typedef typename MethodTraits<MockRecordA, FieldType>::Getter FieldGetterType;
+    typedef typename MethodTraits<MockRecordA, FieldType>::RefSetter FieldSetterType;
+    typedef typename MethodTraits<MockRecordA, FieldType>::RefGetter FieldGetterType;
 
     static inline FieldSetterType setter()
     {
@@ -217,8 +217,8 @@ struct RecordFieldTraits<RecordTraits<MockRecordA>::MOCK_FIELD_4, MockRecordA>
 {
     typedef I16u FieldType;
     // record field getter / setter types
-    typedef typename MethodTraits<MockRecordA, FieldType>::Setter FieldSetterType;
-    typedef typename MethodTraits<MockRecordA, FieldType>::Getter FieldGetterType;
+    typedef typename MethodTraits<MockRecordA, FieldType>::RefSetter FieldSetterType;
+    typedef typename MethodTraits<MockRecordA, FieldType>::RefGetter FieldGetterType;
 
     static inline FieldSetterType setter()
     {
@@ -237,8 +237,8 @@ struct RecordFieldTraits<RecordTraits<MockRecordA>::POSITION, MockRecordA>
 {
     typedef I32u FieldType;
     // record field getter / setter types
-    typedef typename MethodTraits<MockRecordA, FieldType>::Setter FieldSetterType;
-    typedef typename MethodTraits<MockRecordA, FieldType>::Getter FieldGetterType;
+    typedef typename MethodTraits<MockRecordA, FieldType>::RefSetter FieldSetterType;
+    typedef typename MethodTraits<MockRecordA, FieldType>::RefGetter FieldGetterType;
 
     static inline FieldSetterType setter()
     {
@@ -257,8 +257,8 @@ struct RecordFieldTraits<RecordTraits<MockRecordA>::MOCK_RECORD_B, MockRecordA>
 {
     typedef MockRecordB FieldType;
     // record field getter / setter types
-    typedef typename MethodTraits<MockRecordA, AutoPtr<MockRecordB> >::Setter FieldSetterType;
-    typedef typename MethodTraits<MockRecordA, AutoPtr<MockRecordB> >::Getter FieldGetterType;
+    typedef typename MethodTraits<MockRecordA, AutoPtr<MockRecordB> >::RefSetter FieldSetterType;
+    typedef typename MethodTraits<MockRecordA, AutoPtr<MockRecordB> >::RefGetter FieldGetterType;
 
     static inline FieldSetterType setter()
     {

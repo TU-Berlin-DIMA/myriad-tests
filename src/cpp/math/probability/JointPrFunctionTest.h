@@ -50,7 +50,10 @@ public:
 		size_t size = 512;
 		char buffer[size];
 		_basePath = "/home/mho/TU-Berlin-DIMA/myriad-tests-project"; // getcwd(buffer);
+		// FIXME use stream instead of local distribution file
 		_path = _basePath + "/../test/protein_aminoacid.distribution";
+		_path2 = _basePath + "/../test/q2d_hist_4.distribution";
+
 	}
 
 	~JointPrFunctionTest() {
@@ -157,25 +160,55 @@ public:
 		I64u binID[] = {0, 0, 0, 1, 1, 1, 3, 4}; // i.e. bin0 is hit by [0..2], bin1 by [3..5], bin2/5 are empty
 		I64u tID[] = {0,1,2,0,1,2,0,0}; // expected, normalized tuple IDs
 		set<I64u> s;
-		s.insert(pr.permuteTupleID(0, 0));
-		s.insert(pr.permuteTupleID(1,0));
-		s.insert(pr.permuteTupleID(2,0));
-		cout << endl;
-		for (set<I64u>::iterator it = s.begin(); it != s.end(); ++it)
-			cout << "set contains " << *it << endl;
+		// check binID = 0,1
+		for (I64u bin = 0; bin < 2; ++bin){
+			s.clear();
+			for (I64u t = 0; t < 3; ++t)
+				s.insert(pr.permuteTupleID(t,bin)); // tupleID, binID
+			// check length
+			CPPUNIT_ASSERT_EQUAL( s.size(), 3UL);
+			// check for content [0,2]
+			for (I64u elem = 0; elem < 3; ++elem)
+				CPPUNIT_ASSERT(s.find(elem) != s.end());
 
+			cout << "set elements are " << endl;
+			for (set<I64u>::iterator it = s.begin(); it != s.end(); ++it)
+				cout << *it << endl;
+		}
+		// check binID = 3
+		cout << "pr.permuteTupleID(0,3) = " << pr.permuteTupleID(0,3) << endl;
+		s.clear();
+		s.insert(0);
+		s.insert(1);
+		s.insert(2);
+		CPPUNIT_ASSERT(s.find(pr.permuteTupleID(0,3)) != s.end());
+		// check binID = 4
+		CPPUNIT_ASSERT(s.find(pr.permuteTupleID(0,4)) != s.end());
 	}
-	/*
-	void testScalar2Tuple(){}
-*/
+
+	void testScalar2Tuple(){
+		JointPrFunction<MyriadTuple<I64, I64> > pr(_path);
+		I64 b, t;
+		for (I64u binID = 0; binID < 6; ++binID){
+			for (I64u tID = 0; tID < 3; ++tID){
+				MyriadTuple<I64, I64> m(pr.scalar2Tuple(tID, binID));
+				b = binID/2;
+				t = tID+(binID %2)*3;
+				CPPUNIT_ASSERT_EQUAL(b, m.getFirst());
+				CPPUNIT_ASSERT_EQUAL(t, m.getSecond());
+			}
+		}
+	}
+
 
 	static Test *suite()
 	{
 		TestSuite* suite = new TestSuite("JointPrFunctionTest");
-		//suite->addTest(new TestCaller<JointPrFunctionTest> ("testInitialize", &JointPrFunctionTest<T>::testInitialize));
-		//suite->addTest(new TestCaller<JointPrFunctionTest> ("testFindBucket", &JointPrFunctionTest<T>::testFindBucket));
-		//suite->addTest(new TestCaller<JointPrFunctionTest> ("testNormalizeTupleID", &JointPrFunctionTest<T>::testNormalizeTupleID));
+		suite->addTest(new TestCaller<JointPrFunctionTest> ("testInitialize", &JointPrFunctionTest<T>::testInitialize));
+		suite->addTest(new TestCaller<JointPrFunctionTest> ("testFindBucket", &JointPrFunctionTest<T>::testFindBucket));
+		suite->addTest(new TestCaller<JointPrFunctionTest> ("testNormalizeTupleID", &JointPrFunctionTest<T>::testNormalizeTupleID));
 		suite->addTest(new TestCaller<JointPrFunctionTest> ("testPermuteTupleID", &JointPrFunctionTest<T>::testPermuteTupleID));
+		suite->addTest(new TestCaller<JointPrFunctionTest> ("testScalar2Tuple", &JointPrFunctionTest<T>::testScalar2Tuple));
 
 
 		return suite;
@@ -185,6 +218,8 @@ private:
 
 	string _basePath;
 	string _path;
+	string _path2;
+
     I64u _sampleSize;
 	//I64u* _binID;
 	//I64u* _tID;

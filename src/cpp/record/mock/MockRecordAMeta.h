@@ -3,7 +3,7 @@
 #ifndef MOCKRECORDAMETA_H_
 #define MOCKRECORDAMETA_H_
 
-#include "record/Record.h"
+#include "record/AbstractRecord.h"
 
 using namespace Myriad;
 

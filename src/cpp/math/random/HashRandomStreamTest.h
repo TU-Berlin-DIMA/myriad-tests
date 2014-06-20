@@ -41,11 +41,21 @@ public:
 		UInt64 s1[1] = { 0ULL };
 		CPPUNIT_ASSERT(random.seed() == HashRandomStream::Seed(s1));
 
-		random.nextSubstream();
+		///
+		std::cout << "HashRandomStream.seed: " << std::endl;
+		random.dumpState();
+		///
 
+		random.nextSubstream();
+		///
+		std::cout << "HashRandomStream.seed().nextSubstream: " << std::endl;
+		random.dumpState();
+		///
 		for (int i = 0; i < 3; i++)
 		{
 			random.next();
+			std::cout << "HashRandomStream.seed().nextSubstream.next: " << std::endl;
+			random.dumpState();
 		}
 
 		UInt64 s2[1] = { 281474976710659ULL };

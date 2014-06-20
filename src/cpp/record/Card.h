@@ -19,7 +19,7 @@
 #ifndef CARD_H_
 #define CARD_H_
 
-#include "record/Record.h"
+#include "record/AbstractRecord.h"
 
 namespace Myriad {
 

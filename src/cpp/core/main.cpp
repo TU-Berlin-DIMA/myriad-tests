@@ -19,12 +19,16 @@
 #include "core/constants.h"
 #include "core/Frontend.h"
 #include "core/types/MyriadDateTest.h"
+#include "core/types/MyriadTupleTest.h"
 #include "config/ObjectBuilderTest.h"
 #include "config/GeneratorConfigTest.h"
 #include "math/MathUtilitiesTest.h"
+#include "math/IntervalTupleTest.h"
 #include "math/probability/CombinedPrFunctionTest.h"
+#include "math/probability/JointPrFunctionTest.h"
 #include "math/probability/ProbabilityFunctionsTest.h"
 #include "math/algebra/MultiplicativeGroupTest.h"
+#include "math/random/EICGTest.h"
 #include "math/random/CompoundEICGTest.h"
 #include "math/random/HashRandomStreamTest.h"
 #include "record/RecordRangePredicateTest.h"
@@ -69,37 +73,48 @@ int main(int argc, char **argv)
      */
 
     // core/types
-    runner.addTest(MyriadDateTest::suite());
+//    runner.addTest(MyriadDateTest::suite());
+//    runner.addTest(MyriadTupleTest::suite());
+    //    runner.addTest(IntervalTupleTest::suite());
+    // math/algebra
+    runner.addTest(MultiplicativeGroupTest::suite());
+
     // math/random
-    runner.addTest(CompoundEICGTest::suite());
-    runner.addTest(HashRandomStreamTest::suite());
+//    runner.addTest(EICGTest::suite());
+//    runner.addTest(CompoundEICGTest::suite());
+//    runner.addTest(HashRandomStreamTest::suite());
     // math/probability
-    runner.addTest(MathUtilitiesTest::suite());
-    runner.addTest(CombinedPrFunctionTest<I64u>::suite());
-    runner.addTest(CombinedPrFunctionTest<Date>::suite());
-//    runner.addTest(ConditionalCombinedPrFunctionTest::suite()); //TODO: implement this test, reuse the old ConditionalQHistogramPrFunctionTest
-    runner.addTest(ProbabilityFunctionsTest::suite()); //TODO: disable function output and add result verification code to this test suite
-    // util
-//    runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder
-    // record
-    runner.addTest(RecordRangePredicateTest::suite());
-    // runtime/predicate
-    runner.addTest(EqualityPredicateTest::suite());
-    // runtime/provider/predicate
-    runner.addTest(EqualityPredicateProviderTest::suite());
-    // runtime/provider/range
-    runner.addTest(ConstRangeProviderTest::suite());
-    runner.addTest(ContextFieldRangeProviderTest::suite());
+//    runner.addTest(MathUtilitiesTest::suite());
+//    runner.addTest(CombinedPrFunctionTest<I64u>::suite());
+//    runner.addTest(CombinedPrFunctionTest<Date>::suite());
+   runner.addTest(JointPrFunctionTest<MyriadTuple<I64u, I64u> >::suite());
+////    runner.addTest(ConditionalCombinedPrFunctionTest::suite()); //TODO: implement this test, reuse the old ConditionalQHistogramPrFunctionTest
+//    runner.addTest(ProbabilityFunctionsTest::suite()); //TODO: disable function output and add result verification code to this test suite
+//
+//    // util
+////    runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder
+//    // record
+//    runner.addTest(RecordRangePredicateTest::suite());
+//    // runtime/predicate
+//    runner.addTest(EqualityPredicateTest::suite());
+//    // runtime/provider/predicate
+//    runner.addTest(EqualityPredicateProviderTest::suite());
+//    // runtime/provider/range
+//    runner.addTest(ConstRangeProviderTest::suite());
+//    runner.addTest(ContextFieldRangeProviderTest::suite());
+
+
     // runtime/provider/reference
-    runner.addTest(ClusteredReferenceProviderTest::suite());
-    runner.addTest(RandomReferenceProviderTest::suite());
+    //runner.addTest(ClusteredReferenceProviderTest::suite());
+//    runner.addTest(RandomReferenceProviderTest::suite());
+
     // runtime/provider/value
-    runner.addTest(CallbackValueProviderTest::suite());
+    /*runner.addTest(CallbackValueProviderTest::suite());
     runner.addTest(ClusteredValueProviderTest::suite());
     runner.addTest(ConstValueProviderTest::suite());
     runner.addTest(ContextFieldValueProviderTest::suite());
     runner.addTest(RandomValueProviderTest::suite());
-
+*/
     runner.run();
 
     return 0;

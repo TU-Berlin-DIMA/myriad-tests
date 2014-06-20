@@ -19,7 +19,7 @@
 #ifndef RECORDY_H_
 #define RECORDY_H_
 
-#include "record/Record.h"
+#include "record/AbstractRecord.h"
 #include "record/RecordX.h"
 
 namespace Myriad {

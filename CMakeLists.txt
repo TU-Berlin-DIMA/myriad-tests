@@ -3,6 +3,8 @@ project(myriad-tests)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
+set(CMAKE_CXX_FLAGS "-std=c++11")
+
 include_directories("src/cpp" "vendor/myriad-toolkit/src/cpp")
 
 file(GLOB_RECURSE TEST_SOURCES src/cpp/*.h src/cpp/*.cpp)

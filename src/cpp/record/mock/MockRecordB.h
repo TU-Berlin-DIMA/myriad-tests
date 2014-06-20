@@ -3,7 +3,7 @@
 #ifndef MOCKRECORDB_H_
 #define MOCKRECORDB_H_
 
-#include "record/Record.h"
+#include "record/AbstractRecord.h"
 #include "record/mock/MockRecordBMeta.h"
 
 namespace Myriad {
@@ -37,7 +37,7 @@ RecordTraits<MockRecordB>
 // record type
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-class MockRecordB: public Record
+class MockRecordB: public AbstractRecord
 {
 public:
 
@@ -114,8 +114,8 @@ template<>
 struct RecordFieldTraits<RecordTraits<MockRecordB>::CATALOG_SIZE, MockRecordB>
 {
 	typedef I32u FieldType;
-	typedef typename MethodTraits<MockRecordB, FieldType>::Getter FieldGetterType;
-	typedef typename MethodTraits<MockRecordB, FieldType>::Setter FieldSetterType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::RefGetter FieldGetterType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::RefSetter FieldSetterType;
 
 	static FieldSetterType setter()
 	{
@@ -133,8 +133,8 @@ template<>
 struct RecordFieldTraits<RecordTraits<MockRecordB>::RISK_RATING, MockRecordB>
 {
 	typedef I16u FieldType;
-	typedef typename MethodTraits<MockRecordB, FieldType>::Getter FieldGetterType;
-	typedef typename MethodTraits<MockRecordB, FieldType>::Setter FieldSetterType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::RefGetter FieldGetterType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::RefSetter FieldSetterType;
 
 	static FieldSetterType setter()
 	{
@@ -152,8 +152,8 @@ template<>
 struct RecordFieldTraits<RecordTraits<MockRecordB>::CATEGORY, MockRecordB>
 {
 	typedef Enum FieldType;
-	typedef typename MethodTraits<MockRecordB, FieldType>::Getter FieldGetterType;
-	typedef typename MethodTraits<MockRecordB, FieldType>::Setter FieldSetterType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::RefGetter FieldGetterType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::RefSetter FieldSetterType;
 
 	static FieldSetterType setter()
 	{
@@ -171,8 +171,8 @@ template<>
 struct RecordFieldTraits<RecordTraits<MockRecordB>::TYPE, MockRecordB>
 {
 	typedef Enum FieldType;
-	typedef typename MethodTraits<MockRecordB, FieldType>::Getter FieldGetterType;
-	typedef typename MethodTraits<MockRecordB, FieldType>::Setter FieldSetterType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::RefGetter FieldGetterType;
+	typedef typename MethodTraits<MockRecordB, FieldType>::RefSetter FieldSetterType;
 
 	static FieldSetterType setter()
 	{

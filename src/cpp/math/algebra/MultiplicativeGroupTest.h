@@ -135,12 +135,38 @@ public:
 		CPPUNIT_ASSERT(i == N-1);
 	}
 
+	void testSmallIntegers()
+	{
+//		I64u N = 3;
+//		skGen.configure(N);
+//
+//		for (unsigned int i = 0; i < N; ++i)
+//			std::cout << "skGen_3[" << i << "] = " << skGen[i] << endl;
+
+
+		for (I64u N = 1; N < 14; ++N){
+			skGen.configure(N);
+			cout << endl << "N = " << N  << ", gen = "<< endl;
+			for (I64u pos = 0; pos < N; ++pos)
+				std::cout << skGen[pos] << ", ";
+		}
+
+	}
+
+	// test some special values emerging in e.g. q2d_hist_20, which may cause non-termination of MG
+	void testSDSS(){
+		I64u values[] = {4967684, 7511548, 7561360, 7607585, 8081424, 9693052, 9979936, 10591086};
+		//for (I64u val )
+	}
+
 	static Test *suite()
 	{
 		TestSuite* suite = new TestSuite("MultiplicativeGroupTest");
-		suite->addTest(new TestCaller<MultiplicativeGroupTest> ("testRandomAccess", &MultiplicativeGroupTest::testRandomAccess));
-		suite->addTest(new TestCaller<MultiplicativeGroupTest> ("testLargeIntervals", &MultiplicativeGroupTest::testLargeIntervals));
-		suite->addTest(new TestCaller<MultiplicativeGroupTest> ("testIterator", &MultiplicativeGroupTest::testIterator));
+	//	suite->addTest(new TestCaller<MultiplicativeGroupTest> ("testRandomAccess", &MultiplicativeGroupTest::testRandomAccess));
+		//	suite->addTest(new TestCaller<MultiplicativeGroupTest> ("testLargeIntervals", &MultiplicativeGroupTest::testLargeIntervals));
+		//suite->addTest(new TestCaller<MultiplicativeGroupTest> ("testIterator", &MultiplicativeGroupTest::testIterator));
+		suite->addTest(new TestCaller<MultiplicativeGroupTest> ("testSmallIntegers", &MultiplicativeGroupTest::testSmallIntegers));
+
 //		suite->addTest(new TestCaller<MultiplicativeGroupTest> ("testLargeIntegers", &MultiplicativeGroupTest::testLargeIntegers));
 		return suite;
 	}
