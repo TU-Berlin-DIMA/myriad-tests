@@ -91,7 +91,7 @@ public:
 
 	/* Test for reading joint probability distribution */
 	void testInitialize(){
-		JointPrFunction<MyriadTuple<I64, I64> > pr(_path);
+		JointPrFunction<MyriadTuple<I64, I64> > pr("", _path);
 		// file protein_aminoacid.distribution
 		I32 numberOfBuckets = 6;
 		// test number of buckets correct
@@ -133,7 +133,7 @@ public:
 	}
 
 	void testFindBucket(){
-		JointPrFunction<MyriadTuple<I64, I64> > pr(_path);
+		JointPrFunction<MyriadTuple<I64, I64> > pr("", _path);
 		I64u binID[] = {0, 0, 0, 1, 1, 1, 3, 4}; // i.e. bin0 is hit by [0..2], bin1 by [3..5], bin2/5 are empty
 		for (I64u i = 0; i < this->_sampleSize; ++i){
 			//cout << "\nfindBucket[" <<i<<"] = " << pr.findBucket(i) << endl;
@@ -143,12 +143,12 @@ public:
 
 	// test for GenID normalization, calls findBucket
 	void testNormalizeTupleID(){
-		JointPrFunction<MyriadTuple<I64, I64> > pr(_path);
+		JointPrFunction<MyriadTuple<I64, I64> > pr("", _path);
 		I64u binID[] = {0, 0, 0, 1, 1, 1, 3, 4}; // i.e. bin0 is hit by [0..2], bin1 by [3..5], bin2/5 are empty
 		I64u tID[] = {0,1,2,0,1,2,0,0}; // expected, normalized tuple IDs
 		for (I64u i = 0; i < _sampleSize; ++i){
 			I64u t = pr.normalizeTupleID(i, binID[i]);
-			CPPUNIT_ASSERT_EQUAL( pr.normalizeTupleID(i, binID[i]), tID[i] );
+			CPPUNIT_ASSERT_EQUAL(tID[i], t );
 		}
 	}
 
@@ -156,7 +156,7 @@ public:
 	// activate MultiplicativeGroupTest.h, too
 	void testPermuteTupleID(){
 		cout << "entered testPermuteTupleID" << endl;
-		JointPrFunction<MyriadTuple<I64, I64> > pr(_path);
+		JointPrFunction<MyriadTuple<I64, I64> > pr("", _path);
 		I64u binID[] = {0, 0, 0, 1, 1, 1, 3, 4}; // i.e. bin0 is hit by [0..2], bin1 by [3..5], bin2/5 are empty
 		I64u tID[] = {0,1,2,0,1,2,0,0}; // expected, normalized tuple IDs
 		set<I64u> s;
@@ -187,7 +187,7 @@ public:
 	}
 
 	void testScalar2Tuple(){
-		JointPrFunction<MyriadTuple<I64, I64> > pr(_path);
+		JointPrFunction<MyriadTuple<I64, I64> > pr("", this->_path);
 		I64 b, t;
 		for (I64u binID = 0; binID < 6; ++binID){
 			for (I64u tID = 0; tID < 3; ++tID){
@@ -200,16 +200,114 @@ public:
 		}
 	}
 
+	void testSDSS_initialize(){
+		JointPrFunction<MyriadTuple<I64u, I64u> > pr("", _path2);
+		// file q2d_hist_4.distribution
+		I32 numberOfBuckets = 16;
+		// test number of buckets correct
+		cout << "pr.numBin = " << pr._numberOfBuckets << ", expected " << numberOfBuckets << endl;
+		CPPUNIT_ASSERT_EQUAL(numberOfBuckets, pr._numberOfBuckets);
+		Decimal _bucketProbabilities[] = {0.0623501, 0.0626747, 0.0623501, 0.0623501, 0.0626747, 0.063001, 0.0626747, 0.0626747, 0.0623501, 0.0626747, 0.0623501, 0.0623501, 0.0623501, 0.0626747, 0.0623501, 0.0623501};
+		I64 min_ref[] = {14534925868, 14534925868, 14545516954,14545516954, 14545516954, 14545516954, 14555496890, 14555496890, 14555496890, 14555496890, 14560464574, 14560464574, 14560464574, 14560464574, 17019745, 26712797, 34320382, 42401806, 17019745, 26712797, 34320382, 42401806, 17019745, 26712797, 34320382, 42401806, 17019745, 26712797, 34320382, 42401806};
+		I64 max_ref[] = {14545516954, 14545516954, 14545516954, 14545516954, 14555496890, 14555496890, 14555496890, 14555496890, 14560464574, 14560464574, 14560464574, 14560464574, 14568025934, 14568025934, 14568025934, 14568025934};
+
+//		I64 min_ref[] = {1, 1, 2, 2, 3, 3, 1,4,1,4,1,4};
+//		I64 max_ref[] = {2,2,3,3,4,4,  4,7,4,7,4,7};
+//										, ), [, 26712797)]}
+//		p(X) = 0.0626747 for X = { x in [[, ), [, 34320382)]}
+//		p(X) = 0.0623501 for X = { x in [[, ), [, 42401806)]}
+//		p(X) = 0.0623501 for X = { x in [[, ), [, 49913354)]}
+//		p(X) = 0.0626747 for X = { x in [[, ), [, 26712797)]}
+//		p(X) = 0.063001 for X = { x in [[, ), [, 34320382)]}
+//		p(X) = 0.0626747 for X = { x in [[, ), [, 42401806)]}
+//		p(X) = 0.0626747 for X = { x in [[, ), [, 49913354)]}
+//		p(X) = 0.0623501 for X = { x in [[, ), [, 26712797)]}
+//		p(X) = 0.0626747 for X = { x in [[, ), [, 34320382)]}
+//		p(X) = 0.0623501 for X = { x in [[, ), [, 42401806)]}
+//		p(X) = 0.0623501 for X = { x in [[, ), [, 49913354)]}
+//		p(X) = 0.0623501 for X = { x in [[, ), [, 26712797)]}
+//		p(X) = 0.0626747 for X = { x in [[, ), [, 34320382)]}
+//		p(X) = 0.0623501 for X = { x in [[, ), [, 42401806)]}
+//		p(X) = 0.0623501 for X = { x in [[, ), [, 49913354)]}
+	}
+
+	void testSDSS_findBucket(){
+		JointPrFunction<MyriadTuple<I64u, I64u> > pr("", _path2);
+		I64u sampleSize =  304089172;
+		I64u genID[] = {87099048, 283843523, 238752542, 161246917, 194191055, 133212761, 120149163, 111707042, 129314632, 292427477, 277373905, 112934846, 134133339, 175190346, 190252543, 220362731, 142978894, 148823852, 19937566, 0, 87099048};
+		I64u binID[] = {4, 14, 12,  8, 10, 6, 6, 5, 6, 15, 14, 5, 7,  9,   9,  11,   7,   7,   1,   0,   4};
+		pr.setSampleSize(sampleSize);
+		I64u rangeMap_304089172[] = {18959990, 38018688, 56978678, 75938668, 94997366, 114155288, 133213986, 152272683, 171232674, 190291371, 209251361, 228211352, 247171342, 266230040, 285190030, 304150020};
+		for (unsigned int i = 0; i < sizeof(genID)/sizeof(I64u); ++i)
+			CPPUNIT_ASSERT_EQUAL(binID[i], pr.findBucket(genID[i]));
+	}
+
+	// test for GenID normalization, calls findBucket
+	void testSDSS_normalizeTupleID(){
+		JointPrFunction<MyriadTuple<I64u, I64u> > pr("", _path2);
+		I64u sampleSize =  304089172;
+		I64u genID[] = {87099048, 283843523, 238752542, 161246917, 194191055, 133212761, 120149163, 111707042, 129314632, 292427477, 277373905, 112934846, 134133339, 175190346, 190252543, 220362731, 142978894, 148823852, 19937566, 0, 87099048};
+		I64u binID[] = {4, 14, 12,  8, 10, 6, 6, 5, 6, 15, 14, 5, 7,  9,   9,  11,   7,   7,   1,   0,   4};
+		pr.setSampleSize(sampleSize);
+		I64u rangeMap_304089172[] = {18959990, 38018688, 56978678, 75938668, 94997366, 114155288, 133213986, 152272683, 171232674, 190291371, 209251361, 228211352, 247171342, 266230040, 285190030, 304150020};
+		I64u t, t_ref;
+		for (unsigned int i = 0; i < sizeof(genID)/sizeof(I64u); ++i){
+			t = pr.normalizeTupleID(genID[i], binID[i]);
+			cout << "hier" << endl;
+			t_ref = (binID[i] == 0) ? genID[i]: genID[i] - rangeMap_304089172[binID[i]-1];
+			cout << "normalized t = " << t << ", t_ref = " << t_ref << endl;
+			CPPUNIT_ASSERT_EQUAL(t_ref, t);
+		}
+	}
+
+	void testSDSS_permuteTupleID(){
+		JointPrFunction<MyriadTuple<I64u, I64u> > pr("", _path2);
+		I64u sampleSize =  304089172;
+		I64u genID[] = {87099048, 283843523, 238752542, 161246917, 194191055, 133212761, 120149163, 111707042, 129314632, 292427477, 277373905, 112934846, 134133339, 175190346, 190252543, 220362731, 142978894, 148823852, 19937566, 0, 87099048};
+		I64u binID[] = {4, 14, 12,  8, 10, 6, 6, 5, 6, 15, 14, 5, 7,  9,   9,  11,   7,   7,   1,   0,   4};
+		I64u rangeMap_304089172[] = {18959990, 38018688, 56978678, 75938668, 94997366, 114155288, 133213986, 152272683, 171232674, 190291371, 209251361, 228211352, 247171342, 266230040, 285190030, 304150020};
+
+		vector<I64u> tupleID; // normalized genIDs
+		for (unsigned int i = 0; i < sizeof(genID)/sizeof(I64u); ++i)
+			tupleID.push_back((binID[i] == 0) ? genID[i]: genID[i] - rangeMap_304089172[binID[i]-1]);
+		pr.setSampleSize(sampleSize);
+		set<I64u> s;
+		for (unsigned int i = 0; i < sizeof(genID)/sizeof(I64u); ++i)
+			pr.permuteTupleID(tupleID.at(i), binID[i]);
+	}
+
+	void testSDSS(){
+		JointPrFunction<MyriadTuple<I64u, I64u> > pr("", _path2);
+		I64u binCard[] = {4967684, 7511548, 7561360, 7607585, 8081424, 9693052, 9979936, 10591086};
+		I64u sampleSize =  304089172;
+		I64u genID = 87099048;
+		// test findBin
+		I64u rangeMap_304089172[] = {60459458, 78658129, 97330639, 115433273, 135106261, 152693782, 170755142, 188246626, 202907362, 215482631, 228531739, 241010971, 258265383,   273434328,   289077112,   304150020};
+		// test sample
+		cout << "randmax = " << RAND_MAX << endl;
+		// RAND_MAX = 2147483647, max_card of q2d: 1088780628878194
+		for (unsigned int i = 0; i < 100; ++i){
+			sampleSize = rand();
+			genID = rand() % sampleSize;
+			cout << "sample with genID = " << genID << ", sampleSize = " << sampleSize << endl;
+			MyriadTuple<I64u, I64u> t = pr.sample( genID, sampleSize);
+		}
+	}
 
 	static Test *suite()
 	{
 		TestSuite* suite = new TestSuite("JointPrFunctionTest");
-		suite->addTest(new TestCaller<JointPrFunctionTest> ("testInitialize", &JointPrFunctionTest<T>::testInitialize));
-		suite->addTest(new TestCaller<JointPrFunctionTest> ("testFindBucket", &JointPrFunctionTest<T>::testFindBucket));
-		suite->addTest(new TestCaller<JointPrFunctionTest> ("testNormalizeTupleID", &JointPrFunctionTest<T>::testNormalizeTupleID));
-		suite->addTest(new TestCaller<JointPrFunctionTest> ("testPermuteTupleID", &JointPrFunctionTest<T>::testPermuteTupleID));
-		suite->addTest(new TestCaller<JointPrFunctionTest> ("testScalar2Tuple", &JointPrFunctionTest<T>::testScalar2Tuple));
+//		suite->addTest(new TestCaller<JointPrFunctionTest> ("testInitialize", &JointPrFunctionTest<T>::testInitialize));
+//		suite->addTest(new TestCaller<JointPrFunctionTest> ("testFindBucket", &JointPrFunctionTest<T>::testFindBucket));
+//		suite->addTest(new TestCaller<JointPrFunctionTest> ("testNormalizeTupleID", &JointPrFunctionTest<T>::testNormalizeTupleID));
+//		suite->addTest(new TestCaller<JointPrFunctionTest> ("testPermuteTupleID", &JointPrFunctionTest<T>::testPermuteTupleID));
+//		suite->addTest(new TestCaller<JointPrFunctionTest> ("testScalar2Tuple", &JointPrFunctionTest<T>::testScalar2Tuple));
+	//	suite->addTest(new TestCaller<JointPrFunctionTest> ("testSDSS_initialize", &JointPrFunctionTest<T>::testSDSS_initialize));
+		//	suite->addTest(new TestCaller<JointPrFunctionTest> ("testSDSS_findBucket", &JointPrFunctionTest<T>::testSDSS_findBucket));
+		//	suite->addTest(new TestCaller<JointPrFunctionTest> ("testSDSS_normalizeTupleID", &JointPrFunctionTest<T>::testSDSS_normalizeTupleID));
+		suite->addTest(new TestCaller<JointPrFunctionTest> ("testSDSS_permuteTupleID", &JointPrFunctionTest<T>::testSDSS_permuteTupleID));
 
+//		suite->addTest(new TestCaller<JointPrFunctionTest> ("testSDSS", &JointPrFunctionTest<T>::testSDSS));
 
 		return suite;
 	}
