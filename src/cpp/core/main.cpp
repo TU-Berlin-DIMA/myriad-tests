@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 //    runner.addTest(MyriadTupleTest::suite());
     //    runner.addTest(IntervalTupleTest::suite());
     // math/algebra
-    runner.addTest(MultiplicativeGroupTest::suite());
+//    runner.addTest(MultiplicativeGroupTest::suite());
 
     // math/random
 //    runner.addTest(EICGTest::suite());
@@ -87,9 +87,9 @@ int main(int argc, char **argv)
 //    runner.addTest(MathUtilitiesTest::suite());
 //    runner.addTest(CombinedPrFunctionTest<I64u>::suite());
 //    runner.addTest(CombinedPrFunctionTest<Date>::suite());
-   runner.addTest(JointPrFunctionTest<MyriadTuple<I64u, I64u> >::suite());
+//   runner.addTest(JointPrFunctionTest<MyriadTuple<I64u, I64u> >::suite());
 ////    runner.addTest(ConditionalCombinedPrFunctionTest::suite()); //TODO: implement this test, reuse the old ConditionalQHistogramPrFunctionTest
-//    runner.addTest(ProbabilityFunctionsTest::suite()); //TODO: disable function output and add result verification code to this test suite
+   runner.addTest(ProbabilityFunctionsTest::suite()); //TODO: disable function output and add result verification code to this test suite
 //
 //    // util
 ////    runner.addTest(ObjectBuilderTest::suite()); // TODO: move in ObjectBuilder

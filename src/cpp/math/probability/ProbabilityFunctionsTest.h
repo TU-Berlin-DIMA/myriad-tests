@@ -13,6 +13,8 @@
 #include "math/random/RandomStream.h"
 #include "math/probability/Probability.h"
 
+#include <ctime>
+
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestSuite.h>
@@ -37,8 +39,14 @@ public:
 		_seed.v[0] = 0;
 
 		_random.seed(_seed);
-
-		_numberOfSamples = 1000000;
+//## compile prototype with different sample sizes
+//#	100 MB 	->	8095855 rows
+//#	1 GB	->	80958549 rows
+//#	10 GB 	-> 	809585492 rows
+//#	100 GB	->	8095854922
+//#	1 TB	->	80958549222
+//
+		_numberOfSamples = 10000; //8095855;
 	}
 
 	void tearDown()
@@ -104,6 +112,38 @@ public:
 		//		std::cout << "sum of weights from 0 to " << N << " is " << S << endl;
 	}
 
+	void testJointProbabilitySampling(){
+		String _basePath = "/home/mho/TU-Berlin-DIMA/myriad-tests-project"; // getcwd(buffer);
+		// FIXME use stream instead of local distribution file
+		String _path = _basePath + "/../test/q2d_hist_4.distribution";
+		JointPrFunction<MyriadTuple<I64u, I64u> > pr("", _path);
+		pr.setSampleSize(this->_numberOfSamples);
+
+		// bin edges for each dimension
+		const I32u numBins = 4;
+		// [a,b,c] <=> [[a,b), [b, c)]
+		const I32 bins[][5] = {{14534925, 14545517, 14555497, 14560465, 14568027}, {17019, 26713, 34321, 42402, 49915}};
+		Decimal freq_ref[][4] = {{0.2497,0.2510,0.2497,0.2497}, {0.2497,0.2510,0.2497,0.2497}};
+		Decimal freq_res[2][4] = {0};
+
+		clock_t t_start = clock();
+		createHistogram2(pr, "/tmp/pr_test_joint_q2d.dat", _numberOfSamples, bins, numBins, freq_res);
+		clock_t t_end = clock();
+
+		double elapsed_secs = double(t_end - t_start) / CLOCKS_PER_SEC;
+
+
+
+		double err = 0;
+		for (I32u i = 0; i < numBins; ++i){
+			err += (freq_ref[0][i] - freq_res[0][i]) * (freq_ref[0][i] - freq_res[0][i]);
+			err += (freq_ref[1][i] - freq_res[1][i]) * (freq_ref[1][i] - freq_res[1][i]);
+		}
+		err /= 2*numBins;
+		cout << "err = " << err << " with sample size = " << this->_numberOfSamples << ", elapsed time [s] = "<< elapsed_secs << endl;
+
+	}
+
 //	void testParetoGeneration()
 //	{
 //		ParetoPrFunction f1(1, 0.5);
@@ -156,11 +196,12 @@ public:
 	static Test *suite()
 	{
 		TestSuite* suite = new TestSuite("ProbabilityFunctionsTest");
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testParetoSampling", &ProbabilityFunctionsTest::testParetoSampling));
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testNormalSampling", &ProbabilityFunctionsTest::testNormalSampling));
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testBoundedNormalSampling", &ProbabilityFunctionsTest::testBoundedNormalSampling));
+//		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testParetoSampling", &ProbabilityFunctionsTest::testParetoSampling));
+//		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testNormalSampling", &ProbabilityFunctionsTest::testNormalSampling));
+//		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testBoundedNormalSampling", &ProbabilityFunctionsTest::testBoundedNormalSampling));
 //		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testNormalGeneration", &ProbabilityFunctionsTest::testNormalGeneration));
 //		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testParetoGeneration", &ProbabilityFunctionsTest::testParetoGeneration));
+		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling", &ProbabilityFunctionsTest::testJointProbabilitySampling));
 		return suite;
 	}
 
@@ -171,9 +212,10 @@ private:
 		FileOutputStream out(filename, std::ios::trunc | std::ios::binary);
 		map<I32, I32u> blocks;
 
-		// sample N random points from the underlying d
+		// sample N random points from the underlying distribution
 		for (I32u i = 0; i < numberOfSamples; i++)
 		{
+			//const I64u GenID, const I64u sampleSize
 			Decimal sample = pr.sample(_random());
 
 			I32 b = floor(sample / histogramBlockWidth); // determine bucket
@@ -198,6 +240,48 @@ private:
 		out.close();
 	}
 
+	// histograms dimension-wise (2D) for joint probability function
+	template<typename Pr> void createHistogram2(Pr& pr, const string& filename, const I32u numberOfSamples,  const I32 bins[][5], const I32u numBins, double freq[][4])
+		{
+			cout << "createHisto 1" << endl;
+			FileOutputStream out(filename, std::ios::trunc | std::ios::binary);
+
+			cout << "createHisto 2" << endl;
+			I32u b_fst, b_snd;;
+
+			I32u blocks[2][4] = {};
+			// sample N random points from the underlying d
+			for (I32u i = 0; i < numberOfSamples; i++)
+			{
+				//const I64u GenID, const I64u sampleSize
+				MyriadTuple<I64u, I64u> sample = pr.sample(i, this->_numberOfSamples);
+				b_fst = b_snd = 0;
+				for (I32u j = 1; j < numBins; ++j){
+					if (bins[0][j] <= sample.getFirst() && sample.getFirst() < bins[0][j+1])
+						b_fst = j;
+					if (bins[1][j] <= sample.getSecond() && sample.getSecond() < bins[1][j+1])
+						b_snd = j;
+				}
+				//cout << "sample[0] = " << sample.getFirst() << "in bin " << b_fst << ", sample[1] = " << sample.getSecond() << " in bin " << b_snd<< endl;
+
+				blocks[0][b_fst]++;
+				blocks[1][b_snd]++;
+			}
+			cout << "createHisto 3" << endl;
+			// print relative frequency into file
+			out << "1st, 2nd" << endl << endl;
+			for (I32u k = 0; k < numBins; ++k){
+				double f1 = (double)blocks[0][k]/(double)numberOfSamples;
+				double f2 = (double)blocks[1][k]/(double)numberOfSamples;
+				freq[0][k] = f1;
+				freq[1][k] = f2;
+
+				cout << "write f1 = " << f1 << ", f2 = " << f2 << endl;
+				out << format("%f,\t%f", f1, f2) << endl;
+			}
+			out.close();
+			cout << "createHisto 4" << endl;
+		}
 
 	/**
 	 * Random seed for the stream.
