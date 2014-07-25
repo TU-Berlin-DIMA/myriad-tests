@@ -14,6 +14,8 @@
 #include "math/probability/Probability.h"
 
 #include <ctime>
+#include <unistd.h>
+#include <limits>
 
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestFixture.h>
@@ -46,7 +48,7 @@ public:
 //#	100 GB	->	8095854922
 //#	1 TB	->	80958549222
 //
-		_numberOfSamples = 10000; //8095855;
+		_numberOfSamples = 809; //8095855;
 	}
 
 	void tearDown()
@@ -113,36 +115,89 @@ public:
 	}
 
 	void testJointProbabilitySampling(){
-		String _basePath = "/home/mho/TU-Berlin-DIMA/myriad-tests-project"; // getcwd(buffer);
 		// FIXME use stream instead of local distribution file
-		String _path = _basePath + "/../test/q2d_hist_4.distribution";
-		JointPrFunction<MyriadTuple<I64u, I64u> > pr("", _path);
+		String _path = "../test/q2d_hist_4.distribution";
+		String _outpath = "../tmp/q2d_hist_4_result.distribution";
+		JointPrFunction<MyriadTuple<I64, I64> > pr("", _path);
 		pr.setSampleSize(this->_numberOfSamples);
 
 		// bin edges for each dimension
-		const I32u numBins = 4;
+		const I32u numBins_joint = pr.numberOfBuckets();
+		I32u numBins = sqrt(numBins_joint);
 		// [a,b,c] <=> [[a,b), [b, c)]
-		const I32 bins[][5] = {{14534925, 14545517, 14555497, 14560465, 14568027}, {17019, 26713, 34321, 42402, 49915}};
-		Decimal freq_ref[][4] = {{0.2497,0.2510,0.2497,0.2497}, {0.2497,0.2510,0.2497,0.2497}};
-		Decimal freq_res[2][4] = {0};
+		vector<IntervalTuple<MyriadTuple<I64, I64> > > bins_joint = pr.getBuckets();
+		vector<double> freq_joint = pr.getBucketProbabilities();
+		// collect edges 1D
+		map<I64, double> bins_d1;
+		map<I64, double> bins_d2;
+		I64 maxBin1 = numeric_limits<int>::lowest();
+		I64 maxBin2 = numeric_limits<int>::lowest(); // right most bin edge needed for short representation
+		for (unsigned int b = 0; b < bins_joint.size(); ++b){
+			IntervalTuple<MyriadTuple<I64, I64> > t = bins_joint.at(b);
+			update(t.min().getFirst(), &bins_d1, &freq_joint, b);
+			update(t.min().getSecond(), &bins_d2, &freq_joint, b);
+			maxBin1 = (maxBin1 < t.max().getFirst()) ? t.max().getFirst(): maxBin1;
+			maxBin2 = (maxBin2 < t.max().getSecond()) ? t.max().getSecond(): maxBin2;
+		}
+
+		vector<pair<double, double> > freq_ref, freq_res;
+		vector<pair<I64,I64> > bins;
+
+		// insert edge of 1st dim in sorted, unique manner
+		for (auto keyval : bins_d1){
+			bins.push_back(pair<I64, I64>(keyval.first, 0)); // collect key from map
+			freq_ref.push_back(make_pair((double)keyval.second, 0.0)); // collect val from map
+		}
+		// insert 2nd dim
+		unsigned int idx = 0;
+		for (auto keyval : bins_d2){
+			bins.at(idx).second = (double) keyval.first;
+			freq_ref.at(idx).second = keyval.second;
+			if (idx > 0){
+				bins.at(idx).first++;
+				bins.at(idx).second++;
+			}
+			idx++;
+		}
+		// add max edges
+		bins.push_back(pair<I64,I64>(maxBin1+1, maxBin2+1));
 
 		clock_t t_start = clock();
-		createHistogram2(pr, "/tmp/pr_test_joint_q2d.dat", _numberOfSamples, bins, numBins, freq_res);
+		cout << "create histogram ..." << endl;
+		createHistogram2(pr, "../tmp/pr_test_joint_q2d.dat", &bins, numBins, &freq_res);
+		cout << "... done (create histogram)" << endl;
+
 		clock_t t_end = clock();
-
 		double elapsed_secs = double(t_end - t_start) / CLOCKS_PER_SEC;
+		cout << "sample size = " << this->_numberOfSamples << ", elapsed time [s] = "<< elapsed_secs << endl;
 
-
-
-		double err = 0;
-		for (I32u i = 0; i < numBins; ++i){
-			err += (freq_ref[0][i] - freq_res[0][i]) * (freq_ref[0][i] - freq_res[0][i]);
-			err += (freq_ref[1][i] - freq_res[1][i]) * (freq_ref[1][i] - freq_res[1][i]);
+		// print relative frequency and error into file
+		double err = 0.0, f1, f2;
+		FileOutputStream out(_outpath, std::ios::trunc | std::ios::binary);
+		out << "1st, 2nd" << endl << endl;
+		for (I32u k = 0; k < numBins; ++k){
+			err += (freq_ref.at(k).first - freq_res.at(k).first) * (freq_ref.at(k).first - freq_res.at(k).first);
+			err += (freq_ref.at(k).second - freq_res.at(k).second) * (freq_ref.at(k).second - freq_res.at(k).second);
+			cout << freq_ref.at(k).first << ", " << freq_res.at(k).first << "; " << freq_ref.at(k).second << ", " << freq_res.at(k).second << endl;
+			out << format("%f,\t%f", f1, f2) << endl;
 		}
 		err /= 2*numBins;
-		cout << "err = " << err << " with sample size = " << this->_numberOfSamples << ", elapsed time [s] = "<< elapsed_secs << endl;
-
+		out << format("error: %f", err) << endl;
+		out.close();
+		cout << "err = " << err << endl;
 	}
+
+	// update frequencies to reconstruct one-dimensional histograms
+	void update(I64 key, map<I64, double> *bins, vector<double> *freq_joint, unsigned int i){
+		auto it = bins->find(key);
+		if (it != bins->end()){
+			double freq = bins->at(key);
+			bins->erase(key);
+			bins->insert(make_pair(key, freq + freq_joint->at(i)));
+		}
+		else
+			bins->insert(make_pair(key, freq_joint->at(i)));
+}
 
 //	void testParetoGeneration()
 //	{
@@ -241,47 +296,41 @@ private:
 	}
 
 	// histograms dimension-wise (2D) for joint probability function
-	template<typename Pr> void createHistogram2(Pr& pr, const string& filename, const I32u numberOfSamples,  const I32 bins[][5], const I32u numBins, double freq[][4])
+	template<typename Pr> void createHistogram2(Pr& pr, const string& filename, vector<pair<I64,I64> > *bins, const I32u numBins,
+			vector<pair<double, double> > *freq_res)
+	{
+		//cout << "createHisto 2" << endl;
+		I64 b_fst, b_snd;
+		vector<pair<I64, I64> > blocks;
+		cout << "init blocks" << endl;
+		for (I32u j = 0; j < numBins; ++j)
+			blocks.push_back(make_pair(0, 0));
+		// sample N random points from the underlying d
+		for (I64u i = 0; i < this->_numberOfSamples; i++)
 		{
-			cout << "createHisto 1" << endl;
-			FileOutputStream out(filename, std::ios::trunc | std::ios::binary);
-
-			cout << "createHisto 2" << endl;
-			I32u b_fst, b_snd;;
-
-			I32u blocks[2][4] = {};
-			// sample N random points from the underlying d
-			for (I32u i = 0; i < numberOfSamples; i++)
-			{
-				//const I64u GenID, const I64u sampleSize
-				MyriadTuple<I64u, I64u> sample = pr.sample(i, this->_numberOfSamples);
-				b_fst = b_snd = 0;
-				for (I32u j = 1; j < numBins; ++j){
-					if (bins[0][j] <= sample.getFirst() && sample.getFirst() < bins[0][j+1])
-						b_fst = j;
-					if (bins[1][j] <= sample.getSecond() && sample.getSecond() < bins[1][j+1])
-						b_snd = j;
-				}
-				//cout << "sample[0] = " << sample.getFirst() << "in bin " << b_fst << ", sample[1] = " << sample.getSecond() << " in bin " << b_snd<< endl;
-
-				blocks[0][b_fst]++;
-				blocks[1][b_snd]++;
+			//const I64u GenID, const I64u sampleSize
+			MyriadTuple<I64, I64> sample = pr.sample(i, (I64u)this->_numberOfSamples);
+			b_fst = b_snd = 0;
+			for (I32u j = 1; j < numBins; ++j){
+				if (bins->at(j).first <= sample.getFirst() && sample.getFirst() < bins->at(j+1).first)
+					b_fst = j;
+				if (bins->at(j).second <= sample.getSecond() && sample.getSecond() < bins->at(j+1).second)
+					b_snd = j;
 			}
-			cout << "createHisto 3" << endl;
-			// print relative frequency into file
-			out << "1st, 2nd" << endl << endl;
-			for (I32u k = 0; k < numBins; ++k){
-				double f1 = (double)blocks[0][k]/(double)numberOfSamples;
-				double f2 = (double)blocks[1][k]/(double)numberOfSamples;
-				freq[0][k] = f1;
-				freq[1][k] = f2;
+			//cout << "sample[0] = " << sample.getFirst() << "in bin " << b_fst << ", sample[1] = " << sample.getSecond() << " in bin " << b_snd<< endl;
 
-				cout << "write f1 = " << f1 << ", f2 = " << f2 << endl;
-				out << format("%f,\t%f", f1, f2) << endl;
-			}
-			out.close();
-			cout << "createHisto 4" << endl;
+			blocks.at(b_fst).first++;
+			blocks.at(b_snd).second++;
 		}
+		cout << "finished sampling" << endl;
+		double err = 0, f1, f2;
+		for (I32u k = 0; k < numBins; ++k){
+			f1 = (double)blocks.at(k).first/ (double)this->_numberOfSamples;
+			f2 = (double)blocks.at(k).second/(double)this->_numberOfSamples;
+			freq_res->push_back(make_pair(f1, f2));
+		}
+		cout << "updated freq_res" << endl;
+	}
 
 	/**
 	 * Random seed for the stream.
