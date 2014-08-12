@@ -3,7 +3,11 @@ project(myriad-tests)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
-set(CMAKE_CXX_FLAGS "-std=c++11")
+## decomment the 2 following lines for compilation on cloud-11
+#set(CMAKE_EXE_LINKER_FLAGS "-lstdc++ -lm -ldl")
+#set(CMAKE_CXX_COMPILER "/usr/bin/c++-4.8")
+
+set(CMAKE_CXX_FLAGS "-std=c++11 -fpermissive")
 
 include_directories("src/cpp" "vendor/myriad-toolkit/src/cpp")
 
