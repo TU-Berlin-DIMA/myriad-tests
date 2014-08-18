@@ -56,8 +56,8 @@ public:
 //#	100 GB	->	8095854922
 //#	1 TB	->	80958549222
 //
-		_numberOfSamples = 8095855;
-		_rounds = 10;
+		_numberOfSamples = 8095;
+		_rounds = 2;
 	}
 
 	void tearDown()
@@ -123,10 +123,9 @@ public:
 		//		std::cout << "sum of weights from 0 to " << N << " is " << S << endl;
 	}
 
-	// {DEFAULT_RANDOM_ENGINE, KNUTH_B, MINSTD_RAND, MINSTD_RAND0, MT19937, MT19937_64, RANLUX24, RANLUX48
-
-	void testGenerator_default_random_engine(){
-		jointProbabilitySampling_caller(DEFAULT_RANDOM_ENGINE);
+	// KNUTH_B, MINSTD_RAND=DEFAULT_RANDOM_ENGINE, MINSTD_RAND0, MT19937, MT19937_64, RANLUX24, RANLUX48
+	void testGenerator_rand(){
+		jointProbabilitySampling_caller(RAND);
 	}
 
 	void testGenerator_knuth_b(){
@@ -165,7 +164,7 @@ public:
 		acc.time = 0;
 		for (unsigned int i = 0; i < this->_rounds; ++i)
 		{
-			ErrorTime aux = jointProbabilitySampling(DEFAULT_RANDOM_ENGINE);
+			ErrorTime aux = jointProbabilitySampling(generator);
 			acc.error += aux.error;
 			acc.time += aux.time;
 		}
@@ -318,7 +317,8 @@ public:
 //		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testBoundedNormalSampling", &ProbabilityFunctionsTest::testBoundedNormalSampling));
 //		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testNormalGeneration", &ProbabilityFunctionsTest::testNormalGeneration));
 //		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testParetoGeneration", &ProbabilityFunctionsTest::testParetoGeneration));
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_default_random_engine", &ProbabilityFunctionsTest::testGenerator_default_random_engine));
+
+		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_knuth_b", &ProbabilityFunctionsTest::testGenerator_rand));
 		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_knuth_b", &ProbabilityFunctionsTest::testGenerator_knuth_b));
 		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_minstd_rand", &ProbabilityFunctionsTest::testGenerator_minstd_rand));
 		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_minstd_rand0", &ProbabilityFunctionsTest::testGenerator_minstd_rand0));
