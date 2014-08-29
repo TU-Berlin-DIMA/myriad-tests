@@ -14,6 +14,7 @@
 #include "math/random/RandomStream.h"
 #include "math/probability/Probability.h"
 
+#include <chrono>
 #include <ctime>
 #include <unistd.h>
 #include <limits>
@@ -39,7 +40,7 @@ class ProbabilityFunctionsTest: public TestFixture
 public:
 
 	struct ErrorTime{
-		clock_t time;
+		int time;
 		double error;
 
 	};
@@ -56,8 +57,10 @@ public:
 //#	100 GB	->	8095854922
 //#	1 TB	->	80958549222
 //
-		_numberOfSamples = 8095;
-		_rounds = 2;
+		_numberOfSamples = 809;
+		_numberOfNodes = 1;
+		_nodeID = 1; // from [1.._numberOfNodes]
+		_rounds = 1;
 	}
 
 	void tearDown()
@@ -125,60 +128,100 @@ public:
 
 	// KNUTH_B, MINSTD_RAND=DEFAULT_RANDOM_ENGINE, MINSTD_RAND0, MT19937, MT19937_64, RANLUX24, RANLUX48
 	void testGenerator_rand(){
-		jointProbabilitySampling_caller(RAND);
+		jointProbabilitySampling_caller(RAND, 0);
 	}
 
 	void testGenerator_knuth_b(){
-		jointProbabilitySampling_caller(KNUTH_B);
+		jointProbabilitySampling_caller(KNUTH_B, 0);
 	}
 
 	void testGenerator_minstd_rand(){
-		jointProbabilitySampling_caller(MINSTD_RAND);
+		jointProbabilitySampling_caller(MINSTD_RAND, 0);
 	}
 
 	void testGenerator_minstd_rand0(){
-		jointProbabilitySampling_caller(MINSTD_RAND0);
+		jointProbabilitySampling_caller(MINSTD_RAND0, 0);
 	}
 
 	void testGenerator_mt19937(){
-		jointProbabilitySampling_caller(MT19937);
+		jointProbabilitySampling_caller(MT19937, 0);
 	}
 
 	void testGenerator_mt19937_64(){
-		jointProbabilitySampling_caller(MT19937_64);
+		jointProbabilitySampling_caller(MT19937_64, 0);
 	}
 
 	void testGenerator_ranlux24(){
-		jointProbabilitySampling_caller(RANLUX24);
+		jointProbabilitySampling_caller(RANLUX24, 0);
 	}
 
 	void testGenerator_ranlux48(){
-		jointProbabilitySampling_caller(RANLUX48);
+		jointProbabilitySampling_caller(RANLUX48, 0);
+	}
+
+	void testGenerator_id(){
+
+		this->_numberOfSamples = 8095854922;
+		this->_numberOfNodes = 8;
+		this->_nodeID = 1; // from [1.._numberOfNodes]
+		this->_rounds = 1;
+		jointProbabilitySampling_caller(IDENT, 0);
+//		this->_numberOfSamples = 8095855;
+//		jointProbabilitySampling_caller(IDENT);
+//		this->_numberOfSamples = 80958549;
+//		jointProbabilitySampling_caller(IDENT);
+//		this->_numberOfSamples = 809585492;
+//		jointProbabilitySampling_caller(IDENT);
+//		this->_numberOfSamples = 8095854922;
+//		jointProbabilitySampling_caller(IDENT);
+//		this->_numberOfSamples = 80958549222;
+//		jointProbabilitySampling_caller(IDENT);
+
+	}
+
+	void testGenerator_partitioned(){
+		jointProbabilitySampling_caller(MT19937, 0);
+	}
+
+	// compute error within bins between samples and ideal uniform distribution
+	void testUniformDistribution(){
+		this->_numberOfSamples = 80958549;
+		this->_numberOfNodes = 1;
+		this->_nodeID = 1;
+		this->_rounds = 10;
+		jointProbabilitySampling_caller(IDENT, 1);
+		jointProbabilitySampling_caller(RAND, 1);
+		jointProbabilitySampling_caller(MINSTD_RAND, 1);
+		jointProbabilitySampling_caller(MINSTD_RAND0, 1);
+		jointProbabilitySampling_caller(KNUTH_B, 1);
+		jointProbabilitySampling_caller(MT19937, 1);
+		jointProbabilitySampling_caller(MT19937_64, 1);
+		jointProbabilitySampling_caller(RANLUX24, 1);
+		jointProbabilitySampling_caller(RANLUX48, 1);
 	}
 
 	// test std::default_random_engine
-	void jointProbabilitySampling_caller(GENERATOR generator){
-		cout << "start test " << generator << ", n = " << this->_numberOfSamples << endl;
+	void jointProbabilitySampling_caller(GENERATOR generator, int flag){
+		cout << "start test " << generator << ", n = " << this->_numberOfSamples << ", Node = " << this->_nodeID << endl;
 		ErrorTime acc;
 		acc.error = 0;
 		acc.time = 0;
 		for (unsigned int i = 0; i < this->_rounds; ++i)
 		{
-			ErrorTime aux = jointProbabilitySampling(generator);
+			ErrorTime aux = jointProbabilitySampling(generator, flag);
 			acc.error += aux.error;
 			acc.time += aux.time;
 		}
 		acc.error /= this->_rounds;
 		acc.time /= this->_rounds;
-
-		std::cout << "Avg error = " << acc.error << "\t Avg time = " << acc.time << endl << endl;
+		std::cout << "Avg error = " << acc.error << "\t in " << acc.time << " microseconds = " << acc.time/1000 << " seconds" <<  endl;
 	}
 
+	// flag = 0: compute error on reference and result histogram, flag = 1: compute error of uniform distribution with granularity 10
 
-	struct ErrorTime jointProbabilitySampling(GENERATOR generator){
+	struct ErrorTime jointProbabilitySampling(GENERATOR generator, int flag){
 		// FIXME use stream instead of local distribution file
-		String _path = "../test/q2e_hist_100.distribution";
-		String _outpath = "../test/q2e_hist_100_result.distribution";
+		String _path = (!flag) ? "../test/q2e_hist_100_dec_10.distribution" : "../test/q2e_hist_10_dec_10.distribution";
 		JointPrFunction<MyriadTuple<I64, I64> > pr("", _path);
 		// adjust sample size
 		pr.setSampleSize(this->_numberOfSamples);
@@ -203,7 +246,8 @@ public:
 			maxBin2 = (maxBin2 < t.max().getSecond()) ? t.max().getSecond(): maxBin2;
 		}
 
-		vector<pair<double, double> > freq_ref, freq_res;
+		vector<pair<double, double> > freq_ref, freq_res0;
+		vector<pair<vector<double>, vector<double> > > freq_res1;
 		vector<pair<I64,I64> > bins;
 
 		// insert edge of 1st dim in sorted, unique manner
@@ -224,26 +268,33 @@ public:
 		}
 		// add max edges
 		bins.push_back(pair<I64,I64>(maxBin1+1, maxBin2+1));
-
-		clock_t elapsed_sec = 0;
-		createHistogram2(pr, &bins, numBins, &freq_res, &elapsed_sec);
-
-		//clock_t t_end = clock();
-		//double elapsed_secs = double(t_end - t_start) / CLOCKS_PER_SEC;
-		//cout << "sample size = " << this->_numberOfSamples << ", elapsed time [s] = "<< elapsed_sec << endl;
+		const I32u numSubBins = 10; // resolution for each bin
+		int elapsed_micro = 0;
+		if (!flag)
+			createHistogram2(pr, &bins, numBins, &freq_res0, &elapsed_micro);
+		else
+			createHistogram3(pr, &bins, numBins, numSubBins, &freq_res1, &elapsed_micro);
 
 		// print relative frequency and error into file
-		double err = 0.0, f1, f2;
+		double err = 0.0;
+
 		for (I32u k = 0; k < numBins; ++k){
-			err += (freq_ref.at(k).first - freq_res.at(k).first) * (freq_ref.at(k).first - freq_res.at(k).first);
-			err += (freq_ref.at(k).second - freq_res.at(k).second) * (freq_ref.at(k).second - freq_res.at(k).second);
-			//cout << freq_ref.at(k).first << ", " << freq_res.at(k).first << "; " << freq_ref.at(k).second << ", " << freq_res.at(k).second << endl;
+			if (!flag){
+				err += (freq_ref.at(k).first - freq_res0.at(k).first) * (freq_ref.at(k).first - freq_res0.at(k).first);
+				err += (freq_ref.at(k).second - freq_res0.at(k).second) * (freq_ref.at(k).second - freq_res0.at(k).second);
+			}
+			else{// compute error to uniform distribution bin-wise
+				for (I32u l = 0; l < numSubBins; ++l){
+					err += (freq_ref.at(k).first/(double)numSubBins - freq_res1.at(k).first.at(l)) * (freq_ref.at(k).first/(double)numSubBins - freq_res1.at(k).first.at(l));
+					err += (freq_ref.at(k).second/(double)numSubBins - freq_res1.at(k).second.at(l)) * (freq_ref.at(k).second/(double)numSubBins - freq_res1.at(k).second.at(l));
+				}
+			}
 		}
 		err /= 2*numBins;
 
 		struct ErrorTime et;
 		et.error = err;
-		et.time = elapsed_sec;
+		et.time = elapsed_micro;
 		return et;
 	}
 
@@ -317,8 +368,8 @@ public:
 //		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testBoundedNormalSampling", &ProbabilityFunctionsTest::testBoundedNormalSampling));
 //		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testNormalGeneration", &ProbabilityFunctionsTest::testNormalGeneration));
 //		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testParetoGeneration", &ProbabilityFunctionsTest::testParetoGeneration));
-
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_knuth_b", &ProbabilityFunctionsTest::testGenerator_rand));
+/*
+		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_rand", &ProbabilityFunctionsTest::testGenerator_rand));
 		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_knuth_b", &ProbabilityFunctionsTest::testGenerator_knuth_b));
 		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_minstd_rand", &ProbabilityFunctionsTest::testGenerator_minstd_rand));
 		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_minstd_rand0", &ProbabilityFunctionsTest::testGenerator_minstd_rand0));
@@ -326,6 +377,10 @@ public:
 		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_mt19937_64", &ProbabilityFunctionsTest::testGenerator_mt19937_64));
 		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_ranlux24", &ProbabilityFunctionsTest::testGenerator_ranlux24));
 		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_ranlux48", &ProbabilityFunctionsTest::testGenerator_ranlux48));
+*/
+//		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_partitioned", &ProbabilityFunctionsTest::testGenerator_partitioned));
+		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testUniformDistribution", &ProbabilityFunctionsTest::testUniformDistribution));
+	//	suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_id", &ProbabilityFunctionsTest::testGenerator_id));
 
 		return suite;
 	}
@@ -367,25 +422,33 @@ private:
 	}
 
 	// histograms dimension-wise (2D) for joint probability function
-	template<typename Pr> void createHistogram2(Pr& pr, vector<pair<I64,I64> > *bins, const I32u numBins,
-			vector<pair<double, double> > *freq_res, clock_t *time)
+	template<typename Pr> void createHistogram2(Pr& pr, vector<pair<I64,I64> > *bins, const I32u numBins, vector<pair<double, double> > *freq_res, int *time)
 	{
-		//cout << "createHisto 2" << endl;
 		I64 b_fst, b_snd;
 		vector<pair<I64, I64> > blocks;
 		for (I32u j = 0; j < numBins; ++j)
 			blocks.push_back(make_pair(0, 0));
-		// sample N random points from the underlying d
-		for (I64u i = 0; i < this->_numberOfSamples; i++)
+		// sample N random points from the underlying distribution
+
+		I64u partSize = floor(this->_numberOfSamples/this->_numberOfNodes);
+		//cout << "ID_start = " << ((this->_nodeID-1) * partSize) << ", ID_end = " << min(this->_numberOfSamples, (I64u)floor(this->_nodeID*partSize)) << endl;
+
+		for (I64u i = ((this->_nodeID-1)* partSize); i < min(this->_numberOfSamples, (I64u)floor(this->_nodeID*partSize))-1; i++)
 		{
 			//const I64u GenID, const I64u sampleSize
-			clock_t t_start = clock();
+			//clock_t t_start = clock();
+
+			auto start = std::chrono::steady_clock::now();
 
 			MyriadTuple<I64, I64> sample = pr.sample(i, (I64u)this->_numberOfSamples);
 
-			clock_t t_end = clock();
+			//clock_t t_end = clock();
+			auto end = std::chrono::steady_clock::now();
+			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+			//std::cout << "It took me " << elapsed.count() << " microseconds." << std::endl;
 
-			*time += double(t_end - t_start) / CLOCKS_PER_SEC;
+			*time += (int)elapsed;
+			//cout << "t_end - t_start = " << double(t_end-t_start) << endl;
 
 			b_fst = b_snd = 0;
 			for (I32u j = 1; j < numBins; ++j){
@@ -407,6 +470,77 @@ private:
 		}
 	}
 
+	// histograms dimension-wise (2D) with subdivided buckets for joint probability function
+	template<typename Pr> void createHistogram3(Pr& pr, vector<pair<I64,I64> > *bins, const I32u numBins, const I32 numSubBins, vector<pair<vector<double>, vector<double> > > *freq_res, int *time)
+	{
+			I64 b_fst, b_snd, bs_fst, bs_snd;
+			// initialize histogram
+			vector<pair<vector<I64>, vector<I64> > > blocks;
+			for (I32u j = 0; j < numBins; ++j){
+				vector<I64> aux1, aux2;
+				for (I32u k = 0; k < numSubBins; ++k){
+					aux1.push_back(0);
+					aux2.push_back(0);
+				}
+
+				blocks.push_back(make_pair(aux1, aux2));
+				aux1.clear(); aux2.clear();
+			}
+			// sample N random points from the underlying distribution
+
+			I64u partSize = floor(this->_numberOfSamples/this->_numberOfNodes);
+			//cout << "ID_start = " << ((this->_nodeID-1) * partSize) << ", ID_end = " << min(this->_numberOfSamples, (I64u)floor(this->_nodeID*partSize)) << endl;
+
+			for (I64u i = ((this->_nodeID-1)* partSize); i < min(this->_numberOfSamples, (I64u)floor(this->_nodeID*partSize))-1; i++)
+			{
+				auto start = std::chrono::steady_clock::now();
+
+				MyriadTuple<I64, I64> sample = pr.sample(i, (I64u)this->_numberOfSamples);
+
+				auto end = std::chrono::steady_clock::now();
+				auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+				*time += (int)elapsed;
+
+				b_fst = b_snd = 0;
+				for (I32u j = 1; j < numBins; ++j){
+					I64 width = ceil((bins->at(j+1).first - bins->at(j).first)/numSubBins);
+					if (bins->at(j).first <= sample.getFirst() && sample.getFirst() < bins->at(j+1).first){
+						b_fst = j; // found coarse-grained bin
+						bs_fst = 0;
+						for (I32u k = 1; k < numSubBins; ++k){
+							if ((bins->at(j).first + k*width) <= sample.getFirst() && sample.getFirst() < (bins->at(j).first + (k+1)*width)){
+								bs_fst = k; break; // found fine-grained bin
+							}
+						}
+					}
+					if (bins->at(j).second <= sample.getSecond() && sample.getSecond() < bins->at(j+1).second){
+						b_snd = j;
+						bs_snd = 0;
+						for (I32u k = 1; k < numSubBins; ++k){
+							if ((bins->at(j).second + k*width) <= sample.getSecond() && sample.getSecond() < (bins->at(j).second + (k+1)*width)){
+								bs_snd = k; break; // found fine-grained bin
+							}
+						}
+					}
+				}
+
+				blocks.at(b_fst).first.at(bs_fst)++;
+				blocks.at(b_snd).second.at(bs_fst)++;
+			}
+			double f1, f2;
+			for (I32u k = 0; k < numBins; ++k){
+				vector<double> aux1, aux2;
+				for (I32u l = 0; l < numSubBins; ++l){
+					f1 = (double)blocks.at(k).first.at(l) / (double)this->_numberOfSamples;
+					f2 = (double)blocks.at(k).second.at(l) / (double)this->_numberOfSamples;
+					aux1.push_back(f1);
+					aux2.push_back(f2);
+				}
+				freq_res->push_back(make_pair(aux1, aux2));
+				aux1.clear(); aux2.clear();
+			}
+		}
+
 	/**
 	 * Random seed for the stream.
 	 */
@@ -420,7 +554,17 @@ private:
 	/**
 	 * Number of samples per histogram.
 	 */
-	I32u _numberOfSamples;
+	I64u _numberOfSamples;
+
+	/**
+	 * Number of nodes generating data set.
+	 */
+	I64u _numberOfNodes;
+
+	/**
+	 * Partition number of current instance.
+	 */
+	I64u _nodeID;
 
 	/**
 	 * Number of repetitions.
