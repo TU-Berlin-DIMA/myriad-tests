@@ -19,11 +19,11 @@
 #ifndef PRODUCTCLASS_H_
 #define PRODUCTCLASS_H_
 
-#include "record/Record.h"
+#include "record/AbstractRecord.h"
 
 namespace Myriad {
 
-class ProductClass: public Record
+class ProductClass: public AbstractRecord
 {
 public:
 
