@@ -8,15 +8,19 @@ set (MYRIAD_TESTS_HEADERS src/cpp/config/GeneratorConfig.h
                           src/cpp/config/GeneratorConfigTest.h
                           src/cpp/config/ObjectBuilderTest.h
                           src/cpp/core/types/MyriadDateTest.h
+                          src/cpp/core/types/MyriadTupleTest.h
                           src/cpp/generator/GeneratorSubsystem.h
                           src/cpp/generator/mock/MockRecordBGenerator.h
                           src/cpp/generator/mock/MockRecordBSetterChain.h
                           src/cpp/math/algebra/MultiplicativeGroupTest.h
+                          src/cpp/math/IntervalTupleTest.h
                           src/cpp/math/MathUtilitiesTest.h
                           src/cpp/math/probability/CombinedPrFunctionTest.h
+                          src/cpp/math/probability/JointPrFunctionTest.h
                           src/cpp/math/probability/ProbabilityFunctionsTest.h
                           src/cpp/math/probability/util/CombinedPrFunctionInput.h
                           src/cpp/math/random/CompoundEICGTest.h
+                          src/cpp/math/random/EICGTest.h
                           src/cpp/math/random/HashRandomStreamTest.h
                           src/cpp/math/random/PermutatorTest.h
                           src/cpp/record/Card.h
@@ -59,6 +63,9 @@ find_package(CppUnit REQUIRED)
 
 include_directories("src/cpp" "vendor/myriad-toolkit/src/cpp")
 include_directories(${Poco_INCLUDE_DIRS} ${CPPUNIT_INCLUDE_DIR})
+
+# add header only implementations to project files
+add_custom_target(libMyriadTest SOURCES ${MYRIAD_TESTS_HEADERS})
 
 add_executable(myriad-tests ${MYRIAD_TESTS_SOURCES} ${MYRIAD_TOOLKIT_SOURCES})
 
