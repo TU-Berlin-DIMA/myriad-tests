@@ -50,14 +50,10 @@ public:
 		_seed.v[0] = 0;
 
 		_random.seed(_seed);
-//## compile prototype with different sample sizes
-//#	100 MB 	->	8095855 rows
-//#	1 GB	->	80958549 rows
-//#	10 GB 	-> 	809585492 rows
-//#	100 GB	->	8095854922
-//#	1 TB	->	80958549222
-//
-		_numberOfSamples = 809;
+/* compile prototype with different sample sizes
+ * 100 MB: 8095855 rows, 1 GB: 80958549 rows, 10 GB: 809585492 rows, 100 GB: 8095854922, 1 TB: 80958549222
+ */
+		_numberOfSamples = 80958549;
 		_numberOfNodes = 1;
 		_nodeID = 1; // from [1.._numberOfNodes]
 		_rounds = 1;
@@ -160,23 +156,7 @@ public:
 	}
 
 	void testGenerator_id(){
-
-		this->_numberOfSamples = 8095854922;
-		this->_numberOfNodes = 8;
-		this->_nodeID = 1; // from [1.._numberOfNodes]
-		this->_rounds = 1;
 		jointProbabilitySampling_caller(IDENT, 0);
-//		this->_numberOfSamples = 8095855;
-//		jointProbabilitySampling_caller(IDENT);
-//		this->_numberOfSamples = 80958549;
-//		jointProbabilitySampling_caller(IDENT);
-//		this->_numberOfSamples = 809585492;
-//		jointProbabilitySampling_caller(IDENT);
-//		this->_numberOfSamples = 8095854922;
-//		jointProbabilitySampling_caller(IDENT);
-//		this->_numberOfSamples = 80958549222;
-//		jointProbabilitySampling_caller(IDENT);
-
 	}
 
 	void testGenerator_partitioned(){
@@ -188,7 +168,7 @@ public:
 		this->_numberOfSamples = 80958549;
 		this->_numberOfNodes = 1;
 		this->_nodeID = 1;
-		this->_rounds = 10;
+		this->_rounds = 1;
 		jointProbabilitySampling_caller(IDENT, 1);
 		jointProbabilitySampling_caller(RAND, 1);
 		jointProbabilitySampling_caller(MINSTD_RAND, 1);
@@ -214,7 +194,7 @@ public:
 		}
 		acc.error /= this->_rounds;
 		acc.time /= this->_rounds;
-		std::cout << "Avg error = " << acc.error << "\t in " << acc.time << " microseconds = " << acc.time/1000 << " seconds" <<  endl;
+		std::cout << "Avg error = " << acc.error << "\t in " << acc.time << " milliseconds = " << acc.time/1000 << " microseconds" <<  endl;
 	}
 
 	// flag = 0: compute error on reference and result histogram, flag = 1: compute error of uniform distribution with granularity 10
@@ -269,11 +249,11 @@ public:
 		// add max edges
 		bins.push_back(pair<I64,I64>(maxBin1+1, maxBin2+1));
 		const I32u numSubBins = 10; // resolution for each bin
-		int elapsed_micro = 0;
+		int elapsed_milli = 0;
 		if (!flag)
-			createHistogram2(pr, &bins, numBins, &freq_res0, &elapsed_micro);
+			createHistogram2(pr, &bins, numBins, &freq_res0, &elapsed_milli);
 		else
-			createHistogram3(pr, &bins, numBins, numSubBins, &freq_res1, &elapsed_micro);
+			createHistogram3(pr, &bins, numBins, numSubBins, &freq_res1, &elapsed_milli);
 
 		// print relative frequency and error into file
 		double err = 0.0;
@@ -294,7 +274,7 @@ public:
 
 		struct ErrorTime et;
 		et.error = err;
-		et.time = elapsed_micro;
+		et.time = elapsed_milli;
 		return et;
 	}
 
@@ -368,19 +348,21 @@ public:
 //		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testBoundedNormalSampling", &ProbabilityFunctionsTest::testBoundedNormalSampling));
 //		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testNormalGeneration", &ProbabilityFunctionsTest::testNormalGeneration));
 //		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testParetoGeneration", &ProbabilityFunctionsTest::testParetoGeneration));
-/*
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_rand", &ProbabilityFunctionsTest::testGenerator_rand));
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_knuth_b", &ProbabilityFunctionsTest::testGenerator_knuth_b));
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_minstd_rand", &ProbabilityFunctionsTest::testGenerator_minstd_rand));
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_minstd_rand0", &ProbabilityFunctionsTest::testGenerator_minstd_rand0));
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_mt19937", &ProbabilityFunctionsTest::testGenerator_mt19937));
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_mt19937_64", &ProbabilityFunctionsTest::testGenerator_mt19937_64));
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_ranlux24", &ProbabilityFunctionsTest::testGenerator_ranlux24));
-		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_ranlux48", &ProbabilityFunctionsTest::testGenerator_ranlux48));
-*/
+
+//		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_rand", &ProbabilityFunctionsTest::testGenerator_rand));
+//		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_knuth_b", &ProbabilityFunctionsTest::testGenerator_knuth_b));
+//		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_minstd_rand", &ProbabilityFunctionsTest::testGenerator_minstd_rand));
+//		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_minstd_rand0", &ProbabilityFunctionsTest::testGenerator_minstd_rand0));
+//		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_mt19937", &ProbabilityFunctionsTest::testGenerator_mt19937));
+//		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_mt19937_64", &ProbabilityFunctionsTest::testGenerator_mt19937_64));
+//		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_ranlux24", &ProbabilityFunctionsTest::testGenerator_ranlux24));
+//		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_ranlux48", &ProbabilityFunctionsTest::testGenerator_ranlux48));
+//        suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_rand", &ProbabilityFunctionsTest::testGenerator_rand));
+//        suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_ident", &ProbabilityFunctionsTest::testGenerator_ident));
+		
 //		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_partitioned", &ProbabilityFunctionsTest::testGenerator_partitioned));
 		suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testUniformDistribution", &ProbabilityFunctionsTest::testUniformDistribution));
-	//	suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_id", &ProbabilityFunctionsTest::testGenerator_id));
+//      suite->addTest(new TestCaller<ProbabilityFunctionsTest> ("testJointProbabilitySampling_id", &ProbabilityFunctionsTest::testGenerator_id));
 
 		return suite;
 	}
